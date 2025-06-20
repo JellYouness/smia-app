@@ -1,0 +1,29 @@
+{
+  "common": {
+    "create_new_one": "Crear un nuevo usuario",
+    "edit_one": "Editar el usuario",
+    "items": "Usuarios",
+    "new_one": "Nuevo usuario",
+    "read_all": "Lista de usuarios"
+  },
+  "form": {
+    "step1_label": "Información de inicio de sesión",
+    "step2_label": "Rol"
+  },
+  "list": {
+    "created_at": "Fecha de registro",
+    "email": "Email",
+    "role": "Admin"
+  },
+  "invalid_image_format": "Por favor seleccione un archivo de imagen válido",
+  "image_size_limit": "La imagen no debe exceder 5MB",
+  "image_upload_error": "Error al subir la imagen",
+  "image_delete_error": "Error al eliminar la imagen",
+  "profile": {
+    "title": "Mi Perfil",
+    "basic_info": "Información básica",
+    "address": "Dirección",
+    "preferences": "Preferencias",
+    "security": "Seguridad"
+  }
+}

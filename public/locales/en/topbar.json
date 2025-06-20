@@ -1,0 +1,14 @@
+{
+  "home": "Home",
+  "language": "Languages",
+  "language_english": "English",
+  "language_french": "French",
+  "language_spanish": "Spanish",
+  "logged": {
+    "logout": "Logout"
+  },
+  "login": "Login",
+  "register": "Register",
+  "user": "User",
+  "profile": "My Profile"
+}
