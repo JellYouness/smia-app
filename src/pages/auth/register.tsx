@@ -1,17 +1,28 @@
 import { NextPage } from 'next';
-import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
-import Routes from '@common/defs/routes';
-import RegisterForm from '@modules/auth/components/pages/RegisterForm';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { CircularProgress, Box } from '@mui/material';
 
 const RegisterPage: NextPage = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to the proper registration selection page
+    router.replace('/auth/register/');
+  }, [router]);
+
   return (
-    <>
-      <RegisterForm />
-    </>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '60vh',
+      }}
+    >
+      <CircularProgress />
+    </Box>
   );
 };
 
-export default withAuth(RegisterPage, {
-  mode: AUTH_MODE.LOGGED_OUT,
-  redirectUrl: Routes.Common.Home,
-});
+export default RegisterPage;

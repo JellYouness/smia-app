@@ -49,6 +49,7 @@ export interface User extends CrudObject {
   };
   // Relations avec les différents types d'utilisateurs
   creator?: Creator;
+  client?: Client;
   ambassador?: Ambassador;
   systemAdministrator?: SystemAdministrator;
 }
@@ -93,6 +94,9 @@ export interface Creator extends CrudObject {
   certifications: Certification[];
   biography: string;
   equipmentInfo: EquipmentInfo;
+  education: Education[];
+  professionalBackground: ProfessionalBackground[];
+  achievements: string[];
 }
 
 export interface Ambassador extends CrudObject {
@@ -155,6 +159,20 @@ export interface Certification {
   date: string;
 }
 
+export interface Education {
+  degree: string;
+  field: string;
+  institution: string;
+  year: string;
+}
+
+export interface ProfessionalBackground {
+  title: string;
+  company: string;
+  duration: string;
+  description: string;
+}
+
 export interface EquipmentInfo {
   cameras: string[];
   lenses: string[];
@@ -173,4 +191,26 @@ export interface BusinessAddress {
   state: string;
   postalCode: string;
   country: string;
+}
+
+export interface Client extends CrudObject {
+  userId: number;
+  companyName: string;
+  companySize: string;
+  industry: string;
+  websiteUrl: string;
+  billingStreet: string;
+  billingCity: string;
+  billingState: string;
+  billingPostalCode: string;
+  billingCountry: string;
+  taxIdentifier: string;
+  budget: number;
+  preferredCreators: number[];
+  projectCount: number;
+  defaultProjectSettings: {
+    budget?: number;
+    timeline?: string;
+    requirements?: string;
+  };
 }

@@ -61,6 +61,10 @@ export interface VerifyEmailInput {
   hash: string;
 }
 
+export interface ResendEmailVerificationInput {
+  email: string;
+}
+
 interface AuthData {
   user: User | null;
   login: (
@@ -84,6 +88,10 @@ interface AuthData {
     _input: VerifyEmailInput,
     _options?: FetchApiOptions
   ) => Promise<ApiResponse<{ token: string }>>;
+  resendEmailVerification: (
+    _input: ResendEmailVerificationInput,
+    _options?: FetchApiOptions
+  ) => Promise<ApiResponse<null>>;
   initialized: boolean; // This is used to prevent the app from rendering before the useAuth initial fetch is complete
 }
 
@@ -99,6 +107,7 @@ const useAuth = (): AuthData => {
       requestPasswordReset: async () => ({ success: false, errors: ['Auth is disabled'] }),
       resetPassword: async () => ({ success: false, errors: ['Auth is disabled'] }),
       verifyEmail: async () => ({ success: false, errors: ['Auth is disabled'] }),
+      resendEmailVerification: async () => ({ success: false, errors: ['Auth is disabled'] }),
     };
   }
 
@@ -198,6 +207,17 @@ const useAuth = (): AuthData => {
     return response;
   };
 
+  const resendEmailVerification = async (
+    input: ResendEmailVerificationInput,
+    options?: FetchApiOptions
+  ) => {
+    const response = await fetchApi<null>(ApiRoutes.Auth.ResendEmailVerification, {
+      data: input,
+      ...options,
+    });
+    return response;
+  };
+
   return {
     user: user ?? null,
     login,
@@ -206,6 +226,7 @@ const useAuth = (): AuthData => {
     requestPasswordReset,
     resetPassword,
     verifyEmail,
+    resendEmailVerification,
     initialized,
   };
 };

@@ -6,6 +6,7 @@ const Routes: CrudAppRoutes = {
   Me: prefix + '/me',
   CreateOne: prefix + '/create',
   UpdateOne: prefix + '/{id}',
+  EditProfile: prefix + '/edit-profile',
 };
 
 export default Routes;

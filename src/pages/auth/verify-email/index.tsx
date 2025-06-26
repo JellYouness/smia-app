@@ -7,11 +7,13 @@ import useAuth from '@modules/auth/hooks/api/useAuth';
 import Routes from '@common/defs/routes';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useSnackbar } from 'notistack';
 
 const EmailVerificationPendingPage: NextPage = () => {
   const router = useRouter();
-  const { requestPasswordReset } = useAuth();
+  const { resendEmailVerification } = useAuth();
   const { t } = useTranslation(['auth', 'common']);
+  const { enqueueSnackbar } = useSnackbar();
   const [email, setEmail] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
@@ -35,11 +37,17 @@ const EmailVerificationPendingPage: NextPage = () => {
 
     setLoading(true);
     try {
-      // For now, we'll just show a success message
-      // In the future, you might want to implement a resend verification email endpoint
-      alert(t('auth:verification_email_resent'));
+      const response = await resendEmailVerification({ email });
+      if (response.success) {
+        // Show success message
+        enqueueSnackbar(t('auth:verification_email_resent'), { variant: 'success' });
+      } else {
+        // Show error message
+        enqueueSnackbar(response.errors?.[0] || t('common:unexpected_error'), { variant: 'error' });
+      }
     } catch (error) {
       console.error('Error resending verification email:', error);
+      enqueueSnackbar(t('common:unexpected_error'), { variant: 'error' });
     } finally {
       setLoading(false);
     }

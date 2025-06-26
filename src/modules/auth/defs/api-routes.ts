@@ -5,6 +5,7 @@ const ApiRoutes = {
   Logout: prefix + '/logout',
   RequestPasswordReset: prefix + '/request-password-reset',
   ResetPassword: prefix + '/reset-password',
+  ResendEmailVerification: prefix + '/resend-email-verification',
   VerifyEmail: prefix + '/verify-email',
   Me: prefix + '/me',
 };

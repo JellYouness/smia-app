@@ -109,5 +109,12 @@
     "french": "Francés",
     "english": "Inglés",
     "spanish": "Español"
-  }
+  },
+  "skip_for_now": "Omitir por ahora",
+  "select_gender": "Seleccionar género",
+  "male": "Masculino",
+  "female": "Femenino",
+  "other": "Otro",
+  "address_information": "Información de dirección",
+  "personal_information": "Información personal"
 }

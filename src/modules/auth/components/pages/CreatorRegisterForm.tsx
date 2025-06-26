@@ -2,6 +2,7 @@ import FormProvider, {
   RHFTextField,
   RHFCheckbox,
   RHFAutocomplete,
+  RHFSelect,
 } from '@common/components/lib/react-hook-form';
 import { LockOpen } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
@@ -251,18 +252,19 @@ const CreatorRegisterForm = () => {
                     onChange={(e) => updateLanguage(index, 'language', e.target.value)}
                     sx={{ flex: 1 }}
                   />
-                  <TextField
-                    select
+                  <RHFSelect
+                    name={`languages[${index}].proficiency`}
                     label={t('auth:proficiency')}
                     value={lang.proficiency}
                     onChange={(e) => updateLanguage(index, 'proficiency', e.target.value)}
+                    variant="outlined"
                     sx={{ flex: 1 }}
                   >
                     <option value="Basic">Basic</option>
                     <option value="Intermediate">Intermediate</option>
                     <option value="Advanced">Advanced</option>
                     <option value="Native">Native</option>
-                  </TextField>
+                  </RHFSelect>
                   <LoadingButton
                     variant="outlined"
                     color="error"
@@ -296,9 +298,9 @@ const CreatorRegisterForm = () => {
 
             {/* Terms and Conditions */}
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}>
                 <RHFCheckbox name="termsAccepted" label={undefined} />
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                <Typography variant="body2" color="text.secondary">
                   {t('auth:terms_and_conditions_text')}{' '}
                   <Link href="/terms" target="_blank">
                     {t('auth:terms_and_conditions_link')}

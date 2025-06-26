@@ -93,7 +93,6 @@
   "show_phone": "Afficher le téléphone",
   "show_address": "Afficher l'adresse",
   "enabled": "Activé",
-  "disabled": "Désactivé",
   "public": "Public",
   "private": "Privé",
   "yes": "Oui",
@@ -109,5 +108,20 @@
     "french": "Français",
     "english": "Anglais",
     "spanish": "Espagnol"
-  }
+  },
+  "skip_for_now": "Passer pour l'instant",
+  "gender": "Genre",
+  "select_gender": "Sélectionner le genre",
+  "male": "Homme",
+  "female": "Femme",
+  "other": "Autre",
+  "address_information": "Informations d'adresse",
+  "personal_information": "Informations personnelles",
+  "date_of_birth": "Date de naissance",
+  "emergency_contact": "Contact d'urgence",
+  "emergency_contact_name": "Nom du contact d'urgence",
+  "emergency_contact_phone": "Téléphone du contact d'urgence",
+  "emergency_contact_email": "Email du contact d'urgence",
+  "emergency_contact_relationship": "Relation avec le contact d'urgence",
+  "emergency_contact_relationship_options": ["Parent", "Ami", "Collegue", "Autre"]
 }

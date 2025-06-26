@@ -24,9 +24,9 @@ const CreateUserForm = (_props: CreateUserFormProps) => {
     password: Yup.string().required(t('common:field_required')),
     role: Yup.mixed<ROLE>()
       .oneOf(Object.values(ROLE), (_values) => {
-        return `${t('common:role_criteria')} ${ROLES_OPTIONS.map(
-          (option) => option.label
-        ).join(', ')}`;
+        return `${t('common:role_criteria')} ${ROLES_OPTIONS.map((option) => option.label).join(
+          ', '
+        )}`;
       })
       .required(t('common:field_required')),
   });

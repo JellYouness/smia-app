@@ -18,6 +18,7 @@ const EmailVerificationPage: NextPage = () => {
   useEffect(() => {
     const verifyEmailToken = async () => {
       const { id, hash } = router.query;
+      console.log(id, hash);
 
       if (!id || !hash) {
         setStatus('error');
@@ -34,8 +35,10 @@ const EmailVerificationPage: NextPage = () => {
         if (response.success) {
           setStatus('success');
           setMessage(t('auth:email_verified_success'));
-          // Redirect to home page after 3 seconds
-          router.push(Routes.Common.Home);
+          // Redirect to profile completion page after 3 seconds
+          setTimeout(() => {
+            router.push(Routes.Auth.CompleteProfile);
+          }, 3000);
         } else {
           setStatus('error');
           setMessage(response.errors?.[0] || t('common:unexpected_error'));
@@ -49,7 +52,7 @@ const EmailVerificationPage: NextPage = () => {
     if (router.isReady) {
       verifyEmailToken();
     }
-  }, [router.isReady, router.query, verifyEmail]);
+  }, []);
 
   const getIcon = () => {
     switch (status) {
@@ -99,7 +102,7 @@ const EmailVerificationPage: NextPage = () => {
   );
 };
 
-export const getStaticProps = async ({ locale }: { locale: string }) => ({
+export const getServerSideProps = async ({ locale }: { locale: string }) => ({
   props: {
     ...(await serverSideTranslations(locale, ['auth', 'common', 'topbar'])),
   },

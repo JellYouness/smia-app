@@ -8,6 +8,7 @@ import { Container, useTheme, Button, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useTranslation } from 'react-i18next';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
 interface ILayoutProps {
   children: React.ReactNode;
@@ -16,10 +17,12 @@ interface ILayoutProps {
 const Layout = (props: ILayoutProps) => {
   const { children } = props;
   const theme = useTheme();
+  const { user } = useAuth();
   const [openLeftbar, setOpenLeftbar] = useState(true);
   const [display, setDisplay] = useState(true);
   const underMaintenance = process.env.NEXT_PUBLIC_UNDER_MAINTENANCE === 'true';
   const { t } = useTranslation('common');
+  const leftbarWidth = user?.systemAdministrator ? LEFTBAR_WIDTH : 0;
 
   useEffect(() => {
     setDisplay(!underMaintenance);
@@ -88,15 +91,17 @@ const Layout = (props: ILayoutProps) => {
       >
         <Box sx={{ minHeight: '100vh', width: '100vw' }}>
           <Stack direction="column" sx={{ height: '100%' }}>
-            <Leftbar open={openLeftbar} onToggle={(open) => setOpenLeftbar(open)} />
+            {user?.systemAdministrator && (
+              <Leftbar open={openLeftbar} onToggle={(open) => setOpenLeftbar(open)} />
+            )}
             <Topbar />
             <Box
               sx={{
                 display: 'flex',
                 flex: 1,
                 justifyContent: 'center',
-                marginLeft: openLeftbar ? LEFTBAR_WIDTH + 'px' : 0,
-                width: openLeftbar ? `calc(100% - ${LEFTBAR_WIDTH}px)` : '100%',
+                marginLeft: openLeftbar ? leftbarWidth + 'px' : 0,
+                width: openLeftbar ? `calc(100% - ${leftbarWidth}px)` : '100%',
               }}
             >
               <Container
@@ -116,8 +121,8 @@ const Layout = (props: ILayoutProps) => {
             </Box>
             <Box
               sx={{
-                marginLeft: openLeftbar ? LEFTBAR_WIDTH + 'px' : 0,
-                maxWidth: openLeftbar ? `calc(100% - ${LEFTBAR_WIDTH}px)` : '100%',
+                marginLeft: openLeftbar ? leftbarWidth + 'px' : 0,
+                maxWidth: openLeftbar ? `calc(100% - ${leftbarWidth}px)` : '100%',
                 transition: theme.transitions.create(['all'], {
                   easing: theme.transitions.easing.sharp,
                   duration: theme.transitions.duration.leavingScreen,
