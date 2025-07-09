@@ -1,7 +1,7 @@
 import Routes from '@common/defs/routes';
 import ResetPassword from '@modules/auth/components/pages/ResetPassword';
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
-import { NextPage } from 'next';
+import { NextPage, GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 
@@ -16,9 +16,15 @@ const ResetPasswordPage: NextPage = () => {
   );
 };
 
-export const getStaticProps = async ({ locale }: { locale: string }) => ({
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['topbar', 'footer', 'leftbar', 'auth', 'common'])),
+    ...(await serverSideTranslations(locale || 'en', [
+      'topbar',
+      'footer',
+      'leftbar',
+      'auth',
+      'common',
+    ])),
   },
 });
 

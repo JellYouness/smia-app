@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky install",
-    "postbuild": "ncc build ./sitemap-config/routes.config.js -o ./sitemap-config/dist/sitemap-config.js && next-sitemap"
+    "prepare": "husky install"    
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
