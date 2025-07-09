@@ -4,6 +4,7 @@ import {
   Work,
   Star,
   Verified,
+  AttachMoney,
   LinkedIn,
   Twitter,
   Facebook,
@@ -14,7 +15,8 @@ import {
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
-import { JsonDataRenderer, ProfilePicture } from '@modules/users/components';
+import JsonDataRenderer from './JsonDataRenderer';
+import ProfilePicture from './ProfilePicture';
 
 interface SidebarProps {
   user: Any;
