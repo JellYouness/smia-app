@@ -26,6 +26,24 @@ import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { setUserLanguage } from '@common/components/lib/utils/language';
 
+// Flag components for languages
+const FlagIcon = ({ country }: { country: string }) => (
+  <Box
+    component="span"
+    sx={{
+      width: 20,
+      height: 15,
+      display: 'inline-block',
+      backgroundImage: `url(https://flagcdn.com/w40/${country.toLowerCase()}.png)`,
+      backgroundSize: 'contain',
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center',
+      borderRadius: '2px',
+      mr: 1,
+    }}
+  />
+);
+
 interface TopbarItem {
   label: string;
   link?: string;
@@ -35,6 +53,7 @@ interface TopbarItem {
     link?: string;
     value?: string;
     onClick?: () => void;
+    flag?: string;
   }>;
 }
 
@@ -63,16 +82,19 @@ const Topbar = () => {
           label: t('topbar:language_french'),
           link: asPath,
           value: 'fr',
+          flag: 'fr',
         },
         {
           label: t('topbar:language_english'),
           link: `${asPath}`,
           value: 'en',
+          flag: 'us',
         },
         {
           label: t('topbar:language_spanish'),
           link: `${asPath}`,
           value: 'es',
+          flag: 'es',
         },
       ],
     },
@@ -242,6 +264,7 @@ const Topbar = () => {
                                     }
                                   }}
                                 >
+                                  {dropdownItem.flag && <FlagIcon country={dropdownItem.flag} />}
                                   {dropdownItem.label}
                                 </ListItemButton>
                               );
@@ -334,7 +357,7 @@ const Topbar = () => {
                           backgroundColor: 'common.white',
                           boxShadow: (theme) => theme.customShadows.z12,
                           position: 'absolute',
-                          top: 48,
+                          top: 40,
                           left: 0,
                           width: 160,
                           padding: 0,
@@ -365,7 +388,8 @@ const Topbar = () => {
                               }}
                               onClick={onNavButtonClick(dropdownItem)}
                             >
-                              {dropdownItem.label}
+                              {dropdownItem.flag && <FlagIcon country={dropdownItem.flag} />}
+                              <ListItemText>{dropdownItem.label}</ListItemText>
                             </ListItemButton>
                           );
 

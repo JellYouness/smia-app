@@ -1,7 +1,7 @@
 import ApiRoutes from '@common/defs/api-routes';
 import useApi, { ApiOptions, ApiResponse, FetchApiOptions } from '@common/hooks/useApi';
 import { User } from '@modules/users/defs/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 
 const toCamelCase = (str: string) => str.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
@@ -134,6 +134,13 @@ const useAuth = (): AuthData => {
     setInitialized(true);
     return returnedUser;
   });
+
+  // Ensure initialized is set if user is present but fetcher didn't run
+  useEffect(() => {
+    if (user !== undefined && !initialized) {
+      setInitialized(true);
+    }
+  }, [user, initialized]);
 
   const login = async (input: LoginInput, options?: FetchApiOptions) => {
     const response = await fetchApi<{ token: string }>(ApiRoutes.Auth.Login, {

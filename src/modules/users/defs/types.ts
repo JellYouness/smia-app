@@ -16,6 +16,7 @@ export interface User extends CrudObject {
   postalCode: string;
   profilePicture: string;
   bio: string;
+  title?: string;
   dateOfBirth: string;
   gender: string;
   preferredLanguage: string;
@@ -92,7 +93,6 @@ export interface Creator extends CrudObject {
   isJournalist: boolean;
   mediaTypes: MediaType[];
   certifications: Certification[];
-  biography: string;
   equipmentInfo: EquipmentInfo;
   education: Education[];
   professionalBackground: ProfessionalBackground[];

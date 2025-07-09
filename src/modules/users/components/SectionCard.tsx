@@ -1,0 +1,44 @@
+import React from 'react';
+import { Box, Typography, IconButton, useTheme } from '@mui/material';
+import { Edit } from '@mui/icons-material';
+import Link from 'next/link';
+
+interface SectionCardProps {
+  title: string;
+  onEdit?: () => void;
+  children: React.ReactNode;
+  editLink?: string;
+}
+
+const SectionCard: React.FC<SectionCardProps> = ({ title, onEdit, children, editLink }) => {
+  const theme = useTheme();
+  return (
+    <Box
+      sx={{
+        p: 3,
+        // mb: 3,
+        position: 'relative',
+        borderBottom: `2px solid ${theme.palette.divider}`,
+        //  borderRadius: 2, border: '1px solid #e0e0e0'
+      }}
+    >
+      <Box display="flex" alignItems="center" mb={2}>
+        <Typography variant="h4" sx={{ fontWeight: 600, flexGrow: 1 }}>
+          {title}
+        </Typography>
+        {editLink ? (
+          <IconButton component={Link} href={editLink} aria-label={`Edit ${title}`}>
+            <Edit />
+          </IconButton>
+        ) : (
+          <IconButton onClick={onEdit} aria-label={`Edit ${title}`}>
+            <Edit />
+          </IconButton>
+        )}
+      </Box>
+      {children}
+    </Box>
+  );
+};
+
+export default SectionCard;

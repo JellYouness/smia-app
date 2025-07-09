@@ -6,145 +6,617 @@ import {
   Card,
   Grid,
   Typography,
-  Avatar,
   Button,
   Stack,
-  IconButton,
-  Chip,
   Paper,
   Container,
-  Badge,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CircularProgress,
+  Chip,
+  useTheme,
+  Divider,
 } from '@mui/material';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import {
-  Edit,
   Language,
   Work,
   Star,
   Verified,
-  Business,
   Person,
   Email,
   Phone,
-  Web,
   AttachMoney,
   Schedule,
+  Edit,
+  LinkedIn,
+  Twitter,
+  Facebook,
+  Instagram,
+  GitHub,
+  Language as LanguageIcon,
   School,
-  Public,
 } from '@mui/icons-material';
-import { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import ApiRoutes from '@common/defs/api-routes';
+import Skeleton from '@mui/material/Skeleton';
+import Link from 'next/link';
+import { Any } from '@common/defs/types';
+import {
+  JsonDataRenderer,
+  ChipList,
+  CardList,
+  InfoItem,
+  ProfilePicture,
+  SectionCard,
+} from '@modules/users/components';
 
-interface ProfilePictureProps {
-  src: string | null;
-  onUpload: (file: File) => Promise<void>;
-  onDelete: () => Promise<void>;
+interface MainContentProps {
+  user: Any;
+  t: Any;
 }
 
-const ProfilePicture: React.FC<ProfilePictureProps> = ({ src, onUpload, onDelete }) => {
-  const { t } = useTranslation(['common', 'user']);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+const MainContent = ({ user, t }: MainContentProps) => {
+  const [openPortfolio, setOpenPortfolio] = useState(false);
+  const [openSkills, setOpenSkills] = useState(false);
+  const [openLanguages, setOpenLanguages] = useState(false);
+  const [openEducation, setOpenEducation] = useState(false);
+  const [openAchievements, setOpenAchievements] = useState(false);
+  const [openTestimonials, setOpenTestimonials] = useState(false);
+  const [openCertifications, setOpenCertifications] = useState(false);
+  const [openEmployment, setOpenEmployment] = useState(false);
+  const [openOther, setOpenOther] = useState(false);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
-    if (!file.type.startsWith('image/')) {
-      alert(t('user:invalid_image_format'));
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert(t('user:image_size_limit'));
-      return;
-    }
-
-    setIsUploading(true);
-    try {
-      await onUpload(file);
-    } catch (error) {
-      console.error(t('user:image_upload_error'), error);
-      alert(t('user:image_upload_error'));
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  const renderDialog = (title: string, open: boolean, onClose: () => void) => (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Edit {title}</DialogTitle>
+      <DialogContent>
+        <Typography>Edit {title} form goes here.</Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="contained">Save</Button>
+      </DialogActions>
+    </Dialog>
+  );
 
   return (
-    <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', mb: 2 }}>
-      <Badge
-        overlap="circular"
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        badgeContent={
-          <Stack direction="row" spacing={0.5}>
-            <input
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              ref={fileInputRef}
-              onChange={handleFileChange}
-            />
-            <IconButton
-              size="small"
+    <Stack spacing={0}>
+      {/* Title/About Section */}
+      <SectionCard title={user?.profile?.title || t('user:about')} editLink="/users/edit-profile">
+        <Typography variant="body1" sx={{ mt: 1 }}>
+          {user?.profile?.bio || <Skeleton width="80%" />}
+        </Typography>
+      </SectionCard>
+
+      {/* Portfolio Section */}
+      <SectionCard title="Portfolio" onEdit={() => setOpenPortfolio(true)}>
+        <CardList
+          items={user?.creator?.portfolio || []}
+          renderCard={(item) => (
+            <Box
               sx={{
-                bgcolor: 'primary.main',
-                color: 'white',
-                '&:hover': { bgcolor: 'primary.dark' },
-                width: 32,
-                height: 32,
+                p: 3,
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                mb: 2,
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  boxShadow: 1,
+                  transform: 'translateY(-2px)',
+                  transition: 'all 0.2s ease-in-out',
+                },
               }}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
             >
-              <Edit sx={{ fontSize: 16 }} />
-            </IconButton>
-            {src && (
-              <IconButton
-                size="small"
-                sx={{
-                  bgcolor: 'error.main',
-                  color: 'white',
-                  '&:hover': { bgcolor: 'error.dark' },
-                  width: 32,
-                  height: 32,
-                }}
-                onClick={onDelete}
-                disabled={isUploading}
-              >
-                <Edit sx={{ fontSize: 16 }} />
-              </IconButton>
-            )}
-          </Stack>
-        }
-      >
-        <Avatar
-          src={src || undefined}
-          sx={{
-            width: 120,
-            height: 120,
-            border: '4px solid white',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          }}
+              <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
+                {item.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
+                {item.description}
+              </Typography>
+              {item.url && (
+                <Link href={item.url} target="_blank" rel="noopener noreferrer">
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      textTransform: 'none',
+                      '&:hover': {
+                        backgroundColor: 'primary.main',
+                        color: 'white',
+                      },
+                    }}
+                  >
+                    View Project
+                  </Button>
+                </Link>
+              )}
+            </Box>
+          )}
+          fallback={
+            <Box
+              sx={{
+                p: 4,
+                textAlign: 'center',
+                border: '2px dashed',
+                borderColor: 'divider',
+                borderRadius: 2,
+                bgcolor: 'grey.50',
+              }}
+            >
+              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
+              <Typography variant="body2" color="text.secondary">
+                Showcase your best work and projects.
+              </Typography>
+            </Box>
+          }
         />
-      </Badge>
-    </Box>
+      </SectionCard>
+      {renderDialog('Portfolio', openPortfolio, () => setOpenPortfolio(false))}
+
+      {/* Skills Section */}
+      <SectionCard title="Skills" onEdit={() => setOpenSkills(true)}>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+          <ChipList items={user?.creator?.skills || []} />
+        </Stack>
+      </SectionCard>
+      {renderDialog('Skills', openSkills, () => setOpenSkills(false))}
+
+      {/* Certifications Section */}
+      <SectionCard title="Certifications" onEdit={() => setOpenCertifications(true)}>
+        <Stack spacing={3}>
+          <JsonDataRenderer
+            data={user?.creator?.certifications || []}
+            renderItem={(cert) => (
+              <Box
+                sx={{
+                  p: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  bgcolor: 'background.paper',
+                  position: 'relative',
+                  '&:hover': {
+                    borderColor: 'success.main',
+                    boxShadow: 1,
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 32,
+                    right: 24,
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    bgcolor: 'success.main',
+                  }}
+                />
+                <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'success.dark' }}>
+                  {cert.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
+                  Issued by: {cert.issuer}
+                </Typography>
+                {cert.date && (
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                    Date: {cert.date}
+                  </Typography>
+                )}
+              </Box>
+            )}
+            fallback={
+              <Box
+                sx={{
+                  p: 4,
+                  textAlign: 'center',
+                  border: '2px dashed',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  bgcolor: 'grey.50',
+                }}
+              >
+                <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Listing your certifications can help prove your specific knowledge or abilities.
+                </Typography>
+              </Box>
+            }
+          />
+        </Stack>
+      </SectionCard>
+      {renderDialog('Certifications', openCertifications, () => setOpenCertifications(false))}
+
+      {/* Employment History Section */}
+      <SectionCard title="Employment History" onEdit={() => setOpenEmployment(true)}>
+        <Stack spacing={3}>
+          <JsonDataRenderer
+            data={user?.creator?.professionalBackground || []}
+            renderItem={(job) => (
+              <Box
+                sx={{
+                  p: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  // borderRadius: 2,
+                  borderRadius: '0 16px 16px 0',
+                  bgcolor: 'background.paper',
+                  position: 'relative',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    boxShadow: 1,
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: 4,
+                    bgcolor: 'primary.main',
+                  }}
+                />
+                <Box sx={{ pl: 2 }}>
+                  <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
+                    {job.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 1, fontWeight: 500 }}
+                  >
+                    {job.company} • {job.duration}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                    {job.description}
+                  </Typography>
+                </Box>
+              </Box>
+            )}
+            fallback={
+              <Box
+                sx={{
+                  p: 4,
+                  textAlign: 'center',
+                  border: '2px dashed',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  bgcolor: 'grey.50',
+                }}
+              >
+                <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Add your employment history to help clients understand your background.
+                </Typography>
+              </Box>
+            }
+          />
+        </Stack>
+      </SectionCard>
+      {renderDialog('Employment History', openEmployment, () => setOpenEmployment(false))}
+
+      {/* Achievements Section */}
+      <SectionCard title="Achievements" onEdit={() => setOpenAchievements(true)}>
+        <Stack spacing={3}>
+          <JsonDataRenderer
+            data={user?.creator?.achievements || []}
+            renderItem={(achievement, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  p: 2.5,
+                  pl: 3,
+                  bgcolor: 'grey.50',
+                  borderLeft: '6px solid',
+                  borderColor: 'warning.main',
+                  borderRadius: '0 16px 16px 0',
+                  boxShadow: 0,
+                  gap: 2,
+                  position: 'relative',
+                  minHeight: 56,
+                  '&:hover': {
+                    boxShadow: 2,
+                    bgcolor: 'background.paper',
+                    borderColor: 'primary.main',
+                    transition: 'all 0.2s',
+                  },
+                }}
+              >
+                <Star sx={{ color: 'warning.main', fontSize: 28, mr: 2, flexShrink: 0 }} />
+                <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary' }}>
+                  {achievement}
+                </Typography>
+              </Box>
+            )}
+            fallback={
+              <Box
+                sx={{
+                  p: 4,
+                  textAlign: 'center',
+                  border: '2px dashed',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  bgcolor: 'grey.50',
+                }}
+              >
+                <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
+                <Typography variant="body2" color="text.secondary">
+                  Highlight your key achievements and accomplishments.
+                </Typography>
+              </Box>
+            }
+          />
+        </Stack>
+      </SectionCard>
+      {renderDialog('Achievements', openAchievements, () => setOpenAchievements(false))}
+
+      {/* Testimonials Section */}
+      <SectionCard title="Testimonials" onEdit={() => setOpenTestimonials(true)}>
+        <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2 }} />
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+          Showcase your skills with non-Upwork client testimonials
+        </Typography>
+      </SectionCard>
+      {renderDialog('Testimonials', openTestimonials, () => setOpenTestimonials(false))}
+
+      {/* Other Experiences Section */}
+      <SectionCard title="Other Experiences" onEdit={() => setOpenOther(true)}>
+        <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2 }} />
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+          Add any other experiences that help you stand out.
+        </Typography>
+      </SectionCard>
+      {renderDialog('Other Experiences', openOther, () => setOpenOther(false))}
+    </Stack>
   );
 };
 
+interface SidebarProps {
+  user: Any;
+  profilePicture: string | null;
+  handleUploadPicture: (file: File) => Promise<void>;
+  handleDeletePicture: () => Promise<void>;
+}
+
+const Sidebar = ({
+  user,
+  profilePicture,
+  handleUploadPicture,
+  handleDeletePicture,
+}: SidebarProps) => (
+  <Stack spacing={3}>
+    <Card sx={{ p: 3, textAlign: 'center' }}>
+      <ProfilePicture
+        src={profilePicture}
+        onUpload={handleUploadPicture}
+        onDelete={handleDeletePicture}
+      />
+      <Typography variant="h6" sx={{ mt: 2, fontWeight: 700 }}>
+        {user?.firstName} {user?.lastName}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {user?.profile?.city || <Skeleton width={80} />}{' '}
+        {user?.profile?.country ? `, ${user.profile.country}` : ''}
+      </Typography>
+
+      {/* Additional Info */}
+      {user?.creator && (
+        <Box sx={{ mt: 2 }}>
+          <Stack spacing={1}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Verified sx={{ fontSize: 16, color: 'success.main' }} />
+              <Typography variant="body2" color="text.secondary">
+                {user.creator.verificationStatus}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Work sx={{ fontSize: 16, color: 'text.secondary' }} />
+              <Typography variant="body2" color="text.secondary">
+                {user.creator.experience} years experience
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <AttachMoney sx={{ fontSize: 16, color: 'text.secondary' }} />
+              <Typography variant="body2" color="text.secondary">
+                ${user.creator.hourlyRate}/hr
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Star sx={{ fontSize: 16, color: 'warning.main' }} />
+              <Typography variant="body2" color="text.secondary">
+                {user.creator.averageRating} ({user.creator.ratingCount} reviews)
+              </Typography>
+            </Box>
+          </Stack>
+        </Box>
+      )}
+    </Card>
+
+    {/* Languages Section */}
+    <Card sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+        <LanguageIcon sx={{ fontSize: 20, color: 'primary.main' }} />
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          Languages
+        </Typography>
+      </Box>
+      <Stack spacing={1}>
+        <JsonDataRenderer
+          data={user?.creator?.languages || []}
+          renderItem={(lang, index) => (
+            <Box
+              key={index}
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                {lang.language}
+              </Typography>
+              <Chip label={lang.proficiency} size="small" color="secondary" variant="outlined" />
+            </Box>
+          )}
+          fallback={
+            <Typography variant="body2" color="text.secondary">
+              No languages added yet
+            </Typography>
+          }
+        />
+      </Stack>
+    </Card>
+
+    {/* Education Section */}
+    <Card sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+        <School sx={{ fontSize: 20, color: 'primary.main' }} />
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          Education
+        </Typography>
+      </Box>
+      <Stack spacing={2}>
+        <JsonDataRenderer
+          data={user?.creator?.education || []}
+          renderItem={(edu, index) => (
+            <Box key={index}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                {edu.degree} in {edu.field}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                {edu.institution}
+              </Typography>
+              {edu.year && (
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  {edu.year}
+                </Typography>
+              )}
+            </Box>
+          )}
+          fallback={
+            <Typography variant="body2" color="text.secondary">
+              No education added yet
+            </Typography>
+          }
+        />
+      </Stack>
+    </Card>
+
+    {/* Social Media Links */}
+    <Card sx={{ p: 3 }}>
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+        Social Media
+      </Typography>
+      <Stack spacing={1}>
+        {user?.profile?.socialMediaLinks?.linkedin && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <LinkedIn sx={{ fontSize: 20, color: '#0077b5' }} />
+            <Link
+              href={user.profile.socialMediaLinks.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
+                LinkedIn
+              </Typography>
+            </Link>
+          </Box>
+        )}
+        {user?.profile?.socialMediaLinks?.twitter && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Twitter sx={{ fontSize: 20, color: '#1DA1F2' }} />
+            <Link
+              href={user.profile.socialMediaLinks.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
+                Twitter
+              </Typography>
+            </Link>
+          </Box>
+        )}
+        {user?.profile?.socialMediaLinks?.facebook && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Facebook sx={{ fontSize: 20, color: '#1877F2' }} />
+            <Link
+              href={user.profile.socialMediaLinks.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
+                Facebook
+              </Typography>
+            </Link>
+          </Box>
+        )}
+        {user?.profile?.socialMediaLinks?.instagram && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Instagram sx={{ fontSize: 20, color: '#E4405F' }} />
+            <Link
+              href={user.profile.socialMediaLinks.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
+                Instagram
+              </Typography>
+            </Link>
+          </Box>
+        )}
+        {user?.profile?.socialMediaLinks?.github && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <GitHub sx={{ fontSize: 20, color: '#333' }} />
+            <Link
+              href={user.profile.socialMediaLinks.github}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
+                GitHub
+              </Typography>
+            </Link>
+          </Box>
+        )}
+        {!user?.profile?.socialMediaLinks?.linkedin &&
+          !user?.profile?.socialMediaLinks?.twitter &&
+          !user?.profile?.socialMediaLinks?.facebook &&
+          !user?.profile?.socialMediaLinks?.instagram &&
+          !user?.profile?.socialMediaLinks?.github && (
+            <Typography variant="body2" color="text.secondary">
+              No social media links added yet
+            </Typography>
+          )}
+      </Stack>
+    </Card>
+  </Stack>
+);
+
 const MyProfile: NextPage = () => {
-  const { user } = useAuth();
+  const { user, initialized } = useAuth();
   const { t } = useTranslation(['common', 'user']);
+  const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-  const [profilePicture, setProfilePicture] = useState<string | null>(user?.profilePicture || null);
+  const [profilePicture, setProfilePicture] = useState<string | null>(
+    user?.profile?.profile_picture || null
+  );
+
+  // Update profile picture when user data changes
+  useEffect(() => {
+    if (user?.profile?.profile_picture) {
+      setProfilePicture(user.profile.profile_picture);
+    }
+  }, [user?.profile?.profile_picture]);
 
   // Get the mutate function from SWR to update user data
   const { mutate } = useSWR(ApiRoutes.Auth.Me);
@@ -163,6 +635,54 @@ const MyProfile: NextPage = () => {
     router.push(Routes.Users.EditProfile);
   };
 
+  // Show loading state while auth is initializing
+  if (!initialized) {
+    return (
+      <Box
+        sx={{
+          minHeight: '100vh',
+          bgcolor: 'grey.50',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Show loading state if user data is not available yet
+  if (!user) {
+    return (
+      <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50', py: 4 }}>
+        <Container maxWidth="xl">
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ p: 3, textAlign: 'center' }}>
+                <Skeleton variant="circular" width={120} height={120} sx={{ mx: 'auto', mb: 2 }} />
+                <Skeleton variant="text" width="60%" sx={{ mx: 'auto', mb: 1 }} />
+                <Skeleton variant="text" width="40%" sx={{ mx: 'auto' }} />
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <Stack spacing={3}>
+                <Card sx={{ p: 3, mb: 3 }}>
+                  <Skeleton variant="text" width="30%" sx={{ mb: 2 }} />
+                  <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 1 }} />
+                </Card>
+                <Card sx={{ p: 3, mb: 3 }}>
+                  <Skeleton variant="text" width="25%" sx={{ mb: 2 }} />
+                  <Skeleton variant="rectangular" height={80} sx={{ borderRadius: 1 }} />
+                </Card>
+              </Stack>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+    );
+  }
+
   const renderHeader = () => (
     <Paper
       elevation={0}
@@ -173,7 +693,7 @@ const MyProfile: NextPage = () => {
         py: 4,
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} md={3}>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -228,74 +748,52 @@ const MyProfile: NextPage = () => {
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Person sx={{ color: 'text.secondary' }} />
-            <Box>
-              <Typography variant="body2" color="text.secondary">
-                {t('common:name')}
-              </Typography>
-              <Typography variant="body1">
-                {user?.firstName} {user?.lastName}
-              </Typography>
-            </Box>
-          </Stack>
+          <InfoItem
+            icon={<Person sx={{ color: 'text.secondary' }} />}
+            label={t('common:name')}
+            value={`${user?.firstName} ${user?.lastName}`}
+          />
         </Grid>
         <Grid item xs={12} md={6}>
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Email sx={{ color: 'text.secondary' }} />
-            <Box>
-              <Typography variant="body2" color="text.secondary">
-                {t('common:email')}
-              </Typography>
-              <Typography variant="body1">{user?.email}</Typography>
-            </Box>
-          </Stack>
+          <InfoItem
+            icon={<Email sx={{ color: 'text.secondary' }} />}
+            label={t('common:email')}
+            value={user?.email}
+          />
         </Grid>
-        {user?.phone_number && (
+        {user?.profile?.contactPhone && (
           <Grid item xs={12} md={6}>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Phone sx={{ color: 'text.secondary' }} />
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  {t('common:phone_number')}
-                </Typography>
-                <Typography variant="body1">{user.phone_number}</Typography>
-              </Box>
-            </Stack>
+            <InfoItem
+              icon={<Phone sx={{ color: 'text.secondary' }} />}
+              label={t('common:phone_number')}
+              value={user.profile.contactPhone}
+            />
           </Grid>
         )}
-        {user?.preferred_language && (
+        {user?.profile?.preferred_language && (
           <Grid item xs={12} md={6}>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Language sx={{ color: 'text.secondary' }} />
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  {t('common:preferred_language')}
-                </Typography>
-                <Typography variant="body1">{user.preferred_language}</Typography>
-              </Box>
-            </Stack>
+            <InfoItem
+              icon={<Language sx={{ color: 'text.secondary' }} />}
+              label={t('common:preferred_language')}
+              value={user.profile.preferred_language}
+            />
           </Grid>
         )}
-        {user?.timezone && (
+        {user?.profile?.timezone && (
           <Grid item xs={12} md={6}>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Schedule sx={{ color: 'text.secondary' }} />
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  {t('common:timezone')}
-                </Typography>
-                <Typography variant="body1">{user.timezone}</Typography>
-              </Box>
-            </Stack>
+            <InfoItem
+              icon={<Schedule sx={{ color: 'text.secondary' }} />}
+              label={t('common:timezone')}
+              value={user.profile.timezone}
+            />
           </Grid>
         )}
-        {user?.bio && (
+        {user?.profile?.bio && (
           <Grid item xs={12}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
               {t('common:biography')}
             </Typography>
-            <Typography variant="body1">{user.bio}</Typography>
+            <Typography variant="body1">{user.profile.bio}</Typography>
           </Grid>
         )}
       </Grid>
@@ -352,435 +850,28 @@ const MyProfile: NextPage = () => {
     </Card>
   );
 
-  const renderCreatorInfo = () => {
-    if (!user?.creator) {
-      return null;
-    }
-    const creator = user.creator;
-
-    return (
-      <Card sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <Work sx={{ mr: 2, color: 'primary.main' }} />
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            {t('user:creator_info')}
-          </Typography>
-        </Box>
-
-        <Grid container spacing={3}>
-          {Array.isArray(creator.skills) && creator.skills.length > 0 && (
-            <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {t('user:skills')}
-              </Typography>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                {creator.skills.map((skill, index) => (
-                  <Chip key={index} label={skill} color="primary" variant="outlined" />
-                ))}
-              </Stack>
-            </Grid>
-          )}
-
-          {Array.isArray(creator.mediaTypes) && creator.mediaTypes.length > 0 && (
-            <Grid item xs={12} md={6}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {t('user:media_types')}
-              </Typography>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                {creator.mediaTypes.map((type, index) => (
-                  <Chip key={index} label={type} size="small" />
-                ))}
-              </Stack>
-            </Grid>
-          )}
-
-          {creator.experience && (
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Schedule sx={{ color: 'text.secondary' }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {t('user:experience')}
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {creator.experience} {t('user:years')}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-
-          {creator.hourlyRate && (
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <AttachMoney sx={{ color: 'text.secondary' }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {t('user:hourly_rate')}
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    ${creator.hourlyRate}/hr
-                  </Typography>
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-
-          {Array.isArray(creator.languages) && creator.languages.length > 0 && (
-            <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {t('user:languages')}
-              </Typography>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                {creator.languages.map((lang, index) => (
-                  <Chip
-                    key={index}
-                    label={`${lang.language} (${lang.proficiency})`}
-                    variant="outlined"
-                    size="small"
-                  />
-                ))}
-              </Stack>
-            </Grid>
-          )}
-
-          {Array.isArray(creator.regionalExpertise) && creator.regionalExpertise.length > 0 && (
-            <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {t('user:regional_expertise')}
-              </Typography>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                {creator.regionalExpertise.map((region, index) => (
-                  <Chip
-                    key={index}
-                    label={`${region.region} (${region.expertiseLevel})`}
-                    variant="outlined"
-                    size="small"
-                  />
-                ))}
-              </Stack>
-            </Grid>
-          )}
-
-          {creator.verificationStatus && (
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Verified sx={{ color: 'text.secondary' }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {t('user:verification_status')}
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {creator.verificationStatus}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-
-          {creator.availability && (
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Schedule sx={{ color: 'text.secondary' }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {t('user:availability')}
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {creator.availability}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-
-          {/* Education Section */}
-          {Array.isArray(creator.education) && creator.education.length > 0 && (
-            <Grid item xs={12}>
-              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'primary.main' }}>
-                {t('user:education')}
-              </Typography>
-              <Stack spacing={2}>
-                {creator.education.map((edu, index) => (
-                  <Paper key={index} sx={{ p: 2, bgcolor: 'grey.50' }}>
-                    <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1 }}>
-                      <School sx={{ color: 'primary.main' }} />
-                      <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                        {edu.degree} in {edu.field}
-                      </Typography>
-                    </Stack>
-                    <Typography variant="body2" color="text.secondary">
-                      {edu.institution} • {edu.year}
-                    </Typography>
-                  </Paper>
-                ))}
-              </Stack>
-            </Grid>
-          )}
-
-          {/* Professional Background Section */}
-          {Array.isArray(creator.professionalBackground) &&
-            creator.professionalBackground.length > 0 && (
-              <Grid item xs={12}>
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'primary.main' }}>
-                  {t('user:professional_background')}
-                </Typography>
-                <Stack spacing={2}>
-                  {creator.professionalBackground.map((job, index) => (
-                    <Paper key={index} sx={{ p: 2, bgcolor: 'grey.50' }}>
-                      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1 }}>
-                        <Work sx={{ color: 'primary.main' }} />
-                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                          {job.title}
-                        </Typography>
-                      </Stack>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        {job.company} • {job.duration}
-                      </Typography>
-                      {job.description && (
-                        <Typography variant="body2" color="text.secondary">
-                          {job.description}
-                        </Typography>
-                      )}
-                    </Paper>
-                  ))}
-                </Stack>
-              </Grid>
-            )}
-
-          {/* Achievements Section */}
-          {Array.isArray(creator.achievements) && creator.achievements.length > 0 && (
-            <Grid item xs={12}>
-              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'primary.main' }}>
-                {t('user:achievements')}
-              </Typography>
-              <Stack spacing={1}>
-                {creator.achievements.map((achievement, index) => (
-                  <Stack key={index} direction="row" spacing={1} alignItems="center">
-                    <Star sx={{ color: 'warning.main', fontSize: 16 }} />
-                    <Typography variant="body2">{achievement}</Typography>
-                  </Stack>
-                ))}
-              </Stack>
-            </Grid>
-          )}
-        </Grid>
-      </Card>
-    );
-  };
-
-  const renderClientInfo = () => {
-    if (!user?.client) {
-      return null;
-    }
-    const client = user.client;
-
-    return (
-      <Card sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <Business sx={{ mr: 2, color: 'primary.main' }} />
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            {t('user:client_info')}
-          </Typography>
-        </Box>
-
-        <Grid container spacing={3}>
-          {client.companyName && (
-            <Grid item xs={12} md={6}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {t('user:company_name')}
-              </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {client.companyName}
-              </Typography>
-            </Grid>
-          )}
-
-          {client.industry && (
-            <Grid item xs={12} md={6}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {t('user:industry')}
-              </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {client.industry}
-              </Typography>
-            </Grid>
-          )}
-
-          {client.websiteUrl && (
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Web sx={{ color: 'text.secondary' }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {t('user:website_url')}
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    <a
-                      href={client.websiteUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: 'inherit', textDecoration: 'none' }}
-                    >
-                      {client.websiteUrl}
-                    </a>
-                  </Typography>
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-
-          {client.budget && (
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <AttachMoney sx={{ color: 'text.secondary' }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {t('user:budget')}
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    ${client.budget.toLocaleString()}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-
-          {client.projectCount && (
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Work sx={{ color: 'text.secondary' }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {t('user:project_count')}
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {client.projectCount} {t('user:projects')}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-
-          {Array.isArray(client.preferredCreators) && client.preferredCreators.length > 0 && (
-            <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {t('user:preferred_creators')}
-              </Typography>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                {client.preferredCreators.map((creatorId, index) => (
-                  <Chip
-                    key={index}
-                    label={`Creator #${creatorId}`}
-                    variant="outlined"
-                    size="small"
-                  />
-                ))}
-              </Stack>
-            </Grid>
-          )}
-        </Grid>
-      </Card>
-    );
-  };
-
-  const renderAmbassadorInfo = () => {
-    if (!user?.ambassador) {
-      return null;
-    }
-    const ambassador = user.ambassador;
-
-    return (
-      <Card sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-          <Public sx={{ mr: 2, color: 'primary.main' }} />
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            {t('user:ambassador_info')}
-          </Typography>
-        </Box>
-
-        <Grid container spacing={3}>
-          {ambassador.teamName && (
-            <Grid item xs={12} md={6}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {t('user:team_name')}
-              </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {ambassador.teamName}
-              </Typography>
-            </Grid>
-          )}
-
-          {Array.isArray(ambassador.specializations) && ambassador.specializations.length > 0 && (
-            <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {t('user:specializations')}
-              </Typography>
-              <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                {ambassador.specializations.map((spec, index) => (
-                  <Chip key={index} label={spec} color="primary" variant="outlined" />
-                ))}
-              </Stack>
-            </Grid>
-          )}
-
-          {ambassador.clientCount && (
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Person sx={{ color: 'text.secondary' }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {t('user:client_count')}
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {ambassador.clientCount} {t('user:clients')}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-
-          {ambassador.commissionRate && (
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <AttachMoney sx={{ color: 'text.secondary' }} />
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {t('user:commission_rate')}
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {ambassador.commissionRate}%
-                  </Typography>
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-
-          {ambassador.teamDescription && (
-            <Grid item xs={12}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {t('user:team_description')}
-              </Typography>
-              <Typography variant="body1">{ambassador.teamDescription}</Typography>
-            </Grid>
-          )}
-        </Grid>
-      </Card>
-    );
-  };
-
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
-      {renderHeader()}
-
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Stack spacing={3}>
-          {renderBasicInfo()}
-          {renderAddressInfo()}
-          {user?.creator && renderCreatorInfo()}
-          {user?.client && renderClientInfo()}
-          {user?.ambassador && renderAmbassadorInfo()}
-        </Stack>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'white', py: 4 }}>
+      <Container maxWidth="xl">
+        <Grid container spacing={4}>
+          <Grid
+            item
+            xs={12}
+            md={4}
+            sx={{ borderRight: `1px solid ${theme.palette.divider}`, pr: 4 }}
+          >
+            <Sidebar
+              user={user}
+              profilePicture={profilePicture}
+              handleUploadPicture={handleUploadPicture}
+              handleDeletePicture={handleDeletePicture}
+            />
+          </Grid>
+          {/* <Divider orientation="vertical" flexItem /> */}
+          <Grid item xs={12} md={8} sx={{ pl: '0 !important' }}>
+            <MainContent user={user} t={t} />
+          </Grid>
+        </Grid>
       </Container>
     </Box>
   );

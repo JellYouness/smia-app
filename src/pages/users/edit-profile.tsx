@@ -41,9 +41,9 @@ const EditProfile: NextPage = () => {
   const { mutate } = useSWR(ApiRoutes.Auth.Me);
 
   const ProfileSchema = Yup.object().shape({
-    firstName: Yup.string().required(t('common:first_name_required')),
-    lastName: Yup.string().required(t('common:last_name_required')),
-    email: Yup.string().email(t('common:invalid_email')).required(t('common:email_required')),
+    firstName: Yup.string().nullable(),
+    lastName: Yup.string().nullable(),
+    email: Yup.string().nullable(),
     phoneNumber: Yup.string().nullable(),
     address: Yup.string().nullable(),
     city: Yup.string().nullable(),
@@ -51,6 +51,7 @@ const EditProfile: NextPage = () => {
     country: Yup.string().nullable(),
     postalCode: Yup.string().nullable(),
     bio: Yup.string().nullable().max(1000, t('common:bio_too_long')),
+    title: Yup.string().nullable().max(255, t('user:profile_title_too_long')),
     preferredLanguage: Yup.string().nullable(),
     timezone: Yup.string().nullable(),
     password: Yup.string().nullable().min(8, t('common:password_min_length')),
@@ -58,7 +59,6 @@ const EditProfile: NextPage = () => {
       experience: Yup.number().nullable().min(0, t('user:experience_min')),
       hourlyRate: Yup.number().nullable().min(0, t('user:hourly_rate_min')),
       availability: Yup.string().nullable(),
-      biography: Yup.string().nullable().max(2000, t('user:biography_too_long')),
       skills: Yup.string().nullable(),
       mediaTypes: Yup.string().nullable(),
       education: Yup.array().of(
@@ -101,6 +101,7 @@ const EditProfile: NextPage = () => {
       country: user?.country || '',
       postalCode: user?.postal_code || '',
       bio: user?.profile?.bio || '',
+      title: user?.profile?.title || '',
       preferredLanguage: user?.preferred_language || '',
       timezone: user?.timezone || '',
       password: '',
@@ -108,7 +109,6 @@ const EditProfile: NextPage = () => {
         experience: user?.creator?.experience || '',
         hourlyRate: user?.creator?.hourly_rate || '',
         availability: user?.creator?.availability || '',
-        biography: user?.creator?.biography || '',
         skills:
           user?.creator && Array.isArray(user.creator.skills) ? user.creator.skills.join(', ') : '',
         mediaTypes:
@@ -149,6 +149,7 @@ const EditProfile: NextPage = () => {
         country: data.country,
         postal_code: data.postalCode,
         bio: data.bio,
+        title: data.title,
         preferred_language: data.preferredLanguage,
         timezone: data.timezone,
       };
@@ -169,7 +170,6 @@ const EditProfile: NextPage = () => {
         updateData.experience = data.creator.experience;
         updateData.hourly_rate = data.creator.hourlyRate;
         updateData.availability = data.creator.availability;
-        updateData.biography = data.creator.biography;
         updateData.education = data.creator.education;
         updateData.professional_background = data.creator.professionalBackground;
         updateData.achievements = data.creator.achievements.filter(
@@ -286,6 +286,9 @@ const EditProfile: NextPage = () => {
                   />
                 </Grid>
                 <Grid item xs={12}>
+                  <RHFTextField name="title" label={t('user:profile_title')} />
+                </Grid>
+                <Grid item xs={12}>
                   <RHFTextField name="bio" label={t('common:biography')} multiline rows={4} />
                 </Grid>
               </Grid>
@@ -345,14 +348,6 @@ const EditProfile: NextPage = () => {
                       <MenuItem value="UNAVAILABLE">{t('user:unavailable')}</MenuItem>
                       <MenuItem value="BUSY">{t('user:busy')}</MenuItem>
                     </RHFSelect>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <RHFTextField
-                      name="creator.biography"
-                      label={t('user:professional_biography')}
-                      multiline
-                      rows={4}
-                    />
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>

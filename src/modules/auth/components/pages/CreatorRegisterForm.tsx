@@ -50,9 +50,6 @@ const CreatorRegisterForm = () => {
     regions: Yup.array()
       .min(1, t('auth:regions_min_required'))
       .required(t('common:field_required')),
-    biography: Yup.string()
-      .min(50, t('auth:biography_min_length'))
-      .required(t('common:field_required')),
     termsAccepted: Yup.boolean()
       .oneOf([true], t('auth:terms_must_be_accepted'))
       .required(t('common:field_required')),
