@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { Box, Stack, Typography, Chip, Skeleton, Divider, IconButton } from '@mui/material';
 import {
-  Work,
-  Star,
-  Verified,
+  Business,
   AttachMoney,
-  LinkedIn,
-  Twitter,
-  Facebook,
-  Instagram,
-  GitHub,
   Language as LanguageIcon,
   School,
   Edit,
+  LocationOn,
+  Web,
+  AccountBalance,
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
@@ -28,28 +24,27 @@ interface Language {
   proficiency: string;
 }
 
-interface SidebarProps {
+interface ClientSidebarProps {
   user: Any;
   profilePicture: string | null;
   handleUploadPicture: (file: File) => Promise<void>;
   handleDeletePicture: () => Promise<void>;
 }
 
-const Sidebar = ({
+const ClientSidebar = ({
   user,
   profilePicture,
   handleUploadPicture,
   handleDeletePicture,
-}: SidebarProps) => {
+}: ClientSidebarProps) => {
   const [openLanguages, setOpenLanguages] = useState(false);
   const [openEducation, setOpenEducation] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { updateLanguages, updateEducation } = useProfileUpdates();
 
-  // Remove parseJsonData and parseLanguagesData
-  const languagesData = user?.creator?.languages || [];
-  const educationData = user?.creator?.education || [];
+  const languagesData = user?.client?.languages || [];
+  const educationData = user?.client?.education || [];
 
   const handleSaveLanguages = async (data: Any) => {
     try {
@@ -96,32 +91,32 @@ const Sidebar = ({
             {user?.profile?.country ? `, ${user.profile.country}` : ''}
           </Typography>
 
-          {/* Additional Info */}
-          {user?.creator && (
+          {/* Client-specific Info */}
+          {user?.client && (
             <Box sx={{ mt: 2 }}>
               <Stack spacing={1}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Verified sx={{ fontSize: 16, color: 'success.main' }} />
+                  <Business sx={{ fontSize: 16, color: 'primary.main' }} />
                   <Typography variant="body2" color="text.secondary">
-                    {user.creator.verificationStatus}
+                    {user.client.companyName || 'Company Name'}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Work sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <AccountBalance sx={{ fontSize: 16, color: 'text.secondary' }} />
                   <Typography variant="body2" color="text.secondary">
-                    {user.creator.experience} years experience
+                    {user.client.companySize} Company
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <AttachMoney sx={{ fontSize: 16, color: 'text.secondary' }} />
                   <Typography variant="body2" color="text.secondary">
-                    ${user.creator.hourlyRate}/hr
+                    {user.client.budget} Budget
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Star sx={{ fontSize: 16, color: 'warning.main' }} />
+                  <Business sx={{ fontSize: 16, color: 'text.secondary' }} />
                   <Typography variant="body2" color="text.secondary">
-                    {user.creator.averageRating} ({user.creator.ratingCount} reviews)
+                    {user.client.projectCount} Projects
                   </Typography>
                 </Box>
               </Stack>
@@ -131,50 +126,70 @@ const Sidebar = ({
 
         <Divider />
 
+        {/* Company Information */}
+        <Box sx={{ p: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+            Company Information
+          </Typography>
+          <Stack spacing={2}>
+            {user?.client?.websiteUrl && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Web sx={{ fontSize: 20, color: 'primary.main' }} />
+                <Link href={user.client.websiteUrl} target="_blank" rel="noopener noreferrer">
+                  <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
+                    Website
+                  </Typography>
+                </Link>
+              </Box>
+            )}
+            {user?.client?.industry && (
+              <Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                  Industry
+                </Typography>
+                <Chip label={user.client.industry} size="small" variant="outlined" />
+              </Box>
+            )}
+            {user?.client?.billingCity && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <LocationOn sx={{ fontSize: 16, color: 'text.secondary' }} />
+                <Typography variant="body2" color="text.secondary">
+                  {user.client.billingCity}, {user.client.billingCountry}
+                </Typography>
+              </Box>
+            )}
+          </Stack>
+        </Box>
+
+        <Divider />
+
         {/* Languages Section */}
         <Box sx={{ p: 2 }}>
           <Box
-            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <LanguageIcon sx={{ fontSize: 20, color: 'primary.main' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Languages
-              </Typography>
-            </Box>
-            <IconButton
-              size="small"
-              onClick={() => setOpenLanguages(true)}
-              sx={{ color: 'primary.main' }}
-            >
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Languages
+            </Typography>
+            <IconButton size="small" onClick={() => setOpenLanguages(true)}>
               <Edit sx={{ fontSize: 16 }} />
             </IconButton>
           </Box>
           <Stack spacing={1}>
-            <JsonDataRenderer
-              data={languagesData}
-              renderItem={(lang, index) => (
-                <Box
-                  key={index}
-                  sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                >
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {lang.language}
+            {languagesData.length > 0 ? (
+              languagesData.map((lang: Language, index: number) => (
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <LanguageIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {lang.language} - {lang.proficiency}
                   </Typography>
-                  <Chip
-                    label={lang.proficiency}
-                    size="small"
-                    color="secondary"
-                    variant="outlined"
-                  />
                 </Box>
-              )}
-              fallback={
-                <Typography variant="body2" color="text.secondary">
-                  No languages added yet
-                </Typography>
-              }
-            />
+              ))
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No languages added yet
+              </Typography>
+            )}
           </Stack>
         </Box>
 
@@ -183,56 +198,41 @@ const Sidebar = ({
         {/* Education Section */}
         <Box sx={{ p: 2 }}>
           <Box
-            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <School sx={{ fontSize: 20, color: 'primary.main' }} />
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Education
-              </Typography>
-            </Box>
-            <IconButton
-              size="small"
-              onClick={() => setOpenEducation(true)}
-              sx={{ color: 'primary.main' }}
-            >
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Education
+            </Typography>
+            <IconButton size="small" onClick={() => setOpenEducation(true)}>
               <Edit sx={{ fontSize: 16 }} />
             </IconButton>
           </Box>
-          <Stack spacing={2}>
-            <JsonDataRenderer
-              data={educationData}
-              renderItem={(edu, index) => (
+          <Stack spacing={1}>
+            {educationData.length > 0 ? (
+              educationData.map((edu: Any, index: number) => (
                 <Box key={index}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                    {edu.degree} in {edu.field}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
                     {edu.institution}
                   </Typography>
-                  {edu.year && (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ fontSize: '0.875rem' }}
-                    >
-                      {edu.year}
-                    </Typography>
-                  )}
+                  <Typography variant="body2" color="text.secondary">
+                    {edu.degree} - {edu.field}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                    {edu.startYear} - {edu.endYear}
+                  </Typography>
                 </Box>
-              )}
-              fallback={
-                <Typography variant="body2" color="text.secondary">
-                  No education added yet
-                </Typography>
-              }
-            />
+              ))
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No education added yet
+              </Typography>
+            )}
           </Stack>
         </Box>
 
         <Divider />
 
-        {/* Social Media Links */}
+        {/* Social Media Section */}
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
             Social Media
@@ -240,7 +240,7 @@ const Sidebar = ({
           <Stack spacing={1}>
             {user?.profile?.socialMediaLinks?.linkedin && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <LinkedIn sx={{ fontSize: 20, color: '#0077b5' }} />
+                <Box sx={{ width: 20, height: 20, bgcolor: '#0077b5', borderRadius: 1 }} />
                 <Link
                   href={user.profile.socialMediaLinks.linkedin}
                   target="_blank"
@@ -254,7 +254,7 @@ const Sidebar = ({
             )}
             {user?.profile?.socialMediaLinks?.twitter && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Twitter sx={{ fontSize: 20, color: '#1DA1F2' }} />
+                <Box sx={{ width: 20, height: 20, bgcolor: '#1DA1F2', borderRadius: 1 }} />
                 <Link
                   href={user.profile.socialMediaLinks.twitter}
                   target="_blank"
@@ -268,7 +268,7 @@ const Sidebar = ({
             )}
             {user?.profile?.socialMediaLinks?.facebook && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Facebook sx={{ fontSize: 20, color: '#1877F2' }} />
+                <Box sx={{ width: 20, height: 20, bgcolor: '#1877F2', borderRadius: 1 }} />
                 <Link
                   href={user.profile.socialMediaLinks.facebook}
                   target="_blank"
@@ -280,39 +280,9 @@ const Sidebar = ({
                 </Link>
               </Box>
             )}
-            {user?.profile?.socialMediaLinks?.instagram && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Instagram sx={{ fontSize: 20, color: '#E4405F' }} />
-                <Link
-                  href={user.profile.socialMediaLinks.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
-                    Instagram
-                  </Typography>
-                </Link>
-              </Box>
-            )}
-            {user?.profile?.socialMediaLinks?.github && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <GitHub sx={{ fontSize: 20, color: '#333' }} />
-                <Link
-                  href={user.profile.socialMediaLinks.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
-                    GitHub
-                  </Typography>
-                </Link>
-              </Box>
-            )}
             {!user?.profile?.socialMediaLinks?.linkedin &&
               !user?.profile?.socialMediaLinks?.twitter &&
-              !user?.profile?.socialMediaLinks?.facebook &&
-              !user?.profile?.socialMediaLinks?.instagram &&
-              !user?.profile?.socialMediaLinks?.github && (
+              !user?.profile?.socialMediaLinks?.facebook && (
                 <Typography variant="body2" color="text.secondary">
                   No social media links added yet
                 </Typography>
@@ -342,4 +312,4 @@ const Sidebar = ({
   );
 };
 
-export default Sidebar;
+export default ClientSidebar;

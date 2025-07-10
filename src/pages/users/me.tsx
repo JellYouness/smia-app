@@ -1,36 +1,18 @@
 import { NextPage } from 'next';
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import Routes from '@common/defs/routes';
-import {
-  Box,
-  Grid,
-  Typography,
-  Button,
-  Stack,
-  Paper,
-  Container,
-  CircularProgress,
-  useTheme,
-} from '@mui/material';
+import { Box, Grid, Stack, Container, CircularProgress, useTheme } from '@mui/material';
 import useAuth from '@modules/auth/hooks/api/useAuth';
-import { Edit } from '@mui/icons-material';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useSnackbar } from 'notistack';
-import { useRouter } from 'next/router';
-import useSWR from 'swr';
-import ApiRoutes from '@common/defs/api-routes';
 import Skeleton from '@mui/material/Skeleton';
-import { Any } from '@common/defs/types';
-import { Sidebar, MainContent } from '@modules/users/components';
+import { Sidebar, MainContent, ClientSidebar, ClientMainContent } from '@modules/users/components';
 
 const MyProfile: NextPage = () => {
   const { user, initialized } = useAuth();
   const { t } = useTranslation(['common', 'user']);
   const theme = useTheme();
-  const { enqueueSnackbar } = useSnackbar();
-  const router = useRouter();
   const [profilePicture, setProfilePicture] = useState<string | null>(
     user?.profile?.profile_picture || null
   );
@@ -42,9 +24,6 @@ const MyProfile: NextPage = () => {
     }
   }, [user?.profile?.profile_picture]);
 
-  // Get the mutate function from SWR to update user data
-  const { mutate } = useSWR(ApiRoutes.Auth.Me);
-
   const handleUploadPicture = async (file: File) => {
     // Implementation for uploading profile picture
     console.log('Uploading file:', file);
@@ -55,9 +34,9 @@ const MyProfile: NextPage = () => {
     console.log('Deleting profile picture');
   };
 
-  const handleEditProfile = () => {
-    router.push(Routes.Users.EditProfile);
-  };
+  // Determine user type based on userType field (more reliable than roles)
+  const isClient = user?.userType === 'CLIENT' || user?.client;
+  const isCreator = user?.userType === 'CREATOR' || user?.creator;
 
   // Show loading state while auth is initializing
   if (!initialized) {
@@ -98,28 +77,47 @@ const MyProfile: NextPage = () => {
     );
   }
 
+  // Determine which components to use based on user type
+  const SidebarComponent = isClient ? ClientSidebar : Sidebar;
+  const MainContentComponent = isClient ? ClientMainContent : MainContent;
+
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'white', py: 4 }}>
-      <Container maxWidth="xl">
-        <Grid container spacing={4}>
-          <Grid
-            item
-            xs={12}
-            md={4}
-            sx={{ borderRight: `1px solid ${theme.palette.divider}`, pr: 4 }}
-          >
-            <Sidebar
-              user={user}
-              profilePicture={profilePicture}
-              handleUploadPicture={handleUploadPicture}
-              handleDeletePicture={handleDeletePicture}
-            />
-          </Grid>
-          <Grid item xs={12} md={8} sx={{ pl: '0 !important' }}>
-            <MainContent user={user} t={t} />
-          </Grid>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: 'white',
+        pt: 4,
+        border: `2px solid ${theme.palette.divider}`,
+      }}
+    >
+      {/* <Container maxWidth="xl"> */}
+      <Grid container spacing={4}>
+        <Grid
+          item
+          xs={12}
+          md={4}
+          sx={{
+            borderRight: { xs: 'none', md: `1px solid ${theme.palette.divider}` },
+            pr: { xs: 0, md: 4 },
+          }}
+        >
+          <SidebarComponent
+            user={user}
+            profilePicture={profilePicture}
+            handleUploadPicture={handleUploadPicture}
+            handleDeletePicture={handleDeletePicture}
+          />
         </Grid>
-      </Container>
+        <Grid
+          item
+          xs={12}
+          md={8}
+          sx={{ pl: { xs: 0, md: '0 !important' }, pt: { xs: 0, md: '0 !important' } }}
+        >
+          <MainContentComponent user={user} t={t} />
+        </Grid>
+      </Grid>
+      {/* </Container> */}
     </Box>
   );
 };
