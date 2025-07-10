@@ -97,6 +97,53 @@ export interface UpdateOneInput {
     language: string;
     notifications: boolean;
   };
+  // Profile fields
+  profile?: {
+    title?: string;
+    bio?: string;
+    [key: string]: any;
+  };
+  // Creator-specific fields
+  creator?: {
+    title?: string;
+    portfolio?: Array<{
+      title: string;
+      description: string;
+      url: string;
+    }>;
+    skills?: string[];
+    certifications?: Array<{
+      title: string;
+      issuer: string;
+      date: string;
+    }>;
+    professionalBackground?: Array<{
+      title: string;
+      company: string;
+      duration: string;
+      description: string;
+    }>;
+    achievements?: string[];
+    equipmentInfo?: {
+      [category: string]: string[];
+    };
+    regionalExpertise?: Array<{
+      region: string;
+      expertiseLevel: string;
+    }>;
+    mediaTypes?: string[];
+    languages?: Array<{
+      language: string;
+      proficiency: string;
+    }>;
+    education?: Array<{
+      year: string;
+      field: string;
+      degree: string;
+      institution: string;
+    }>;
+    [key: string]: any;
+  };
 }
 
 export type UpsertOneInput = CreateOneInput | UpdateOneInput;
@@ -106,6 +153,7 @@ const useUsers: UseItems<User, CreateOneInput, UpdateOneInput> = (
 ) => {
   const apiRoutes = ApiRoutes.Users;
   const useItemsHook = useItems<User, CreateOneInput, UpdateOneInput>(apiRoutes, opts);
+
   return useItemsHook;
 };
 

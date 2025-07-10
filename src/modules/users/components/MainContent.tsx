@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Stack,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Skeleton,
-} from '@mui/material';
+import { Box, Stack, Typography, Skeleton, Button, Chip } from '@mui/material';
 import { Star } from '@mui/icons-material';
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
@@ -17,6 +7,16 @@ import JsonDataRenderer from './JsonDataRenderer';
 import ChipList from './ChipList';
 import CardList from './CardList';
 import SectionCard from './SectionCard';
+import EditAboutDialog from './EditAboutDialog';
+import EditSkillsDialog from './EditSkillsDialog';
+import EditPortfolioDialog from './EditPortfolioDialog';
+import EditCertificationsDialog from './EditCertificationsDialog';
+import EditEmploymentDialog from './EditEmploymentDialog';
+import EditAchievementsDialog from './EditAchievementsDialog';
+import EditEquipmentDialog from './EditEquipmentDialog';
+import EditRegionalExpertiseDialog from './EditRegionalExpertiseDialog';
+import EditMediaTypesDialog from './EditMediaTypesDialog';
+import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
 
 interface MainContentProps {
   user: Any;
@@ -24,35 +24,177 @@ interface MainContentProps {
 }
 
 const MainContent = ({ user, t }: MainContentProps) => {
+  const [openAbout, setOpenAbout] = useState(false);
   const [openPortfolio, setOpenPortfolio] = useState(false);
   const [openSkills, setOpenSkills] = useState(false);
   const [openAchievements, setOpenAchievements] = useState(false);
-  const [openTestimonials, setOpenTestimonials] = useState(false);
   const [openCertifications, setOpenCertifications] = useState(false);
   const [openEmployment, setOpenEmployment] = useState(false);
-  const [openOther, setOpenOther] = useState(false);
+  const [openEquipment, setOpenEquipment] = useState(false);
+  const [openRegionalExpertise, setOpenRegionalExpertise] = useState(false);
+  const [openMediaTypes, setOpenMediaTypes] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const renderDialog = (title: string, open: boolean, onClose: () => void) => (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Edit {title}</DialogTitle>
-      <DialogContent>
-        <Typography>Edit {title} form goes here.</Typography>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained">Save</Button>
-      </DialogActions>
-    </Dialog>
-  );
+  const {
+    updateAbout,
+    updatePortfolio,
+    updateSkills,
+    updateCertifications,
+    updateEmployment,
+    updateAchievements,
+    updateEquipment,
+    updateRegionalExpertise,
+    updateMediaTypes,
+  } = useProfileUpdates();
+
+  const handleSaveAbout = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateAbout(user.id, data);
+      if (response.success) {
+        setOpenAbout(false);
+      }
+    } catch (error) {
+      console.error('Error saving about data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveSkills = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateSkills(user.id, data);
+      if (response.success) {
+        setOpenSkills(false);
+      }
+    } catch (error) {
+      console.error('Error saving skills data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSavePortfolio = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updatePortfolio(user.id, data);
+      if (response.success) {
+        setOpenPortfolio(false);
+      }
+    } catch (error) {
+      console.error('Error saving portfolio data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveCertifications = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateCertifications(user.id, data);
+      if (response.success) {
+        setOpenCertifications(false);
+      }
+    } catch (error) {
+      console.error('Error saving certifications data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveEmployment = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateEmployment(user.id, data);
+      if (response.success) {
+        setOpenEmployment(false);
+      }
+    } catch (error) {
+      console.error('Error saving employment data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveAchievements = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateAchievements(user.id, data);
+      if (response.success) {
+        setOpenAchievements(false);
+      }
+    } catch (error) {
+      console.error('Error saving achievements data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveEquipment = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateEquipment(user.id, data);
+      if (response.success) {
+        setOpenEquipment(false);
+      }
+    } catch (error) {
+      console.error('Error saving equipment data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveRegionalExpertise = async (data: Any) => {
+    try {
+      console.log('handleSaveRegionalExpertise called with data:', data);
+      console.log('data.regionalExpertise:', data.regionalExpertise);
+      setLoading(true);
+      const response = await updateRegionalExpertise(user.id, data.regionalExpertise);
+      if (response.success) {
+        setOpenRegionalExpertise(false);
+      }
+    } catch (error) {
+      console.error('Error saving regional expertise data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveMediaTypes = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateMediaTypes(user.id, data);
+      if (response.success) {
+        setOpenMediaTypes(false);
+      }
+    } catch (error) {
+      console.error('Error saving media types data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Stack spacing={0}>
       {/* Title/About Section */}
-      <SectionCard title={user?.profile?.title || t('user:about')} editLink="/users/edit-profile">
+      <SectionCard
+        title={user?.profile?.title || t('user:about')}
+        onEdit={() => setOpenAbout(true)}
+      >
         <Typography variant="body1" sx={{ mt: 1 }}>
           {user?.profile?.bio || <Skeleton width="80%" />}
         </Typography>
       </SectionCard>
+
+      {/* About Edit Dialog */}
+      <EditAboutDialog
+        user={user}
+        onSave={handleSaveAbout}
+        loading={loading}
+        open={openAbout}
+        onClose={() => setOpenAbout(false)}
+      />
 
       {/* Portfolio Section */}
       <SectionCard title="Portfolio" onEdit={() => setOpenPortfolio(true)}>
@@ -118,15 +260,150 @@ const MainContent = ({ user, t }: MainContentProps) => {
           }
         />
       </SectionCard>
-      {renderDialog('Portfolio', openPortfolio, () => setOpenPortfolio(false))}
+
+      {/* Portfolio Edit Dialog */}
+      <EditPortfolioDialog
+        user={user}
+        onSave={handleSavePortfolio}
+        loading={loading}
+        open={openPortfolio}
+        onClose={() => setOpenPortfolio(false)}
+      />
 
       {/* Skills Section */}
       <SectionCard title="Skills" onEdit={() => setOpenSkills(true)}>
         <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-          <ChipList items={user?.creator?.skills || []} />
+          {user?.creator?.skills?.length > 0 ? (
+            user?.creator?.skills?.map((skill: string, index: number) => (
+              <Chip key={index} label={skill} size="small" variant="outlined" color="primary" />
+            ))
+          ) : (
+            <Box
+              sx={{
+                p: 4,
+                textAlign: 'center',
+                border: '2px dashed',
+                borderColor: 'divider',
+                borderRadius: 2,
+                bgcolor: 'grey.50',
+              }}
+            >
+              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
+              <Typography variant="body2" color="text.secondary">
+                Add your skills to showcase your expertise to potential clients.
+              </Typography>
+            </Box>
+          )}
         </Stack>
       </SectionCard>
-      {renderDialog('Skills', openSkills, () => setOpenSkills(false))}
+
+      {/* Skills Edit Dialog */}
+      <EditSkillsDialog
+        user={user}
+        onSave={handleSaveSkills}
+        loading={loading}
+        open={openSkills}
+        onClose={() => setOpenSkills(false)}
+      />
+
+      {/* Regional Expertise Section */}
+      <SectionCard title="Regional Expertise" onEdit={() => setOpenRegionalExpertise(true)}>
+        <Stack spacing={2}>
+          {user?.creator?.regionalExpertise?.length > 0 ? (
+            user?.creator?.regionalExpertise?.map((expertise: Any, index: number) => (
+              <Box
+                key={index}
+                sx={{
+                  p: 2,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  bgcolor: 'background.paper',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    boxShadow: 1,
+                  },
+                }}
+              >
+                <Box
+                  sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                    {expertise.region}
+                  </Typography>
+                  <Chip
+                    label={expertise.expertiseLevel}
+                    size="small"
+                    color="secondary"
+                    variant="outlined"
+                  />
+                </Box>
+              </Box>
+            ))
+          ) : (
+            <Box
+              sx={{
+                p: 4,
+                textAlign: 'center',
+                border: '2px dashed',
+                borderColor: 'divider',
+                borderRadius: 2,
+                bgcolor: 'grey.50',
+              }}
+            >
+              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
+              <Typography variant="body2" color="text.secondary">
+                Add your regional expertise to help clients understand your geographic knowledge.
+              </Typography>
+            </Box>
+          )}
+        </Stack>
+      </SectionCard>
+
+      {/* Regional Expertise Edit Dialog */}
+      <EditRegionalExpertiseDialog
+        user={user}
+        onSave={handleSaveRegionalExpertise}
+        loading={loading}
+        open={openRegionalExpertise}
+        onClose={() => setOpenRegionalExpertise(false)}
+      />
+
+      {/* Media Types Section */}
+      <SectionCard title="Media Types" onEdit={() => setOpenMediaTypes(true)}>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+          {user?.creator?.mediaTypes?.length > 0 ? (
+            user?.creator?.mediaTypes?.map((mediaType: string, index: number) => (
+              <Chip key={index} label={mediaType} size="small" variant="outlined" color="primary" />
+            ))
+          ) : (
+            <Box
+              sx={{
+                p: 4,
+                textAlign: 'center',
+                border: '2px dashed',
+                borderColor: 'divider',
+                borderRadius: 2,
+                bgcolor: 'grey.50',
+              }}
+            >
+              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
+              <Typography variant="body2" color="text.secondary">
+                Add the types of media you specialize in.
+              </Typography>
+            </Box>
+          )}
+        </Stack>
+      </SectionCard>
+
+      {/* Media Types Edit Dialog */}
+      <EditMediaTypesDialog
+        user={user}
+        onSave={handleSaveMediaTypes}
+        loading={loading}
+        open={openMediaTypes}
+        onClose={() => setOpenMediaTypes(false)}
+      />
 
       {/* Certifications Section */}
       <SectionCard title="Certifications" onEdit={() => setOpenCertifications(true)}>
@@ -192,7 +469,15 @@ const MainContent = ({ user, t }: MainContentProps) => {
           />
         </Stack>
       </SectionCard>
-      {renderDialog('Certifications', openCertifications, () => setOpenCertifications(false))}
+
+      {/* Certifications Edit Dialog */}
+      <EditCertificationsDialog
+        user={user}
+        onSave={handleSaveCertifications}
+        loading={loading}
+        open={openCertifications}
+        onClose={() => setOpenCertifications(false)}
+      />
 
       {/* Employment History Section */}
       <SectionCard title="Employment History" onEdit={() => setOpenEmployment(true)}>
@@ -261,7 +546,80 @@ const MainContent = ({ user, t }: MainContentProps) => {
           />
         </Stack>
       </SectionCard>
-      {renderDialog('Employment History', openEmployment, () => setOpenEmployment(false))}
+
+      {/* Employment Edit Dialog */}
+      <EditEmploymentDialog
+        user={user}
+        onSave={handleSaveEmployment}
+        loading={loading}
+        open={openEmployment}
+        onClose={() => setOpenEmployment(false)}
+      />
+
+      {/* Equipment Section */}
+      <SectionCard title="Equipment" onEdit={() => setOpenEquipment(true)}>
+        <Stack spacing={3}>
+          {user?.creator?.equipmentInfo &&
+          Object.keys(user?.creator?.equipmentInfo || {}).length > 0 ? (
+            <Stack spacing={2}>
+              {Object.entries(user?.creator?.equipmentInfo || {}).map(
+                ([category, items]: [string, Any]) => (
+                  <Box key={category}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 1,
+                        fontWeight: 600,
+                        color: 'primary.main',
+                        textTransform: 'capitalize',
+                      }}
+                    >
+                      {category}
+                    </Typography>
+                    <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                      {Array.isArray(items) &&
+                        items.map((item, index) => (
+                          <Chip
+                            key={index}
+                            label={item}
+                            size="small"
+                            variant="outlined"
+                            color="secondary"
+                          />
+                        ))}
+                    </Stack>
+                  </Box>
+                )
+              )}
+            </Stack>
+          ) : (
+            <Box
+              sx={{
+                p: 4,
+                textAlign: 'center',
+                border: '2px dashed',
+                borderColor: 'divider',
+                borderRadius: 2,
+                bgcolor: 'grey.50',
+              }}
+            >
+              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
+              <Typography variant="body2" color="text.secondary">
+                List your equipment to help clients understand your capabilities.
+              </Typography>
+            </Box>
+          )}
+        </Stack>
+      </SectionCard>
+
+      {/* Equipment Edit Dialog */}
+      <EditEquipmentDialog
+        user={user}
+        onSave={handleSaveEquipment}
+        loading={loading}
+        open={openEquipment}
+        onClose={() => setOpenEquipment(false)}
+      />
 
       {/* Achievements Section */}
       <SectionCard title="Achievements" onEdit={() => setOpenAchievements(true)}>
@@ -318,25 +676,15 @@ const MainContent = ({ user, t }: MainContentProps) => {
           />
         </Stack>
       </SectionCard>
-      {renderDialog('Achievements', openAchievements, () => setOpenAchievements(false))}
 
-      {/* Testimonials Section */}
-      {/* <SectionCard title="Testimonials" onEdit={() => setOpenTestimonials(true)}>
-        <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2 }} />
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          Showcase your skills with non-Upwork client testimonials
-        </Typography>
-      </SectionCard>
-      {renderDialog('Testimonials', openTestimonials, () => setOpenTestimonials(false))} */}
-
-      {/* Other Experiences Section */}
-      {/* <SectionCard title="Other Experiences" onEdit={() => setOpenOther(true)}>
-        <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2 }} />
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          Add any other experiences that help you stand out.
-        </Typography>
-      </SectionCard>
-      {renderDialog('Other Experiences', openOther, () => setOpenOther(false))} */}
+      {/* Achievements Edit Dialog */}
+      <EditAchievementsDialog
+        user={user}
+        onSave={handleSaveAchievements}
+        loading={loading}
+        open={openAchievements}
+        onClose={() => setOpenAchievements(false)}
+      />
     </Stack>
   );
 };

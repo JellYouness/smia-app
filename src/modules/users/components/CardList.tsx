@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Card } from '@mui/material';
+import { Box } from '@mui/material';
 import Skeleton from '@mui/material/Skeleton';
 import JsonDataRenderer from './JsonDataRenderer';
 import { Any } from '@common/defs/types';

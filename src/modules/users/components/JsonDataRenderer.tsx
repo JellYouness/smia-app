@@ -15,11 +15,10 @@ const JsonDataRenderer: React.FC<JsonDataRendererProps> = ({
   fallback = <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 2 }} />,
   errorFallback = <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 2 }} />,
 }) => {
-  let parsedData: Any[] = [];
+  let parsedData: Any[] = Array.isArray(data) ? data : [];
 
   try {
     if (data) {
-      parsedData = typeof data === 'string' ? JSON.parse(data) : data;
       parsedData = parsedData.map((item) =>
         typeof item === 'string' ? item.charAt(0).toUpperCase() + item.slice(1).toLowerCase() : item
       );
