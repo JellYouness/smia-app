@@ -1,0 +1,16 @@
+{
+  "ongoing": "En curso",
+  "completed": "Completado",
+  "other": "Otros",
+  "search_projects": "Buscar proyectos...",
+  "loading_projects": "Cargando tus proyectos...",
+  "loading_projects_hint": "Por favor espera mientras obtenemos tus proyectos más recientes.",
+  "no_projects_found": "No se encontraron proyectos",
+  "no_projects_match": "No hay proyectos que coincidan con \"{{searchTerm}}\"",
+  "no_projects_available": "No hay proyectos disponibles",
+  "status": {
+    "in_progress": "En progreso",
+    "completed": "Completado",
+    "pending": "Pendiente"
+  }
+}

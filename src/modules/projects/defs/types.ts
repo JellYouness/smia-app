@@ -2,10 +2,10 @@ import { CrudObject, Id } from '@common/defs/types';
 import { User } from '@modules/users/defs/types';
 
 export enum PROJECT_STATUS {
-  PENDING = 'PENDING',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
+  PENDING = 'pending',
+  IN_PROGRESS = 'in_progress',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
 }
 
 export interface Project extends CrudObject {

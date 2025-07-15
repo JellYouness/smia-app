@@ -48,7 +48,15 @@ const Index: NextPage = () => {
 
 export const getStaticProps = async ({ locale }: { locale: string }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['topbar', 'footer', 'leftbar', 'home'])),
+    ...(await serverSideTranslations(locale, [
+      'topbar',
+      'footer',
+      'leftbar',
+      'home',
+      'project',
+      'user',
+      'common',
+    ])),
   },
 });
 export default withAuth(Index, {

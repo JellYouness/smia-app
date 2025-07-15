@@ -125,5 +125,6 @@
   "female": "Female",
   "other": "Other",
   "date_of_birth": "Date of Birth",
-  "skip_for_now": "Skip for now"
+  "skip_for_now": "Skip for now",
+  "clear_search": "Clear search"
 }

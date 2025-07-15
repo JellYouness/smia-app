@@ -98,20 +98,24 @@ const Topbar = () => {
         },
       ],
     },
-    {
-      label: t('topbar:user'),
-      dropdown: [
-        {
-          label: t('topbar:profile'),
-          link: Routes.Users.Me,
-          onClick: () => router.push(Routes.Users.Me),
-        },
-        {
-          label: t('topbar:logged.logout'),
-          onClick: () => logout(),
-        },
-      ],
-    },
+    ...(user
+      ? [
+          {
+            label: t('topbar:user'),
+            dropdown: [
+              {
+                label: t('topbar:profile'),
+                link: Routes.Users.Me,
+                onClick: () => router.push(Routes.Users.Me),
+              },
+              {
+                label: t('topbar:logged.logout'),
+                onClick: () => logout(),
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 
   const toggleDropdown = () => {
@@ -174,9 +178,6 @@ const Topbar = () => {
           <List sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
             <>
               {navItems.map((item, index) => {
-                if (item.label === 'Utilisateur') {
-                  return null;
-                }
                 return (
                   <ListItem
                     key={index}
@@ -316,106 +317,7 @@ const Topbar = () => {
                   </Button>
                 </ListItem>
               </>
-            ) : (
-              <>
-                <ListItem
-                  key="user-options"
-                  sx={{
-                    width: 'fit-content',
-                  }}
-                >
-                  <StyledListItemButton
-                    sx={{
-                      borderTopLeftRadius: 24,
-                      borderTopRightRadius: 24,
-                      borderBottomLeftRadius: 0,
-                      borderBottomRightRadius: 0,
-                      width: 160,
-                      display: 'flex',
-                      alignItems: 'center',
-                      '&:hover': {
-                        backgroundColor: 'transparent',
-                        boxShadow: (theme) => theme.customShadows.z12,
-                        '.MuiTypography-root': {
-                          fontWeight: 'bold',
-                        },
-                        '.dropdown-menu': {
-                          visibility: 'visible',
-                        },
-                        '.MuiTouchRipple-child': {
-                          backgroundColor: 'transparent',
-                        },
-                      },
-                    }}
-                  >
-                    <>
-                      <ListItemText>{navItems[2].label}</ListItemText>
-                      <KeyboardArrowDown />
-                      <List
-                        className="dropdown-menu"
-                        sx={{
-                          backgroundColor: 'common.white',
-                          boxShadow: (theme) => theme.customShadows.z12,
-                          position: 'absolute',
-                          top: 40,
-                          left: 0,
-                          width: 160,
-                          padding: 0,
-                          borderBottomLeftRadius: 24,
-                          borderBottomRightRadius: 24,
-                          visibility: 'hidden',
-                          zIndex: 1000000,
-                        }}
-                      >
-                        {navItems[2].dropdown?.map((dropdownItem, dropdownItemIndex) => {
-                          const content = (
-                            <ListItemButton
-                              sx={{
-                                display: 'flex',
-                                gap: 1,
-                                paddingX: 2,
-                                paddingY: 1.5,
-                                borderRadius: 0,
-                                zIndex: 1000000,
-                                '&:hover': {
-                                  backgroundColor: 'primary.dark',
-                                  color: 'primary.contrastText',
-                                },
-                                ...(navItems[2].dropdown?.length === dropdownItemIndex + 1 && {
-                                  borderBottomLeftRadius: 24,
-                                  borderBottomRightRadius: 24,
-                                }),
-                              }}
-                              onClick={onNavButtonClick(dropdownItem)}
-                            >
-                              {dropdownItem.flag && <FlagIcon country={dropdownItem.flag} />}
-                              <ListItemText>{dropdownItem.label}</ListItemText>
-                            </ListItemButton>
-                          );
-
-                          return (
-                            <ListItem
-                              key={dropdownItemIndex}
-                              sx={{
-                                padding: 0,
-                              }}
-                            >
-                              {dropdownItem.link ? (
-                                <Link href={dropdownItem.link} locale={dropdownItem.value}>
-                                  {content}
-                                </Link>
-                              ) : (
-                                content
-                              )}
-                            </ListItem>
-                          );
-                        })}
-                      </List>
-                    </>
-                  </StyledListItemButton>
-                </ListItem>
-              </>
-            )}
+            ) : null}
           </List>
           <IconButton
             onClick={() => toggleSidebar()}

@@ -191,5 +191,7 @@
   "achievement": "Réalisation",
   "achievement_description": "Description de la réalisation",
   "enter_achievement": "Entrez votre réalisation",
-  "achievement_help": "Décrivez votre réalisation ou accomplissement"
+  "achievement_help": "Décrivez votre réalisation ou accomplissement",
+  "journalist_enabled": "Journaliste activé",
+  "ratings": "évaluations"
 }

@@ -6,6 +6,7 @@ import useItems, {
   UseItemsOptions,
   defaultOptions,
   ItemsResponse,
+  ItemsData,
   SortParam,
   FilterParam,
 } from '@common/hooks/useItems';
@@ -92,12 +93,12 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     if (filters && filters.length > 0) {
       data.filters = filters;
     }
-    const response = await fetchApi<ItemsResponse<Project>>(endpoint, {
+    const response = await fetchApi<ItemsData<Project>>(endpoint, {
       method: 'GET',
       data,
       ...options,
     });
-    return response.data as ItemsResponse<Project>;
+    return response;
   };
 
   const readAllByClient = async (
@@ -120,12 +121,12 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     if (filters && filters.length > 0) {
       data.filters = filters;
     }
-    const response = await fetchApi<ItemsResponse<Project>>(endpoint, {
+    const response = await fetchApi<ItemsData<Project>>(endpoint, {
       method: 'GET',
       data,
       ...options,
     });
-    return response.data as ItemsResponse<Project>;
+    return response;
   };
 
   const readAllByAmbassador = async (
@@ -151,12 +152,12 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     if (filters && filters.length > 0) {
       data.filters = filters;
     }
-    const response = await fetchApi<ItemsResponse<Project>>(endpoint, {
+    const response = await fetchApi<ItemsData<Project>>(endpoint, {
       method: 'GET',
       data,
       ...options,
     });
-    return response.data as ItemsResponse<Project>;
+    return response;
   };
 
   const hook: UseProjectsHook = {
