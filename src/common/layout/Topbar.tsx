@@ -64,6 +64,7 @@ const Topbar = () => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const { user, logout } = useAuth();
+  const userIsAdmin = user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN';
 
   const dropdownWidth = 137;
   const toggleSidebar = () => {
@@ -165,11 +166,13 @@ const Topbar = () => {
       <Container>
         <Toolbar sx={{ px: { xs: 0, sm: 0 } }}>
           <Stack flexDirection="row" alignItems="center" flexGrow={1}>
-            <Logo
-              id="topbar-logo"
-              onClick={() => router.push(Routes.Common.Home)}
-              sx={{ cursor: 'pointer' }}
-            />
+            {!userIsAdmin && (
+              <Logo
+                id="topbar-logo"
+                onClick={() => router.push(Routes.Common.Home)}
+                sx={{ cursor: 'pointer' }}
+              />
+            )}
           </Stack>
           <List sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
             <>
