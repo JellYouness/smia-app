@@ -1,16 +1,7 @@
 import { NextPage } from 'next';
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import Routes from '@common/defs/routes';
-import {
-  Box,
-  Card,
-  Grid,
-  Typography,
-  Button,
-  Stack,
-  Container,
-  Paper,
-} from '@mui/material';
+import { Box, Card, Grid, Typography, Button, Stack, Container, Paper } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import FormProvider, { RHFTextField } from '@common/components/lib/react-hook-form';
@@ -134,7 +125,7 @@ const ChangePassword: NextPage = () => {
                   {t('user:change_password')}
                 </Typography>
               </Box>
-              
+
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                 {t('user:change_password_description')}
               </Typography>
@@ -192,10 +183,13 @@ const ChangePassword: NextPage = () => {
   );
 };
 
-export default withAuth(ChangePassword, { mode: AUTH_MODE.LOGGED_IN, redirectUrl: Routes.Auth.Login });
+export default withAuth(ChangePassword, {
+  mode: AUTH_MODE.LOGGED_IN,
+  redirectUrl: Routes.Auth.Login,
+});
 
 export const getStaticProps = async ({ locale }: { locale: string }) => ({
   props: {
     ...(await serverSideTranslations(locale, ['user', 'common', 'topbar'])),
   },
-}); 
+});
