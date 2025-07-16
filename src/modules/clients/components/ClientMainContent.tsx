@@ -3,13 +3,10 @@ import { Box, Stack, Typography, Skeleton, Button, Chip } from '@mui/material';
 import { Business, LocationOn, Web, AccountBalance, AttachMoney } from '@mui/icons-material';
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
-import JsonDataRenderer from './JsonDataRenderer';
-import ChipList from './ChipList';
-import CardList from './CardList';
-import SectionCard from './SectionCard';
-import EditAboutDialog from './EditAboutDialog';
-import EditCompanyDialog from './EditCompanyDialog';
-import EditBillingDialog from './EditBillingDialog';
+import SectionCard from '@common/components/SectionCard';
+import EditAboutDialog from '@modules/users/components/EditAboutDialog';
+import EditCompanyDialog from '@modules/users/components/EditCompanyDialog';
+import EditBillingDialog from '@modules/users/components/EditBillingDialog';
 import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
 
 interface ClientMainContentProps {
