@@ -11,6 +11,7 @@ import { ROLE } from '@modules/permissions/defs/types';
 import { useRouter } from 'next/router';
 import Projects from '@modules/projects/defs/routes';
 import { Add } from '@mui/icons-material';
+import ClientDashboard from '@modules/clients/components/ClientDashboard';
 
 const Index: NextPage = () => {
   const { t } = useTranslation(['home']);
@@ -60,7 +61,7 @@ const Index: NextPage = () => {
               startIcon: <Add />,
             }}
           />
-          {/* <ClientDashboard /> */}
+          <ClientDashboard user={user!} />
         </>
       )}
     </>
