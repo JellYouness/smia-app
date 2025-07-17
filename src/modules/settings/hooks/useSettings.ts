@@ -10,12 +10,12 @@ const useSettings = () => {
   const { fetchApi } = useApi();
 
   const fetchSettings = useCallback(async () => {
-    return fetchApi<Setting[]>('/settings', { method: 'GET' });
+    return await fetchApi<Setting[]>('/settings', { method: 'GET' });
   }, [fetchApi]);
 
   const updateSetting = useCallback(
     async (key: string, value: string) => {
-      return fetchApi<Setting>(`/settings/${key}`, {
+      return await fetchApi<Setting>(`/settings/${key}`, {
         method: 'PUT',
         data: { value },
         displaySuccess: true,
