@@ -1,3 +1,5 @@
 {
-  "dashboard": "Tableau de bord"
+  "dashboard": "Tableau de bord",
+  "loading": "Chargement...",
+  "greeting": "Bonjour"
 }

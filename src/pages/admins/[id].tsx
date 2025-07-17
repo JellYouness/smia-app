@@ -13,12 +13,16 @@ const AdminDetailsPage = () => {
   useEffect(() => {
     if (id) {
       readOne(id).then(({ data }) => {
-        if (data && data.item) setItem(data.item);
+        if (data && data.item) {
+          setItem(data.item);
+        }
       });
     }
   }, [id]);
 
-  if (!item) return <div>Loading...</div>;
+  if (!item) {
+    return <div>Loading...</div>;
+  }
   return <AdminDetailsCard admin={item} />;
 };
 
