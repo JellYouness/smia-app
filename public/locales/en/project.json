@@ -1,0 +1,41 @@
+{
+  "common": {
+    "create_new_one": "Create New Project",
+    "new_one": "New Project",
+    "read_all": "All Projects",
+    "items": "Projects",
+    "edit_one": "Edit Project"
+  },
+  "steps": {
+    "step1": {
+      "step_title": "Project Details",
+      "pro_tip": "Pro Tip",
+      "tip": "Choose a clear, descriptive project title and provide a detailed summary. This helps creators and team members quickly understand your project's goals.",
+      "title": "Project Title",
+      "description": "Project Description"
+    },
+    "step2": {
+      "step_title": "Project Resources",
+      "pro_tip": "Pro Tip",
+      "tip": "Choose a start and end date for your project. This helps creators and team members quickly understand your project's goals.",
+      "timeline_title": "Timeline",
+      "budget_title": "Budget",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "budget": "Budget"
+    }
+  },
+  "budget": "Budget",
+  "timeline": "Timeline",
+  "created": "Created",
+  "status": "Status",
+  "draft": "Draft",
+  "in_progress": "In Progress",
+  "completed": "Completed",
+  "edit_project": "Edit Project",
+  "delete_project": "Delete Project",
+  "view_details": "View Details",
+  "resume_creation": "Resume Project Creation",
+  "loading_project_form": "Setting up your project form...",
+  "loading_project_form_description": "Please wait while we load everything you need to create your project. This should only take a moment."
+}

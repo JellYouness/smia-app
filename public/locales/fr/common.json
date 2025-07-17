@@ -21,6 +21,8 @@
   "email": "Email",
   "email_format_incorrect": "Le format de l'email est incorrect",
   "field_required": "Ce champ est obligatoire",
+  "field_positive": "Ce champ doit être un nombre supérieur à 0",
+  "end_after_start": "La date de fin doit être après la date de début",
   "field_too_long": "Ce champ est trop long",
   "field_invalid": "Ce champ est invalide",
   "field_choose_values_table": "Veuillez choisir au moins un élément du tableau",
@@ -123,5 +125,6 @@
   "emergency_contact_phone": "Téléphone du contact d'urgence",
   "emergency_contact_email": "Email du contact d'urgence",
   "emergency_contact_relationship": "Relation avec le contact d'urgence",
-  "emergency_contact_relationship_options": ["Parent", "Ami", "Collegue", "Autre"]
+  "emergency_contact_relationship_options": ["Parent", "Ami", "Collegue", "Autre"],
+  "save_draft": "Enregistrer comme brouillon"
 }

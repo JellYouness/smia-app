@@ -1,3 +1,5 @@
 {
-  "dashboard": "Dashboard"
+  "dashboard": "Dashboard",
+  "loading": "Loading...",
+  "greeting": "Hello"
 }

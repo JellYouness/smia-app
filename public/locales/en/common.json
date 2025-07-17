@@ -21,6 +21,8 @@
   "email": "Email",
   "email_format_incorrect": "The email format is incorrect",
   "field_required": "This field is required",
+  "field_positive": "This field must be a number greater than 0",
+  "end_after_start": "The end date must be after the start date",
   "field_too_long": "This field is too long",
   "field_invalid": "This field is invalid",
   "field_choose_values_table": "Please choose at least an item from the table",
@@ -125,5 +127,6 @@
   "female": "Female",
   "other": "Other",
   "date_of_birth": "Date of Birth",
-  "skip_for_now": "Skip for now"
+  "skip_for_now": "Skip for now",
+  "save_draft": "Save as Draft"
 }

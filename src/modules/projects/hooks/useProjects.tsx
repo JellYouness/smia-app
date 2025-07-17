@@ -15,11 +15,11 @@ import useApi, { FetchApiOptions } from '@common/hooks/useApi';
 
 export interface CreateOneInput {
   title: string;
-  description?: string;
-  status: PROJECT_STATUS;
-  startDate?: string;
-  endDate?: string;
-  budget?: number;
+  description: string;
+  status?: PROJECT_STATUS;
+  startDate: string;
+  endDate: string;
+  budget: number;
   clientId?: Id;
   creatorId?: Id;
   ambassadorId?: Id;
