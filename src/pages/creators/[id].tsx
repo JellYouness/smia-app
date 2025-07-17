@@ -4,6 +4,13 @@ import useItems from '@common/hooks/useItems';
 import { CreatorsApiRoutes } from '@modules/creators/defs/api-routes';
 import CreatorMainContent from '@modules/creators/components/CreatorMainContent';
 import { useTranslation } from 'react-i18next';
+import { GetServerSideProps } from 'next';
+import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
+import withPermissions from '@modules/permissions/hocs/withPermissions';
+import Namespaces from '@common/defs/namespaces';
+import { CRUD_ACTION } from '@common/defs/types';
+import Routes from '@common/defs/routes';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const CreatorDetailsPage = () => {
   const router = useRouter();
@@ -68,4 +75,25 @@ const CreatorDetailsPage = () => {
   return <CreatorMainContent user={item} t={t} readOnly />;
 };
 
-export default CreatorDetailsPage;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const locale = context.locale || 'en';
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['topbar', 'footer', 'leftbar', 'user', 'common'])),
+    },
+  };
+};
+
+export default withAuth(
+  withPermissions(CreatorDetailsPage, {
+    requiredPermissions: {
+      entity: Namespaces.Creators,
+      action: CRUD_ACTION.READ,
+    },
+    redirectUrl: Routes.Permissions.Forbidden,
+  }),
+  {
+    mode: AUTH_MODE.LOGGED_IN,
+    redirectUrl: Routes.Auth.Login,
+  }
+);

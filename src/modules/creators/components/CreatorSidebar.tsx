@@ -16,9 +16,8 @@ import {
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
-import JsonDataRenderer from './JsonDataRenderer';
-import ProfilePicture from './ProfilePicture';
-import EditSectionDialog from './EditSectionDialog';
+import ProfilePicture from '@modules/users/components/ProfilePicture';
+import EditSectionDialog from '@modules/users/components/EditSectionDialog';
 import EditLanguagesDialog from '@modules/creators/components/EditLanguagesDialog';
 import EditEducationDialog from '@modules/creators/components/EditEducationDialog';
 import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
@@ -28,19 +27,19 @@ interface Language {
   proficiency: string;
 }
 
-interface SidebarProps {
+interface CreatorSidebarProps {
   user: Any;
   profilePicture: string | null;
   handleUploadPicture: (file: File) => Promise<void>;
   handleDeletePicture: () => Promise<void>;
 }
 
-const Sidebar = ({
+const CreatorSidebar = ({
   user,
   profilePicture,
   handleUploadPicture,
   handleDeletePicture,
-}: SidebarProps) => {
+}: CreatorSidebarProps) => {
   const [openLanguages, setOpenLanguages] = useState(false);
   const [openEducation, setOpenEducation] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -151,7 +150,18 @@ const Sidebar = ({
             </IconButton>
           </Box>
           <Stack spacing={1}>
-            <JsonDataRenderer
+            {languagesData.map((lang: Any, index: number) => (
+              <Box
+                key={index}
+                sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {lang.language}
+                </Typography>
+                <Chip label={lang.proficiency} size="small" color="secondary" variant="outlined" />
+              </Box>
+            ))}
+            {/* <JsonDataRenderer
               data={languagesData}
               renderItem={(lang, index) => (
                 <Box
@@ -174,7 +184,7 @@ const Sidebar = ({
                   No languages added yet
                 </Typography>
               }
-            />
+            /> */}
           </Stack>
         </Box>
 
@@ -200,7 +210,22 @@ const Sidebar = ({
             </IconButton>
           </Box>
           <Stack spacing={2}>
-            <JsonDataRenderer
+            {educationData.map((edu: Any, index: number) => (
+              <Box key={index}>
+                <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                  {edu.degree} in {edu.field}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                  {edu.institution}
+                </Typography>
+                {edu.year && (
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                    {edu.year}
+                  </Typography>
+                )}
+              </Box>
+            ))}
+            {/* <JsonDataRenderer
               data={educationData}
               renderItem={(edu, index) => (
                 <Box key={index}>
@@ -226,7 +251,7 @@ const Sidebar = ({
                   No education added yet
                 </Typography>
               }
-            />
+            /> */}
           </Stack>
         </Box>
 
@@ -342,4 +367,4 @@ const Sidebar = ({
   );
 };
 
-export default Sidebar;
+export default CreatorSidebar;

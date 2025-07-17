@@ -92,10 +92,9 @@ const Layout = (props: ILayoutProps) => {
       >
         <Box sx={{ minHeight: '100vh', width: '100vw' }}>
           <Stack direction="column" sx={{ height: '100%' }}>
-            {user?.userType === 'ADMIN' ||
-              (user?.userType === 'SUPERADMIN' && (
-                <Leftbar open={openLeftbar} onToggle={(open) => setOpenLeftbar(open)} />
-              ))}
+            {(user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN') && (
+              <Leftbar open={openLeftbar} onToggle={(open) => setOpenLeftbar(open)} />
+            )}
             <Topbar />
             <Box
               sx={{

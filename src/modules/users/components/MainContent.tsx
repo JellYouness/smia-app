@@ -6,15 +6,15 @@ import { Any } from '@common/defs/types';
 import JsonDataRenderer from './JsonDataRenderer';
 import CardList from './CardList';
 import SectionCard from './SectionCard';
-import EditAboutDialog from './EditAboutDialog';
-import EditSkillsDialog from './EditSkillsDialog';
-import EditPortfolioDialog from './EditPortfolioDialog';
-import EditCertificationsDialog from './EditCertificationsDialog';
-import EditEmploymentDialog from './EditEmploymentDialog';
-import EditAchievementsDialog from './EditAchievementsDialog';
-import EditEquipmentDialog from './EditEquipmentDialog';
-import EditRegionalExpertiseDialog from './EditRegionalExpertiseDialog';
-import EditMediaTypesDialog from './EditMediaTypesDialog';
+import EditAboutDialog from '@modules/creators/components/EditAboutDialog';
+import EditSkillsDialog from '@modules/creators/components/EditSkillsDialog';
+import EditPortfolioDialog from '@modules/creators/components/EditPortfolioDialog';
+import EditCertificationsDialog from '@modules/creators/components/EditCertificationsDialog';
+import EditEmploymentDialog from '@modules/creators/components/EditEmploymentDialog';
+import EditAchievementsDialog from '@modules/creators/components/EditAchievementsDialog';
+import EditEquipmentDialog from '@modules/creators/components/EditEquipmentDialog';
+import EditRegionalExpertiseDialog from '@modules/creators/components/EditRegionalExpertiseDialog';
+import EditMediaTypesDialog from '@modules/creators/components/EditMediaTypesDialog';
 import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
 
 interface MainContentProps {

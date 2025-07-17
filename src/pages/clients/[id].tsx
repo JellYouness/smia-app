@@ -4,6 +4,13 @@ import useItems from '@common/hooks/useItems';
 import { ClientsApiRoutes } from '@modules/clients/defs/api-routes';
 import ClientMainContent from '@modules/clients/components/ClientMainContent';
 import { useTranslation } from 'react-i18next';
+import { GetServerSideProps } from 'next';
+import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
+import withPermissions from '@modules/permissions/hocs/withPermissions';
+import Namespaces from '@common/defs/namespaces';
+import { CRUD_ACTION } from '@common/defs/types';
+import Routes from '@common/defs/routes';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const ClientDetailsPage = () => {
   const router = useRouter();
@@ -65,4 +72,25 @@ const ClientDetailsPage = () => {
   return <ClientMainContent user={item} t={t} readOnly />;
 };
 
-export default ClientDetailsPage;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const locale = context.locale || 'en';
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['topbar', 'footer', 'leftbar', 'user', 'common'])),
+    },
+  };
+};
+
+export default withAuth(
+  withPermissions(ClientDetailsPage, {
+    requiredPermissions: {
+      entity: Namespaces.Clients,
+      action: CRUD_ACTION.READ,
+    },
+    redirectUrl: Routes.Permissions.Forbidden,
+  }),
+  {
+    mode: AUTH_MODE.LOGGED_IN,
+    redirectUrl: Routes.Auth.Login,
+  }
+);

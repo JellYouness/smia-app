@@ -25,7 +25,7 @@ const ClientsTable = () => {
   const router = useRouter();
   const actions = [
     {
-      label: 'View Details',
+      label: t('user:list.view_details'),
       icon: <Visibility fontSize="small" />,
       onClick: (id: number) => {
         router.push(`/clients/${id}`);

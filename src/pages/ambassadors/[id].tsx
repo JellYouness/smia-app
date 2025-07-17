@@ -4,6 +4,13 @@ import useItems from '@common/hooks/useItems';
 import { AmbassadorsApiRoutes } from '@modules/ambassadors/defs/api-routes';
 import AmbassadorMainContent from '@modules/ambassadors/components/AmbassadorMainContent';
 import { useTranslation } from 'react-i18next';
+import { GetServerSideProps } from 'next';
+import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
+import withPermissions from '@modules/permissions/hocs/withPermissions';
+import Namespaces from '@common/defs/namespaces';
+import { CRUD_ACTION } from '@common/defs/types';
+import Routes from '@common/defs/routes';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const AmbassadorDetailsPage = () => {
   const router = useRouter();
@@ -70,4 +77,25 @@ const AmbassadorDetailsPage = () => {
   return <AmbassadorMainContent user={item} t={t} readOnly />;
 };
 
-export default AmbassadorDetailsPage;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const locale = context.locale || 'en';
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['topbar', 'footer', 'leftbar', 'user', 'common'])),
+    },
+  };
+};
+
+export default withAuth(
+  withPermissions(AmbassadorDetailsPage, {
+    requiredPermissions: {
+      entity: Namespaces.Ambassadors,
+      action: CRUD_ACTION.READ,
+    },
+    redirectUrl: Routes.Permissions.Forbidden,
+  }),
+  {
+    mode: AUTH_MODE.LOGGED_IN,
+    redirectUrl: Routes.Auth.Login,
+  }
+);

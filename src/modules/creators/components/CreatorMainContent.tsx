@@ -1,8 +1,7 @@
 import React from 'react';
-import { Box, Stack, Typography, Chip, Grid, Button, Skeleton } from '@mui/material';
+import { Box, Stack, Typography, Chip, Button, Skeleton } from '@mui/material';
 import SectionCard from '@modules/users/components/SectionCard';
-import InfoItem from '@modules/users/components/InfoItem';
-import { Star, Work } from '@mui/icons-material';
+import { Star } from '@mui/icons-material';
 import CardList from '@modules/users/components/CardList';
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
@@ -20,7 +19,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       {/* About Section */}
       <SectionCard title={user?.profile?.title || t('user:about')} readOnly={readOnly}>
         <Typography variant="body1" sx={{ mt: 1 }}>
-          {user?.profile?.bio || 'No bio provided.'}
+          {user?.profile?.bio || t('user:no_bio_provided')}
         </Typography>
       </SectionCard>
 
@@ -44,7 +43,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
             >
               <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
               <Typography variant="body2" color="text.secondary">
-                No skills added yet.
+                {t('user:no_skills_added_yet')}
               </Typography>
             </Box>
           )}
@@ -90,7 +89,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
                       },
                     }}
                   >
-                    View Project
+                    {t('user:view_project')}
                   </Button>
                 </Link>
               )}
@@ -109,7 +108,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
             >
               <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
               <Typography variant="body2" color="text.secondary">
-                Showcase your best work and projects.
+                {t('user:showcase_your_best_work')}
               </Typography>
             </Box>
           }
@@ -161,11 +160,11 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
                   {cert.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
-                  Issued by: {cert.issuer}
+                  {t('user:issued_by')}: {cert.issuer}
                 </Typography>
                 {cert.date && (
                   <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
-                    Date: {cert.date}
+                    {t('user:date')}: {cert.date}
                   </Typography>
                 )}
               </Box>
@@ -183,7 +182,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
             >
               <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
               <Typography variant="body2" color="text.secondary">
-                Listing your certifications can help prove your specific knowledge or abilities.
+                {t('user:ing_certifications_help')}
               </Typography>
             </Box>
           )}
@@ -237,7 +236,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
             >
               <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
               <Typography variant="body2" color="text.secondary">
-                Highlight your key achievements and accomplishments.
+                {t('user:highlight_achievements')}
               </Typography>
             </Box>
           )}
@@ -307,7 +306,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
             >
               <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
               <Typography variant="body2" color="text.secondary">
-                Add your employment history to help clients understand your background.
+                {t('user:add_employment_history')}
               </Typography>
             </Box>
           )}
@@ -334,7 +333,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
             >
               <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
               <Typography variant="body2" color="text.secondary">
-                Add the types of media you specialize in.
+                {t('user:add_media_types')}
               </Typography>
             </Box>
           )}
@@ -389,7 +388,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
             >
               <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
               <Typography variant="body2" color="text.secondary">
-                List your equipment to help clients understand your capabilities.
+                {t('user:list_equipment_help')}
               </Typography>
             </Box>
           )}
@@ -443,7 +442,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
             >
               <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
               <Typography variant="body2" color="text.secondary">
-                No regional expertise added yet.
+                {t('user:no_regional_expertise')}
               </Typography>
             </Box>
           )}
