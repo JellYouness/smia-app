@@ -10,6 +10,8 @@ import Namespaces from '@common/defs/namespaces';
 import { CrudRow } from '@common/defs/types';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
+import { Visibility } from '@mui/icons-material';
+import { useRouter } from 'next/router';
 
 interface Row extends CrudRow {
   email: string;
@@ -19,6 +21,16 @@ interface Row extends CrudRow {
 
 const UsersTable = () => {
   const { t, i18n } = useTranslation(['user']);
+  const router = useRouter();
+  const actions = [
+    {
+      label: t('user:list.view_details'),
+      icon: <Visibility fontSize="small" />,
+      onClick: (id: number, item: any) => {
+        router.push(`/users/${id}`);
+      },
+    },
+  ];
   const columns: GridColumns<Row> = [
     {
       field: 'id',
@@ -75,6 +87,7 @@ const UsersTable = () => {
         useItems={useUsers}
         columns={translatedColumns}
         itemToRow={itemToRow}
+        actions={actions}
         showEdit={() => true}
         showDelete={() => true}
         showLock

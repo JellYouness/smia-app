@@ -21,7 +21,7 @@ export interface User extends CrudObject {
   gender: string;
   preferredLanguage: string;
   timezone: string;
-  userType?: 'CLIENT' | 'CREATOR' | 'AMBASSADOR' | 'ADMIN';
+  userType?: 'CLIENT' | 'CREATOR' | 'AMBASSADOR' | 'ADMIN' | 'SUPERADMIN';
   notificationPreferences: {
     email: boolean;
     sms: boolean;
