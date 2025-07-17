@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
-import { Box, Stack, Typography, Skeleton, Button, Chip } from '@mui/material';
-import { Business, LocationOn, Web, AccountBalance, AttachMoney } from '@mui/icons-material';
+import { Box, Stack, Typography, Skeleton, Chip } from '@mui/material';
+import { AttachMoney } from '@mui/icons-material';
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
-import SectionCard from '@common/components/SectionCard';
-import EditAboutDialog from '@modules/users/components/EditAboutDialog';
-import EditCompanyDialog from '@modules/users/components/EditCompanyDialog';
-import EditBillingDialog from '@modules/users/components/EditBillingDialog';
+import SectionCard from '@modules/users/components/SectionCard';
+import EditAboutDialog from '@modules/creators/components/EditAboutDialog';
+import EditCompanyDialog from '@modules/clients/components/EditCompanyDialog';
+import EditBillingDialog from '@modules/clients/components/EditBillingDialog';
 import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
 
 interface ClientMainContentProps {
   user: Any;
   t: Any;
+  readOnly?: boolean;
 }
 
-const ClientMainContent = ({ user, t }: ClientMainContentProps) => {
+const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
   const [openAbout, setOpenAbout] = useState(false);
   const [openCompany, setOpenCompany] = useState(false);
   const [openBilling, setOpenBilling] = useState(false);
@@ -79,26 +80,14 @@ const ClientMainContent = ({ user, t }: ClientMainContentProps) => {
   return (
     <Stack spacing={0}>
       {/* Title/About Section */}
-      <SectionCard
-        title={user?.profile?.title || t('user:about')}
-        onEdit={() => setOpenAbout(true)}
-      >
+      <SectionCard title={user?.profile?.title || t('user:about')} readOnly={readOnly}>
         <Typography variant="body1" sx={{ mt: 1 }}>
           {user?.profile?.bio || <Skeleton width="80%" />}
         </Typography>
       </SectionCard>
 
-      {/* About Edit Dialog */}
-      <EditAboutDialog
-        user={user}
-        onSave={handleSaveAbout}
-        loading={loading}
-        open={openAbout}
-        onClose={() => setOpenAbout(false)}
-      />
-
       {/* Company Information Section */}
-      <SectionCard title="Company Information" onEdit={() => setOpenCompany(true)}>
+      <SectionCard title="Company Information" readOnly={readOnly}>
         <Stack spacing={3}>
           {user?.client?.companyName && (
             <Box>
@@ -146,17 +135,8 @@ const ClientMainContent = ({ user, t }: ClientMainContentProps) => {
         </Stack>
       </SectionCard>
 
-      {/* Company Edit Dialog */}
-      <EditCompanyDialog
-        user={user}
-        onSave={handleSaveCompany}
-        loading={loading}
-        open={openCompany}
-        onClose={() => setOpenCompany(false)}
-      />
-
       {/* Billing Information Section */}
-      <SectionCard title="Billing Information" onEdit={() => setOpenBilling(true)}>
+      <SectionCard title="Billing Information" readOnly={readOnly}>
         <Stack spacing={3}>
           {user?.client?.billingStreet && (
             <Box>
@@ -187,17 +167,8 @@ const ClientMainContent = ({ user, t }: ClientMainContentProps) => {
         </Stack>
       </SectionCard>
 
-      {/* Billing Edit Dialog */}
-      <EditBillingDialog
-        user={user}
-        onSave={handleSaveBilling}
-        loading={loading}
-        open={openBilling}
-        onClose={() => setOpenBilling(false)}
-      />
-
       {/* Budget & Project Information Section */}
-      <SectionCard title="Budget & Projects">
+      <SectionCard title="Budget & Projects" readOnly={readOnly}>
         <Stack spacing={3}>
           {user?.client?.budget && (
             <Box>
@@ -239,7 +210,7 @@ const ClientMainContent = ({ user, t }: ClientMainContentProps) => {
       </SectionCard>
 
       {/* Default Project Settings Section */}
-      <SectionCard title="Default Project Settings">
+      <SectionCard title="Default Project Settings" readOnly={readOnly}>
         <Stack spacing={3}>
           {user?.client?.defaultProjectSettings ? (
             <Stack spacing={2}>
@@ -297,7 +268,7 @@ const ClientMainContent = ({ user, t }: ClientMainContentProps) => {
       </SectionCard>
 
       {/* Contact Information Section */}
-      <SectionCard title="Contact Information">
+      <SectionCard title="Contact Information" readOnly={readOnly}>
         <Stack spacing={3}>
           {user?.phoneNumber && (
             <Box>
@@ -336,7 +307,7 @@ const ClientMainContent = ({ user, t }: ClientMainContentProps) => {
       </SectionCard>
 
       {/* Additional Information Section */}
-      <SectionCard title="Additional Information">
+      <SectionCard title="Additional Information" readOnly={readOnly}>
         <Stack spacing={3}>
           {user?.preferredLanguage && (
             <Box>

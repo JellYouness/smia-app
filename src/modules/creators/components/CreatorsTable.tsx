@@ -27,9 +27,8 @@ const CreatorsTable = () => {
     {
       label: 'View Details',
       icon: <Visibility fontSize="small" />,
-      onClick: (id: number, item: any) => {
-        const userId = item.user?.id || item.id;
-        router.push(`/creators/${userId}`);
+      onClick: (id: number) => {
+        router.push(`/creators/${id}`);
       },
     },
   ];

@@ -4,7 +4,6 @@ import { Star } from '@mui/icons-material';
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
 import JsonDataRenderer from './JsonDataRenderer';
-import ChipList from './ChipList';
 import CardList from './CardList';
 import SectionCard from './SectionCard';
 import EditAboutDialog from './EditAboutDialog';

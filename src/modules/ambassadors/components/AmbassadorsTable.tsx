@@ -27,9 +27,8 @@ const AmbassadorsTable = () => {
     {
       label: 'View Details',
       icon: <Visibility fontSize="small" />,
-      onClick: (id: number, item: any) => {
-        const userId = item.user?.id || item.id;
-        router.push(`/ambassadors/${userId}`);
+      onClick: (id: number) => {
+        router.push(`/ambassadors/${id}`);
       },
     },
   ];

@@ -2,24 +2,70 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import useItems from '@common/hooks/useItems';
 import { CreatorsApiRoutes } from '@modules/creators/defs/api-routes';
-import CreatorDetailsCard from '@modules/creators/components/CreatorDetailsCard';
+import CreatorMainContent from '@modules/creators/components/CreatorMainContent';
+import { useTranslation } from 'react-i18next';
 
 const CreatorDetailsPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const { readOne } = useItems(CreatorsApiRoutes);
   const [item, setItem] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const { t } = useTranslation(['user']);
 
   useEffect(() => {
     if (id) {
-      readOne(id).then(({ data }) => {
-        if (data && data.item) setItem(data.item);
-      });
+      setLoading(true);
+      readOne(Number(id))
+        .then(({ data }) => {
+          if (data && data.item) {
+            // Structure data to match what CreatorMainContent expects
+            const item = data.item as any;
+            const creatorData = {
+              ...item.user,
+              profile: item.user.profile,
+              creator: {
+                id: item.id,
+                userId: item.userId,
+                skills: item.skills,
+                verificationStatus: item.verificationStatus,
+                portfolio: item.portfolio,
+                experience: item.experience,
+                hourlyRate: item.hourlyRate,
+                availability: item.availability,
+                averageRating: item.averageRating,
+                ratingCount: item.ratingCount,
+                regionalExpertise: item.regionalExpertise,
+                languages: item.languages,
+                isJournalist: item.isJournalist,
+                mediaTypes: item.mediaTypes,
+                certifications: item.certifications,
+                equipmentInfo: item.equipmentInfo,
+                education: item.education,
+                professionalBackground: item.professionalBackground,
+                achievements: item.achievements,
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt,
+              },
+            };
+            setItem(creatorData);
+          }
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
     }
   }, [id]);
 
-  if (!item) return <div>Loading...</div>;
-  return <CreatorDetailsCard creator={item} />;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (!item) {
+    return <div>Creator not found</div>;
+  }
+
+  return <CreatorMainContent user={item} t={t} readOnly />;
 };
 
 export default CreatorDetailsPage;
