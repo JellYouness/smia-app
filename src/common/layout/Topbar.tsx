@@ -19,7 +19,6 @@ import {
   Tooltip,
   Menu,
   MenuItem,
-  Switch,
   Divider,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -33,29 +32,11 @@ import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { setUserLanguage } from '@common/components/lib/utils/language';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { NotificationDropdown } from '@modules/notifications/components/NotificationDropdown';
+import { useUnreadCount } from '@modules/notifications/hooks/useNotifications';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-
-// Flag components for languages
-const FlagIcon = ({ country }: { country: string }) => (
-  <Box
-    component="span"
-    sx={{
-      width: 20,
-      height: 15,
-      display: 'inline-block',
-      backgroundImage: `url(https://flagcdn.com/w40/${country.toLowerCase()}.png)`,
-      backgroundSize: 'contain',
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'center',
-      borderRadius: '2px',
-      mr: 1,
-    }}
-  />
-);
 
 interface TopbarItem {
   label: string;
@@ -80,7 +61,10 @@ const Topbar = () => {
   const userIsAdmin = user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN';
   const [anchorNotif, setAnchorNotif] = useState<null | HTMLElement>(null);
   const [anchorUser, setAnchorUser] = useState<null | HTMLElement>(null);
-  const [darkMode, setDarkMode] = useState(false); // Placeholder, should be from context
+
+  // Get unread notification count
+  const { data: unreadCountData } = useUnreadCount();
+  const unreadCount = unreadCountData?.unreadCount || 0;
 
   // Notification dropdown handlers
   const handleNotifClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -96,12 +80,6 @@ const Topbar = () => {
   };
   const handleUserClose = () => {
     setAnchorUser(null);
-  };
-
-  // Dark mode toggle (placeholder)
-  const handleToggleDarkMode = () => {
-    setDarkMode((prev) => !prev);
-    // TODO: integrate with theme context
   };
 
   const dropdownWidth = 137;
@@ -333,19 +311,16 @@ const Topbar = () => {
             {/* Notifications */}
             <Tooltip title={t('topbar:notifications', 'Notifications')}>
               <IconButton onClick={handleNotifClick}>
-                <Badge badgeContent={3} color="error">
+                <Badge badgeContent={unreadCount} color="error" max={99}>
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Menu
+            <NotificationDropdown
               anchorEl={anchorNotif}
               open={Boolean(anchorNotif)}
               onClose={handleNotifClose}
-              PaperProps={{ sx: { mt: 1.5, minWidth: 260 } }}
-            >
-              <MenuItem disabled>{t('topbar:no_notifications', 'No new notifications')}</MenuItem>
-            </Menu>
+            />
 
             {/* User Avatar & Menu */}
             {user && (

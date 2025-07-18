@@ -1,5 +1,5 @@
 export { default as useUsers } from './useUsers';
-export { default as useCompleteProfile } from './useCompleteProfile';
+export * from './useCompleteProfile';
 export { default as useProfileUpdates } from './useProfileUpdates';
 export { default as useUserSettings } from './useUserSettings';
 export type {
@@ -8,4 +8,4 @@ export type {
   TwoFASetup,
   Session,
   ConnectedAccount,
-} from './useUserSettings'; 
+} from './useUserSettings';
