@@ -36,6 +36,7 @@
   "delete_project": "Delete Project",
   "view_details": "View Details",
   "resume_creation": "Resume Project Creation",
+  "hire_creator": "Hire a Creator",
   "loading_project_form": "Setting up your project form...",
   "loading_project_form_description": "Please wait while we load everything you need to create your project. This should only take a moment."
 }

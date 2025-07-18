@@ -1,10 +1,10 @@
 import { CRUD_ACTION, Id } from '@common/defs/types';
 
 export enum ROLE {
-  CLIENT = 'client',
-  CREATOR = 'creator',
-  AMBASSADOR = 'ambassador',
-  SYSTEM_ADMINISTRATOR = 'system_administrator',
+  CLIENT = 'CLIENT',
+  CREATOR = 'CREATOR',
+  AMBASSADOR = 'AMBASSADOR',
+  SYSTEM_ADMINISTRATOR = 'ADMIN',
 }
 
 export interface Permission {

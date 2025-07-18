@@ -7,6 +7,7 @@ const Routes: CrudAppRoutes = {
   CreateOne: prefix + '/create',
   UpdateOne: prefix + '/edit/{id}',
   DeleteOne: prefix + '/{id}',
+  HireCreator: prefix + '/{id}/hire-creator',
 };
 
 export default Routes;

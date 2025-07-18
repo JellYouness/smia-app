@@ -68,14 +68,42 @@ const ProjectCard = ({ project, hideAction = false, onEdit, onDelete }: ProjectC
     }
   };
 
-  const actionLabel = isDraft
-    ? t('project:resume_creation', 'Resume project creation')
-    : t('project:view_details', 'View details');
+  const isUnassigned = project.creatorId === null;
+
+  const getActionLabel = () => {
+    if (isDraft) {
+      return t('project:resume_creation', 'Resume project creation');
+    }
+
+    if (isUnassigned && project.proposalsCount === 0) {
+      return t('project:invite_creators', 'Invite Creators');
+    }
+
+    if (isUnassigned && project.proposalsCount && project.proposalsCount > 0) {
+      return t('project:review_proposals', 'Review Proposals');
+    }
+
+    return t('project:view_project', 'View Project');
+  };
+  const actionLabel = getActionLabel();
+
+  const getProjectRoute = () => {
+    const base = Routes.Projects.HireCreator.replace('{id}', project.id.toString());
+
+    if (isDraft) {
+      return Routes.Projects.UpdateOne.replace('{id}', project.id.toString());
+    }
+
+    if (isUnassigned) {
+      const step = project.proposalsCount === 0 ? 'invite' : 'review';
+      return { pathname: base, query: { step } };
+    }
+
+    return Routes.Projects.ReadOne.replace('{id}', project.id.toString());
+  };
 
   const handleActionClick = () => {
-    const route = isDraft
-      ? Routes.Projects.UpdateOne.replace('{id}', project.id.toString())
-      : Routes.Projects.ReadOne.replace('{id}', project.id.toString());
+    const route = getProjectRoute();
     router.push(route);
   };
 
