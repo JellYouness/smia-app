@@ -1,14 +1,11 @@
 {
-  "home": "Accueil",
-  "language": "Langues",
-  "language_english": "Anglais",
-  "language_french": "Français",
-  "language_spanish": "Espagnol",
-  "logged": {
-    "logout": "Se déconnecter"
-  },
-  "login": "Connexion",
-  "register": "Inscription",
-  "user": "Utilisateur",
-  "profile": "Mon profil"
+  "org_switcher": "Sélectionner une organisation/projet",
+  "dashboard": "Tableau de bord",
+  "settings": "Paramètres",
+  "help": "Aide & Support",
+  "notifications": "Notifications",
+  "no_notifications": "Aucune nouvelle notification",
+  "dark_mode": "Mode sombre",
+  "light_mode": "Mode clair",
+  "profile": "Profil"
 }

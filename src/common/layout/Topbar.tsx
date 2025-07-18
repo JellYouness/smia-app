@@ -14,6 +14,13 @@ import {
   ListItemText,
   Toolbar,
   styled,
+  Avatar,
+  Badge,
+  Tooltip,
+  Menu,
+  MenuItem,
+  Switch,
+  Divider,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from 'next/router';
@@ -25,6 +32,12 @@ import { ArrowForwardIos, Logout } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { setUserLanguage } from '@common/components/lib/utils/language';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 // Flag components for languages
 const FlagIcon = ({ country }: { country: string }) => (
@@ -65,6 +78,31 @@ const Topbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const { user, logout } = useAuth();
   const userIsAdmin = user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN';
+  const [anchorNotif, setAnchorNotif] = useState<null | HTMLElement>(null);
+  const [anchorUser, setAnchorUser] = useState<null | HTMLElement>(null);
+  const [darkMode, setDarkMode] = useState(false); // Placeholder, should be from context
+
+  // Notification dropdown handlers
+  const handleNotifClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorNotif(event.currentTarget);
+  };
+  const handleNotifClose = () => {
+    setAnchorNotif(null);
+  };
+
+  // User menu handlers
+  const handleUserClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorUser(event.currentTarget);
+  };
+  const handleUserClose = () => {
+    setAnchorUser(null);
+  };
+
+  // Dark mode toggle (placeholder)
+  const handleToggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+    // TODO: integrate with theme context
+  };
 
   const dropdownWidth = 137;
   const toggleSidebar = () => {
@@ -155,277 +193,225 @@ const Topbar = () => {
     }
   };
 
+  if (!user) {
+    // Old unauthenticated layout
+    return (
+      <AppBar
+        position="static"
+        sx={{
+          boxShadow: (theme) => theme.customShadows.z1,
+          backgroundColor: 'common.white',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          zIndex: 1201,
+        }}
+      >
+        <Container maxWidth="xl">
+          <Toolbar sx={{ px: { xs: 0, sm: 0 }, minHeight: 64 }}>
+            <Stack direction="row" alignItems="center" flexGrow={1}>
+              <Logo
+                id="topbar-logo"
+                onClick={() => router.push(Routes.Common.Home)}
+                sx={{ cursor: 'pointer' }}
+              />
+            </Stack>
+            <List sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+              <ListItem>
+                <ListItemText>{t('topbar:language')}</ListItemText>
+                <KeyboardArrowDown />
+                <List
+                  className="dropdown-menu"
+                  sx={{
+                    backgroundColor: 'common.white',
+                    boxShadow: (theme) => theme.customShadows.z12,
+                    position: 'absolute',
+                    top: 48,
+                    left: 0,
+                    padding: 0,
+                    width: 137,
+                    borderBottomLeftRadius: 24,
+                    borderBottomRightRadius: 24,
+                    visibility: 'hidden',
+                    zIndex: 1000000,
+                  }}
+                >
+                  <ListItemButton onClick={() => setUserLanguage('fr')}>
+                    <ListItemText>Français</ListItemText>
+                  </ListItemButton>
+                  <ListItemButton onClick={() => setUserLanguage('en')}>
+                    <ListItemText>English</ListItemText>
+                  </ListItemButton>
+                  <ListItemButton onClick={() => setUserLanguage('es')}>
+                    <ListItemText>Español</ListItemText>
+                  </ListItemButton>
+                </List>
+              </ListItem>
+              <ListItem>
+                <Button
+                  variant="text"
+                  onClick={() => onAuthButtonClick('login')}
+                  sx={{ textTransform: 'none' }}
+                >
+                  {t('topbar:login')}
+                </Button>
+              </ListItem>
+              <ListItem>
+                <Button
+                  variant="contained"
+                  onClick={() => onAuthButtonClick('register')}
+                  sx={{ textTransform: 'none' }}
+                >
+                  {t('topbar:register')}
+                </Button>
+              </ListItem>
+            </List>
+            <IconButton onClick={toggleSidebar} sx={{ display: { md: 'none', sm: 'flex' }, ml: 1 }}>
+              <MenuIcon fontSize="medium" sx={{ color: 'grey.700' }} />
+            </IconButton>
+          </Toolbar>
+        </Container>
+        {/* Drawer for mobile nav remains unchanged */}
+      </AppBar>
+    );
+  }
+
+  // Modernized authenticated layout
   return (
     <AppBar
       position="static"
       sx={{
         boxShadow: (theme) => theme.customShadows.z1,
         backgroundColor: 'common.white',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        zIndex: 1201,
       }}
     >
-      <Container>
-        <Toolbar sx={{ px: { xs: 0, sm: 0 } }}>
-          <Stack flexDirection="row" alignItems="center" flexGrow={1}>
-            {!userIsAdmin && (
-              <Logo
-                id="topbar-logo"
-                onClick={() => router.push(Routes.Common.Home)}
-                sx={{ cursor: 'pointer' }}
-              />
+      <Container maxWidth="xl">
+        <Toolbar sx={{ px: { xs: 0, sm: 0 }, minHeight: 64 }}>
+          {/* Left: Logo and Org/Project Switcher */}
+          <Stack direction="row" alignItems="center" spacing={2} flexGrow={1}>
+            <Logo
+              id="topbar-logo"
+              onClick={() => router.push(Routes.Common.Home)}
+              sx={{ cursor: 'pointer', mr: 2 }}
+            />
+            {/* Org/Project Switcher Placeholder */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+              <Button
+                variant="outlined"
+                size="small"
+                sx={{ borderRadius: 2, textTransform: 'none' }}
+                disabled
+              >
+                {t('topbar:org_switcher', 'Select Org/Project')}
+              </Button>
+            </Box>
+          </Stack>
+
+          {/* Center: Quick Links */}
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ flexGrow: 0 }}>
+            <Tooltip title={t('topbar:dashboard', 'Dashboard')}>
+              <IconButton onClick={() => router.push(Routes.Common.Home)}>
+                <DashboardIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t('topbar:settings', 'Settings')}>
+              <IconButton onClick={() => router.push(Routes.Users.Settings)}>
+                <SettingsIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t('topbar:help', 'Help & Support')}>
+              <IconButton>
+                <HelpOutlineIcon />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+
+          {/* Right: Notifications, Dark Mode, User */}
+          <Stack direction="row" spacing={1} alignItems="center">
+            {/* Notifications */}
+            <Tooltip title={t('topbar:notifications', 'Notifications')}>
+              <IconButton onClick={handleNotifClick}>
+                <Badge badgeContent={3} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Menu
+              anchorEl={anchorNotif}
+              open={Boolean(anchorNotif)}
+              onClose={handleNotifClose}
+              PaperProps={{ sx: { mt: 1.5, minWidth: 260 } }}
+            >
+              <MenuItem disabled>{t('topbar:no_notifications', 'No new notifications')}</MenuItem>
+            </Menu>
+
+            {/* User Avatar & Menu */}
+            {user && (
+              <>
+                <Tooltip title={user.firstName + ' ' + user.lastName}>
+                  <IconButton onClick={handleUserClick} sx={{ p: 0 }}>
+                    <Avatar
+                      src={user.profile?.profile_picture || undefined}
+                      alt={user.firstName || user.email}
+                      sx={{ width: 40, height: 40, ml: 1 }}
+                    />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  anchorEl={anchorUser}
+                  open={Boolean(anchorUser)}
+                  onClose={handleUserClose}
+                  PaperProps={{ sx: { mt: 1.5, minWidth: 200 } }}
+                >
+                  <Box sx={{ px: 2, py: 1.5 }}>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Avatar
+                        src={user.profile?.profile_picture || undefined}
+                        alt={user.firstName || user.email}
+                        sx={{ width: 32, height: 32 }}
+                      />
+                      <Box>
+                        <Box sx={{ fontWeight: 600 }}>
+                          {user.firstName} {user.lastName}
+                        </Box>
+                        <Box sx={{ fontSize: 13, color: 'text.secondary' }}>{user.email}</Box>
+                      </Box>
+                    </Stack>
+                  </Box>
+                  <Divider />
+                  <MenuItem
+                    onClick={() => {
+                      handleUserClose();
+                      router.push(Routes.Users.Me);
+                    }}
+                  >
+                    {t('topbar:profile', 'Profile')}
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleUserClose();
+                      router.push(Routes.Users.Settings);
+                    }}
+                  >
+                    {t('topbar:settings', 'Settings')}
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleUserClose();
+                      logout();
+                    }}
+                  >
+                    {t('topbar:logged.logout', 'Logout')}
+                  </MenuItem>
+                </Menu>
+              </>
             )}
           </Stack>
-          <List sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-            <>
-              {navItems.map((item, index) => {
-                if (item.label === 'Utilisateur') {
-                  return null;
-                }
-                return (
-                  <ListItem
-                    key={index}
-                    sx={{
-                      width: 'fit-content',
-                    }}
-                  >
-                    <StyledListItemButton
-                      sx={{
-                        ...(router.pathname === item.link && {
-                          color: 'primary.main',
-                        }),
-                        ...(item.dropdown && {
-                          borderTopLeftRadius: 24,
-                          borderTopRightRadius: 24,
-                          borderBottomLeftRadius: 0,
-                          borderBottomRightRadius: 0,
-                          width: dropdownWidth,
-                          display: 'flex',
-                          alignItems: 'center',
-                          '&:hover': {
-                            backgroundColor: 'transparent',
-                            boxShadow: (theme) => theme.customShadows.z12,
-                            '.MuiTypography-root': {
-                              fontWeight: 'bold',
-                            },
-                            '.dropdown-menu': {
-                              visibility: 'visible',
-                            },
-                            '.MuiTouchRipple-child': {
-                              backgroundColor: 'transparent',
-                            },
-                          },
-                        }),
-                      }}
-                      onClick={onNavButtonClick(item)}
-                    >
-                      {!item.dropdown ? (
-                        <>{item.label}</>
-                      ) : (
-                        <>
-                          <ListItemText>{item.label}</ListItemText>
-                          <KeyboardArrowDown />
-                          <List
-                            className="dropdown-menu"
-                            sx={{
-                              backgroundColor: 'common.white',
-                              boxShadow: (theme) => theme.customShadows.z12,
-                              position: 'absolute',
-                              top: 48,
-                              left: 0,
-                              padding: 0,
-                              width: dropdownWidth,
-                              borderBottomLeftRadius: 24,
-                              borderBottomRightRadius: 24,
-                              visibility: 'hidden',
-                              zIndex: 1000000,
-                            }}
-                          >
-                            {item.dropdown.map((dropdownItem, dropdownItemIndex) => {
-                              const content = (
-                                <ListItemButton
-                                  sx={{
-                                    display: 'flex',
-                                    gap: 1,
-                                    paddingX: 2,
-                                    paddingY: 1.5,
-                                    borderRadius: 0,
-                                    zIndex: 1000000,
-                                    '&:hover': {
-                                      backgroundColor: 'primary.dark',
-                                      color: 'primary.contrastText',
-                                    },
-                                    ...(item.dropdown?.length === dropdownItemIndex + 1 && {
-                                      borderBottomLeftRadius: 24,
-                                      borderBottomRightRadius: 24,
-                                    }),
-                                  }}
-                                  onClick={() => {
-                                    if (dropdownItem.onClick) {
-                                      dropdownItem.onClick();
-                                    }
-                                    if (dropdownItem.value) {
-                                      setUserLanguage(dropdownItem.value);
-                                    }
-                                  }}
-                                >
-                                  {dropdownItem.flag && <FlagIcon country={dropdownItem.flag} />}
-                                  {dropdownItem.label}
-                                </ListItemButton>
-                              );
 
-                              return (
-                                <ListItem
-                                  key={dropdownItemIndex}
-                                  sx={{
-                                    padding: 0,
-                                    display: 'unset',
-                                  }}
-                                >
-                                  {dropdownItem.link ? (
-                                    <Link href={dropdownItem.link} locale={dropdownItem.value}>
-                                      {content}
-                                    </Link>
-                                  ) : (
-                                    content
-                                  )}
-                                </ListItem>
-                              );
-                            })}
-                          </List>
-                        </>
-                      )}
-                    </StyledListItemButton>
-                  </ListItem>
-                );
-              })}
-            </>
-            {!user ? (
-              <>
-                <ListItem sx={{ width: 'fit-content' }}>
-                  <Button
-                    variant="text"
-                    onClick={() => onAuthButtonClick('login')}
-                    sx={{ textTransform: 'none' }}
-                  >
-                    {t('topbar:login')}
-                  </Button>
-                </ListItem>
-                <ListItem sx={{ width: 'fit-content' }}>
-                  <Button
-                    variant="contained"
-                    onClick={() => onAuthButtonClick('register')}
-                    sx={{ textTransform: 'none' }}
-                  >
-                    {t('topbar:register')}
-                  </Button>
-                </ListItem>
-              </>
-            ) : (
-              <>
-                <ListItem
-                  key="user-options"
-                  sx={{
-                    width: 'fit-content',
-                  }}
-                >
-                  <StyledListItemButton
-                    sx={{
-                      borderTopLeftRadius: 24,
-                      borderTopRightRadius: 24,
-                      borderBottomLeftRadius: 0,
-                      borderBottomRightRadius: 0,
-                      width: 160,
-                      display: 'flex',
-                      alignItems: 'center',
-                      '&:hover': {
-                        backgroundColor: 'transparent',
-                        boxShadow: (theme) => theme.customShadows.z12,
-                        '.MuiTypography-root': {
-                          fontWeight: 'bold',
-                        },
-                        '.dropdown-menu': {
-                          visibility: 'visible',
-                        },
-                        '.MuiTouchRipple-child': {
-                          backgroundColor: 'transparent',
-                        },
-                      },
-                    }}
-                  >
-                    <>
-                      <ListItemText>{navItems[2].label}</ListItemText>
-                      <KeyboardArrowDown />
-                      <List
-                        className="dropdown-menu"
-                        sx={{
-                          backgroundColor: 'common.white',
-                          boxShadow: (theme) => theme.customShadows.z12,
-                          position: 'absolute',
-                          top: 40,
-                          left: 0,
-                          width: 160,
-                          padding: 0,
-                          borderBottomLeftRadius: 24,
-                          borderBottomRightRadius: 24,
-                          visibility: 'hidden',
-                          zIndex: 1000000,
-                        }}
-                      >
-                        {navItems[2].dropdown?.map((dropdownItem, dropdownItemIndex) => {
-                          const content = (
-                            <ListItemButton
-                              sx={{
-                                display: 'flex',
-                                gap: 1,
-                                paddingX: 2,
-                                paddingY: 1.5,
-                                borderRadius: 0,
-                                zIndex: 1000000,
-                                '&:hover': {
-                                  backgroundColor: 'primary.dark',
-                                  color: 'primary.contrastText',
-                                },
-                                ...(navItems[2].dropdown?.length === dropdownItemIndex + 1 && {
-                                  borderBottomLeftRadius: 24,
-                                  borderBottomRightRadius: 24,
-                                }),
-                              }}
-                              onClick={onNavButtonClick(dropdownItem)}
-                            >
-                              {dropdownItem.flag && <FlagIcon country={dropdownItem.flag} />}
-                              <ListItemText>{dropdownItem.label}</ListItemText>
-                            </ListItemButton>
-                          );
-
-                          return (
-                            <ListItem
-                              key={dropdownItemIndex}
-                              sx={{
-                                padding: 0,
-                              }}
-                            >
-                              {dropdownItem.link ? (
-                                <Link href={dropdownItem.link} locale={dropdownItem.value}>
-                                  {content}
-                                </Link>
-                              ) : (
-                                content
-                              )}
-                            </ListItem>
-                          );
-                        })}
-                      </List>
-                    </>
-                  </StyledListItemButton>
-                </ListItem>
-              </>
-            )}
-          </List>
-          <IconButton
-            onClick={() => toggleSidebar()}
-            sx={{
-              display: { md: 'none', sm: 'flex' },
-            }}
-          >
+          {/* Mobile menu button */}
+          <IconButton onClick={toggleSidebar} sx={{ display: { md: 'none', sm: 'flex' }, ml: 1 }}>
             <MenuIcon fontSize="medium" sx={{ color: 'grey.700' }} />
           </IconButton>
         </Toolbar>

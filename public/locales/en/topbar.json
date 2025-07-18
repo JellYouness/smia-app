@@ -10,5 +10,13 @@
   "login": "Login",
   "register": "Register",
   "user": "User",
-  "profile": "My Profile"
+  "org_switcher": "Select Org/Project",
+  "dashboard": "Dashboard",
+  "settings": "Settings",
+  "help": "Help & Support",
+  "notifications": "Notifications",
+  "no_notifications": "No new notifications",
+  "dark_mode": "Dark Mode",
+  "light_mode": "Light Mode",
+  "profile": "Profile"
 }
