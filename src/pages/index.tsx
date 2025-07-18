@@ -7,7 +7,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'react-i18next';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { ROLE } from '@modules/permissions/defs/types';
 import { useRouter } from 'next/router';
 import Projects from '@modules/projects/defs/routes';
 import { Add } from '@mui/icons-material';
@@ -27,7 +26,7 @@ const Index: NextPage = () => {
     }
   }, [user]);
 
-  const isClient = user?.rolesNames.includes(ROLE.CLIENT);
+  const isClient = user?.userType === 'CLIENT';
 
   return (
     <>
