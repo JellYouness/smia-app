@@ -84,7 +84,7 @@ const UpsertProjectStepper = ({ projectId, projectOwnerId }: UpsertProjectSteppe
   };
 
   const onSubmit = async (data: CreateOneInput) => {
-    const res = await upsert(data);
+    const res = await upsert(data, PROJECT_STATUS.IN_PROGRESS);
     if (res.success) {
       router.push(Routes.Common.Home);
       return true;

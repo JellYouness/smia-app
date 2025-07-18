@@ -67,6 +67,8 @@ const ClientDashboard = ({ user }: ClientDashboardProps) => {
     fetchProjects();
   };
 
+  console.log(projects);
+
   if (loading) {
     return (
       <Box sx={{ mt: 5, width: '100%' }}>

@@ -36,6 +36,7 @@
   "delete_project": "Eliminar proyecto",
   "view_details": "Ver detalles",
   "resume_creation": "Continuar creación de proyecto",
+  "hire_creator": "Contratar un creador",
   "loading_project_form": "Configuración del formulario de proyecto...",
   "loading_project_form_description": "Por favor, espere mientras cargamos todo lo que necesita para crear su proyecto. Esto solo debería tomar un momento."
 }
