@@ -7,7 +7,10 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Skeleton from '@mui/material/Skeleton';
-import { Sidebar, MainContent, ClientSidebar, ClientMainContent } from '@modules/users/components';
+import { ClientSidebar, ClientMainContent } from '@modules/users/components';
+import AmbassadorMainContent from '@modules/ambassadors/components/AmbassadorMainContent';
+import CreatorMainContent from '@modules/creators/components/CreatorMainContent';
+import CreatorSidebar from '@modules/creators/components/CreatorSidebar';
 
 const MyProfile: NextPage = () => {
   const { user, initialized } = useAuth();
@@ -37,6 +40,8 @@ const MyProfile: NextPage = () => {
   // Determine user type based on userType field (more reliable than roles)
   const isClient = user?.userType === 'CLIENT' || user?.client;
   const isCreator = user?.userType === 'CREATOR' || user?.creator;
+  const isAmbassador = user?.userType === 'AMBASSADOR' || user?.ambassador;
+  const isAdmin = user?.userType === 'ADMIN' || user?.admin;
 
   // Show loading state while auth is initializing
   if (!initialized) {
@@ -78,8 +83,14 @@ const MyProfile: NextPage = () => {
   }
 
   // Determine which components to use based on user type
-  const SidebarComponent = isClient ? ClientSidebar : Sidebar;
-  const MainContentComponent = isClient ? ClientMainContent : MainContent;
+  // const SidebarComponent = isClient ? ClientSidebar : Sidebar;
+  // const MainContentComponent = isClient
+  //   ? ClientMainContent
+  //   : isCreator
+  //   ? CreatorMainContent
+  //   : isAmbassador
+  //   ? AmbassadorMainContent
+  //   : MainContent;
 
   return (
     <Box
@@ -101,12 +112,30 @@ const MyProfile: NextPage = () => {
             pr: { xs: 0, md: 4 },
           }}
         >
-          <SidebarComponent
+          {/* <SidebarComponent
             user={user}
             profilePicture={profilePicture}
             handleUploadPicture={handleUploadPicture}
             handleDeletePicture={handleDeletePicture}
-          />
+          /> */}
+          {isClient && (
+            <ClientSidebar
+              user={user}
+              profilePicture={profilePicture}
+              handleUploadPicture={handleUploadPicture}
+              handleDeletePicture={handleDeletePicture}
+            />
+          )}
+          {isCreator && (
+            <CreatorSidebar
+              user={user}
+              profilePicture={profilePicture}
+              handleUploadPicture={handleUploadPicture}
+              handleDeletePicture={handleDeletePicture}
+            />
+          )}
+          {/* {isAmbassador && <AmbassadorSidebar user={user} t={t} />} */}
+          {/* {isAdmin && <AdminSidebar user={user} t={t} />} */}
         </Grid>
         <Grid
           item
@@ -114,7 +143,11 @@ const MyProfile: NextPage = () => {
           md={8}
           sx={{ pl: { xs: 0, md: '0 !important' }, pt: { xs: 0, md: '0 !important' } }}
         >
-          <MainContentComponent user={user} t={t} />
+          {/* <MainContentComponent user={user} t={t} /> */}
+          {isClient && <ClientMainContent user={user} t={t} />}
+          {isCreator && <CreatorMainContent user={user} t={t} />}
+          {isAmbassador && <AmbassadorMainContent user={user} t={t} />}
+          {/* {isAdmin && <AdminMainContent user={user} t={t} />} */}
         </Grid>
       </Grid>
       {/* </Container> */}

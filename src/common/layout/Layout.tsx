@@ -22,7 +22,8 @@ const Layout = (props: ILayoutProps) => {
   const [display, setDisplay] = useState(true);
   const underMaintenance = process.env.NEXT_PUBLIC_UNDER_MAINTENANCE === 'true';
   const { t } = useTranslation('common');
-  const leftbarWidth = user?.systemAdministrator ? LEFTBAR_WIDTH : 0;
+  const leftbarWidth =
+    user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN' ? LEFTBAR_WIDTH : 0;
 
   useEffect(() => {
     setDisplay(!underMaintenance);
@@ -91,7 +92,7 @@ const Layout = (props: ILayoutProps) => {
       >
         <Box sx={{ minHeight: '100vh', width: '100vw' }}>
           <Stack direction="column" sx={{ height: '100%' }}>
-            {user?.systemAdministrator && (
+            {(user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN') && (
               <Leftbar open={openLeftbar} onToggle={(open) => setOpenLeftbar(open)} />
             )}
             <Topbar />

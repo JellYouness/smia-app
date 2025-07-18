@@ -19,8 +19,8 @@ import { Any } from '@common/defs/types';
 import JsonDataRenderer from './JsonDataRenderer';
 import ProfilePicture from './ProfilePicture';
 import EditSectionDialog from './EditSectionDialog';
-import EditLanguagesDialog from './EditLanguagesDialog';
-import EditEducationDialog from './EditEducationDialog';
+import EditLanguagesDialog from '@modules/creators/components/EditLanguagesDialog';
+import EditEducationDialog from '@modules/creators/components/EditEducationDialog';
 import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
 
 interface Language {

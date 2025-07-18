@@ -1,0 +1,41 @@
+{
+  "common": {
+    "create_new_one": "Créer un nouveau projet",
+    "new_one": "Nouveau projet",
+    "read_all": "Tous les projets",
+    "items": "Projets",
+    "edit_one": "Modifier le projet"
+  },
+  "steps": {
+    "step1": {
+      "step_title": "Détails du projet",
+      "pro_tip": "Astuce",
+      "tip": "Choisissez un titre de projet clair et descriptif et fournissez un résumé détaillé. Cela aide les créateurs et les membres de l'équipe à comprendre rapidement les objectifs de votre projet.",
+      "title": "Titre du projet",
+      "description": "Description du projet"
+    },
+    "step2": {
+      "step_title": "Ressources du projet",
+      "pro_tip": "Astuce",
+      "tip": "Choisissez une date de début et de fin pour votre projet. Cela aide les créateurs et les membres de l'équipe à comprendre rapidement les objectifs de votre projet.",
+      "timeline_title": "Timeline",
+      "budget_title": "Budget",
+      "start_date": "Date de début",
+      "end_date": "Date de fin",
+      "budget": "Budget"
+    }
+  },
+  "budget": "Budget",
+  "timeline": "Chronologie",
+  "created": "Créé le",
+  "status": "Statut",
+  "draft": "Brouillon",
+  "in_progress": "En cours",
+  "completed": "Terminé",
+  "edit_project": "Modifier le projet",
+  "delete_project": "Supprimer le projet",
+  "view_details": "Voir les détails",
+  "resume_creation": "Continuer la création du projet",
+  "loading_project_form": "Configuration du formulaire de projet...",
+  "loading_project_form_description": "Veuillez patienter pendant que nous chargeons tout ce dont vous avez besoin pour créer votre projet. Cela ne devrait prendre qu'un moment."
+}

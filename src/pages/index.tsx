@@ -10,9 +10,10 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Projects from '@modules/projects/defs/routes';
 import { Add } from '@mui/icons-material';
+import ClientDashboard from '@modules/clients/components/ClientDashboard';
 
 const Index: NextPage = () => {
-  const { t } = useTranslation(['home']);
+  const { t } = useTranslation(['home', 'client']);
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -26,8 +27,6 @@ const Index: NextPage = () => {
   }, [user]);
 
   const isClient = user?.userType === 'CLIENT';
-
-  console.log(user);
 
   return (
     <>
@@ -48,9 +47,9 @@ const Index: NextPage = () => {
       {!loading && isClient && (
         <>
           <PageHeader
-            title={`Hello, ${user?.firstName ?? ''}`}
+            title={`${t('home:greeting', 'Hello')}, ${user?.firstName ?? ''}`}
             action={{
-              label: t('home:createProject', 'Create a project'),
+              label: t('client:create_project', 'Create a project'),
               onClick: () => router.push(Projects.CreateOne),
               permission: {
                 entity: 'projects',
@@ -59,7 +58,7 @@ const Index: NextPage = () => {
               startIcon: <Add />,
             }}
           />
-          {/* <ClientDashboard /> */}
+          <ClientDashboard user={user!} />
         </>
       )}
     </>
@@ -73,6 +72,7 @@ export const getStaticProps = async ({ locale }: { locale: string }) => ({
       'footer',
       'leftbar',
       'home',
+      'client',
       'project',
       'user',
       'common',

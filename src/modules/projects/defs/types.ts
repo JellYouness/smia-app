@@ -2,7 +2,7 @@ import { CrudObject, Id } from '@common/defs/types';
 import { User } from '@modules/users/defs/types';
 
 export enum PROJECT_STATUS {
-  PENDING = 'pending',
+  DRAFT = 'draft',
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',

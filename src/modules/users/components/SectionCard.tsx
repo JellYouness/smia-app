@@ -8,9 +8,16 @@ interface SectionCardProps {
   onEdit?: () => void;
   children: React.ReactNode;
   editLink?: string;
+  readOnly?: boolean;
 }
 
-const SectionCard: React.FC<SectionCardProps> = ({ title, onEdit, children, editLink }) => {
+const SectionCard: React.FC<SectionCardProps> = ({
+  title,
+  onEdit,
+  children,
+  editLink,
+  readOnly,
+}) => {
   const theme = useTheme();
   return (
     <Box
@@ -26,14 +33,18 @@ const SectionCard: React.FC<SectionCardProps> = ({ title, onEdit, children, edit
         <Typography variant="h4" sx={{ fontWeight: 600, flexGrow: 1 }}>
           {title}
         </Typography>
-        {editLink ? (
-          <IconButton component={Link} href={editLink} aria-label={`Edit ${title}`}>
-            <Edit />
-          </IconButton>
-        ) : (
-          <IconButton onClick={onEdit} aria-label={`Edit ${title}`}>
-            <Edit />
-          </IconButton>
+        {!readOnly && (
+          <>
+            {editLink ? (
+              <IconButton component={Link} href={editLink} aria-label={`Edit ${title}`}>
+                <Edit />
+              </IconButton>
+            ) : (
+              <IconButton onClick={onEdit} aria-label={`Edit ${title}`}>
+                <Edit />
+              </IconButton>
+            )}
+          </>
         )}
       </Box>
       {children}

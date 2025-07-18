@@ -17,13 +17,7 @@ import { useState, useEffect } from 'react';
 import Logo from '@common/assets/svgs/Logo';
 import Routes from '@common/defs/routes';
 import usePermissions from '@modules/permissions/hooks/usePermissions';
-import {
-  AccountCircle,
-  AddRounded,
-  ChevronRight,
-  Close,
-  ExitToAppOutlined,
-} from '@mui/icons-material';
+import { AddRounded, ChevronRight, Close, ExitToAppOutlined } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { CRUD_ACTION, NavGroup, NavItem } from '@common/defs/types';
 import { menuItems as menuGroups } from '@common/defs/menu-items';
@@ -166,7 +160,7 @@ const Leftbar = (props: LeftbarProps) => {
             />
           </IconButton>
         </Stack>
-        {user && (
+        {/* {user && (
           <Box
             sx={{
               display: 'flex',
@@ -187,7 +181,7 @@ const Leftbar = (props: LeftbarProps) => {
               </Typography>
             </Box>
           </Box>
-        )}
+        )} */}
         <Box>
           <List disablePadding>
             {navEntries.map((entry, groupIndex) => (
@@ -260,7 +254,7 @@ const Leftbar = (props: LeftbarProps) => {
           sx={{
             position: 'absolute',
             display: 'flex',
-            top: 6,
+            top: 20,
             left: {
               xs: 6,
               sm: 14,

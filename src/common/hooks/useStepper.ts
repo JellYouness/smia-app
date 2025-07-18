@@ -22,16 +22,20 @@ const useStepper = <Data extends AnyObject, STEP_ID>(id: string) => {
 
   useEffect(() => {
     const existing = localStorage.getItem('steppers');
+
     if (existing) {
       const existingData = JSON.parse(existing);
       const existingIndex = existingData.findIndex((item: Stepper<STEP_ID>) => item.id === id);
+
       if (existingIndex > -1) {
         setStepper(existingData[existingIndex]);
+      } else {
+        setStepper(defaultStepper);
       }
     } else {
       setStepper(defaultStepper);
     }
-  }, []);
+  }, [id, defaultStepper]);
 
   useEffect(() => {
     if (stepper) {
@@ -53,34 +57,35 @@ const useStepper = <Data extends AnyObject, STEP_ID>(id: string) => {
   }, [stepper]);
 
   const setStepData = (stepId: STEP_ID, data: AnyObject) => {
-    if (!stepper) {
-      return;
-    }
-    const newSteps = [...stepper.steps];
-    const stepIndex = newSteps.findIndex((step) => step.id === stepId);
-    if (stepIndex > -1) {
-      newSteps[stepIndex].data = data;
-    } else {
-      newSteps.push({ id: stepId, data });
-    }
-
-    setStepper((prevState) => {
-      const newStepper: Stepper<STEP_ID> | null = prevState;
-      if (newStepper) {
-        newStepper.steps = newSteps;
+    setStepper((prev) => {
+      if (!prev) {
+        return prev;
       }
-      return newStepper;
+
+      const newSteps = [...prev.steps];
+      const index = newSteps.findIndex((s) => s.id === stepId);
+
+      if (index > -1) {
+        newSteps[index].data = data;
+      } else {
+        newSteps.push({ id: stepId, data });
+      }
+
+      return { ...prev, steps: newSteps };
     });
   };
+
   const getStep = (stepId: STEP_ID) => {
     return stepper ? stepper.steps.find((step) => step.id === stepId) : undefined;
   };
+
   const getStepData = (stepId: STEP_ID) => {
     const step = getStep(stepId);
     if (step) {
       return step.data;
     }
   };
+
   const isStepCompleted = (stepId: STEP_ID) => {
     const step = getStep(stepId);
     if (!step) {
@@ -88,6 +93,7 @@ const useStepper = <Data extends AnyObject, STEP_ID>(id: string) => {
     }
     return Object.keys(step.data).length > 0;
   };
+
   const getAllData = (): Data | undefined => {
     if (!stepper) {
       return undefined;
@@ -97,17 +103,11 @@ const useStepper = <Data extends AnyObject, STEP_ID>(id: string) => {
     }, {});
     return data as Data;
   };
+
   const setLastVisitedStepId = (stepId: STEP_ID) => {
-    if (!stepper) {
-      return;
-    }
-    setStepper((stepper) => {
-      if (stepper) {
-        return { ...stepper, lastVisitedStepId: stepId };
-      }
-      return stepper;
-    });
+    setStepper((prev) => (prev ? { ...prev, lastVisitedStepId: stepId } : prev));
   };
+
   const reset = () => {
     setStepper(defaultStepper);
   };
