@@ -10,6 +10,8 @@ const ApiRoutes: CrudApiRoutes = {
   ReadAllByCreator: prefix + '/creator/{creatorId}',
   ReadAllByClient: prefix + '/client/{clientId}',
   ReadAllByAmbassador: prefix + '/ambassador/{ambassadorId}',
+
+  InviteCreator: prefix + '/invite-creator',
 };
 
 export default ApiRoutes;

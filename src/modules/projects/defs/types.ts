@@ -22,4 +22,6 @@ export interface Project extends CrudObject {
   ambassadorId?: Id;
   ambassador?: User;
   proposalsCount?: number;
+  hiresCount?: number;
+  invitedCreatorIds?: number[];
 }

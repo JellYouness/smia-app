@@ -1,13 +1,14 @@
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { alpha, styled } from '@mui/material/styles';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type StepKey = 'invite' | 'review' | 'hire';
 
-interface HireCreatorStepperProps {
+interface HireStepperBarProps {
   active: StepKey;
   proposalsCount?: number;
-  hireCount?: number;
+  hiresCount?: number;
   onStepChange?: (step: StepKey) => void;
 }
 
@@ -76,17 +77,19 @@ const StepItem = styled('li', {
 const HireStepperBar = ({
   active,
   proposalsCount = 0,
-  hireCount = 0,
+  hiresCount = 0,
   onStepChange,
-}: HireCreatorStepperProps) => {
+}: HireStepperBarProps) => {
+  const { t } = useTranslation(['project']);
+
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down('sm'));
   const primary = theme.palette.primary.main;
 
   const steps: { key: StepKey; label: string; count?: number }[] = [
-    { key: 'invite', label: 'Invite creators' },
-    { key: 'review', label: 'Review proposals', count: proposalsCount },
-    { key: 'hire', label: 'Hire', count: hireCount },
+    { key: 'invite', label: t('project:invite_creators') },
+    { key: 'review', label: t('project:proposals'), count: proposalsCount },
+    { key: 'hire', label: t('project:hire'), count: hiresCount },
   ];
 
   const activeIdx = steps.findIndex((s) => s.key === active);

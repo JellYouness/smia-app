@@ -350,5 +350,8 @@
   "list_equipment_help": "List your equipment to help clients understand your capabilities.",
   "no_regional_expertise": "No regional expertise added yet.",
   "issued_by": "Issued by",
-  "date": "Date"
+  "date": "Date",
+  "unverified": "Unverified",
+  "pending": "Pending",
+  "featured": "Featured"
 }

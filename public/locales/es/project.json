@@ -38,5 +38,16 @@
   "resume_creation": "Continuar creación de proyecto",
   "hire_creator": "Contratar un creador",
   "loading_project_form": "Configuración del formulario de proyecto...",
-  "loading_project_form_description": "Por favor, espere mientras cargamos todo lo que necesita para crear su proyecto. Esto solo debería tomar un momento."
+  "loading_project_form_description": "Por favor, espere mientras cargamos todo lo que necesita para crear su proyecto. Esto solo debería tomar un momento.",
+  "loading_project_details_title": "Cargando detalles del proyecto...",
+  "loading_project_details_description": "Por favor, espere mientras cargamos los detalles del proyecto. Esto solo debería tomar un momento.",
+  "invite_creators": "Invitar creadores",
+  "proposals": "Propuestas",
+  "hire": "Contratar",
+  "invite_to_project": "Invitar a un creador",
+  "invite_message_default": "Hola {{creator}},\n\nMe gustaría invitarte a ver el proyecto que hemos publicado. Si estás disponible e interesado, no dudes en enviar una propuesta. \n\nSaludos,",
+  "revert_to_default_message": "Revertir a un mensaje por defecto",
+  "send_invitation": "Enviar invitación",
+  "no_creators_found": "No se encontraron creadores",
+  "no_creators_description": "No se encontraron creadores para este proyecto. Por favor, inténtelo de nuevo más tarde."
 }
