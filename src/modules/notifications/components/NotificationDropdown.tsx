@@ -17,7 +17,7 @@ import {
   CheckCircle as CheckCircleIcon,
   ClearAll as ClearAllIcon,
 } from '@mui/icons-material';
-import { useNotifications, useMarkAllAsRead, useUnreadCount } from '../hooks/useNotifications';
+import { useNotifications, useMarkAllAsRead } from '../hooks/useNotifications';
 import { NotificationItem } from './NotificationItem';
 import { NotificationFilters } from '../defs/types';
 import router from 'next/router';
@@ -27,12 +27,16 @@ interface NotificationDropdownProps {
   anchorEl: HTMLElement | null;
   onClose: () => void;
   open: boolean;
+  unreadCount: number;
+  onUnreadCountChange: () => void;
 }
 
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   anchorEl,
   onClose,
   open,
+  unreadCount,
+  onUnreadCountChange,
 }) => {
   const [filters, setFilters] = useState<NotificationFilters>({
     perPage: 10,
@@ -44,22 +48,19 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     error,
     refetch: refetchNotifications,
   } = useNotifications(filters);
-  const { data: unreadCountData, refetch: refetchUnreadCount } = useUnreadCount();
   const { markAllAsRead, loading: markAllLoading } = useMarkAllAsRead();
 
   const handleMarkAllAsRead = () => {
     markAllAsRead(() => {
       refetchNotifications();
-      refetchUnreadCount();
+      onUnreadCountChange();
     });
   };
 
   const handleNotificationAction = () => {
     refetchNotifications();
-    refetchUnreadCount();
+    onUnreadCountChange();
   };
-
-  const unreadCount = unreadCountData?.unreadCount || 0;
   const notifications = notificationsData?.notifications || [];
 
   return (

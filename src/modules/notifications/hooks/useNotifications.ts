@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useApi from '@common/hooks/useApi';
 import { API_ROUTES } from '../defs/api-routes';
 import {
@@ -14,7 +14,7 @@ export const useNotifications = (filters: NotificationFilters = {}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -46,11 +46,11 @@ export const useNotifications = (filters: NotificationFilters = {}) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [api, filters.type, filters.read, filters.perPage, filters.page]);
 
   useEffect(() => {
     fetchNotifications();
-  }, [filters.type, filters.read, filters.perPage, filters.page]);
+  }, [fetchNotifications]);
 
   return { data, loading, error, refetch: fetchNotifications };
 };
@@ -61,7 +61,7 @@ export const useNotification = (id: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchNotification = async () => {
+  const fetchNotification = useCallback(async () => {
     if (!id) {
       return;
     }
@@ -81,11 +81,11 @@ export const useNotification = (id: string) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [api, id]);
 
   useEffect(() => {
     fetchNotification();
-  }, [id]);
+  }, [fetchNotification]);
 
   return { data, loading, error, refetch: fetchNotification };
 };
@@ -96,7 +96,7 @@ export const useNotificationTypes = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTypes = async () => {
+  const fetchTypes = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -114,11 +114,11 @@ export const useNotificationTypes = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [api]);
 
   useEffect(() => {
     fetchTypes();
-  }, []);
+  }, [fetchTypes]);
 
   return { data, loading, error, refetch: fetchTypes };
 };
@@ -129,7 +129,7 @@ export const useUnreadCount = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchUnreadCount = async () => {
+  const fetchUnreadCount = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -145,7 +145,7 @@ export const useUnreadCount = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [api]);
 
   useEffect(() => {
     fetchUnreadCount();
@@ -153,7 +153,7 @@ export const useUnreadCount = () => {
     // Refetch every 30 seconds
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchUnreadCount]);
 
   return { data, loading, error, refetch: fetchUnreadCount };
 };

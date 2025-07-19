@@ -13,7 +13,6 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  styled,
   Avatar,
   Badge,
   Tooltip,
@@ -34,9 +33,11 @@ import { setUserLanguage } from '@common/components/lib/utils/language';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { NotificationDropdown } from '@modules/notifications/components/NotificationDropdown';
 import { useUnreadCount } from '@modules/notifications/hooks/useNotifications';
+import { useUnreadConversations } from '@modules/chat/hooks/useUnreadConversations';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import ChatIcon from '@mui/icons-material/Chat';
 
 interface TopbarItem {
   label: string;
@@ -58,13 +59,17 @@ const Topbar = () => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const { user, logout } = useAuth();
-  const userIsAdmin = user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN';
+  // const userIsAdmin = user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN';
   const [anchorNotif, setAnchorNotif] = useState<null | HTMLElement>(null);
   const [anchorUser, setAnchorUser] = useState<null | HTMLElement>(null);
 
   // Get unread notification count
-  const { data: unreadCountData } = useUnreadCount();
+  const { data: unreadCountData, refetch: refetchUnreadCount } = useUnreadCount();
   const unreadCount = unreadCountData?.unreadCount || 0;
+
+  // Get unread conversation count
+  const { data: unreadConversationsData } = useUnreadConversations();
+  const unreadConversationsCount = unreadConversationsData?.unreadCount || 0;
 
   // Notification dropdown handlers
   const handleNotifClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -82,7 +87,7 @@ const Topbar = () => {
     setAnchorUser(null);
   };
 
-  const dropdownWidth = 137;
+  // const dropdownWidth = 137;
   const toggleSidebar = () => {
     setShowDrawer((oldValue) => !oldValue);
   };
@@ -276,34 +281,41 @@ const Topbar = () => {
             />
             {/* Org/Project Switcher Placeholder */}
             <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-              <Button
+              {/* <Button
                 variant="outlined"
                 size="small"
                 sx={{ borderRadius: 2, textTransform: 'none' }}
                 disabled
               >
                 {t('topbar:org_switcher', 'Select Org/Project')}
-              </Button>
+              </Button> */}
             </Box>
           </Stack>
 
           {/* Center: Quick Links */}
           <Stack direction="row" spacing={1} alignItems="center" sx={{ flexGrow: 0 }}>
-            <Tooltip title={t('topbar:dashboard', 'Dashboard')}>
-              <IconButton onClick={() => router.push(Routes.Common.Home)}>
-                <DashboardIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t('topbar:settings', 'Settings')}>
-              <IconButton onClick={() => router.push(Routes.Users.Settings)}>
-                <SettingsIcon />
-              </IconButton>
-            </Tooltip>
             <Tooltip title={t('topbar:help', 'Help & Support')}>
               <IconButton>
                 <HelpOutlineIcon />
               </IconButton>
             </Tooltip>
+            <Tooltip title={t('topbar:dashboard', 'Dashboard')}>
+              <IconButton onClick={() => router.push(Routes.Common.Home)}>
+                <DashboardIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t('topbar:chat', 'Chat')}>
+              <IconButton onClick={() => router.push(Routes.Chat.Index)}>
+                <Badge badgeContent={unreadConversationsCount} color="primary" max={99}>
+                  <ChatIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            {/* <Tooltip title={t('topbar:settings', 'Settings')}>
+              <IconButton onClick={() => router.push(Routes.Users.Settings)}>
+                <SettingsIcon />
+              </IconButton>
+            </Tooltip> */}
           </Stack>
 
           {/* Right: Notifications, Dark Mode, User */}
@@ -320,6 +332,8 @@ const Topbar = () => {
               anchorEl={anchorNotif}
               open={Boolean(anchorNotif)}
               onClose={handleNotifClose}
+              unreadCount={unreadCount}
+              onUnreadCountChange={refetchUnreadCount}
             />
 
             {/* User Avatar & Menu */}
@@ -594,14 +608,14 @@ const Topbar = () => {
     </AppBar>
   );
 };
-const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
-  color: theme.palette.grey[700],
-  borderRadius: theme.shape.borderRadius + 'px',
-  '&:hover': {
-    backgroundColor: 'transparent',
-  },
-  '.MuiTouchRipple-child': {
-    backgroundColor: theme.palette.primary.main,
-  },
-}));
+// const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
+//   color: theme.palette.grey[700],
+//   borderRadius: theme.shape.borderRadius + 'px',
+//   '&:hover': {
+//     backgroundColor: 'transparent',
+//   },
+//   '.MuiTouchRipple-child': {
+//     backgroundColor: theme.palette.primary.main,
+//   },
+// }));
 export default Topbar;
