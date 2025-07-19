@@ -8,7 +8,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'react-i18next';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import { useEffect, useState } from 'react';
-import { Skeleton } from '@mui/material';
+import { Box, Skeleton } from '@mui/material';
 import { useRouter } from 'next/router';
 import HireCreatorStepper from '@modules/projects/components/partials/HireCreatorStepper';
 import { StepKey } from '@modules/projects/components/partials/HireStepperBar';
@@ -53,7 +53,9 @@ const HireCreatorPage: NextPage = () => {
       {loading ? (
         <Skeleton variant="rounded" height={600} />
       ) : (
-        <HireCreatorStepper active={currentStep} onStepChange={handleStepChange} />
+        <Box mt={10}>
+          <HireCreatorStepper active={currentStep} onStepChange={handleStepChange} />
+        </Box>
       )}
     </>
   );
