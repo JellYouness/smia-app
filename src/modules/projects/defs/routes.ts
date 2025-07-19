@@ -7,6 +7,9 @@ const Routes: CrudAppRoutes = {
   CreateOne: prefix + '/create',
   UpdateOne: prefix + '/edit/{id}',
   DeleteOne: prefix + '/{id}',
+  ReadAllByCreator: prefix + '/creator/{creatorId}',
+  ReadAllByClient: prefix + '/client/{clientId}',
+  ReadAllByAmbassador: prefix + '/ambassador/{ambassadorId}',
   HireCreator: prefix + '/{id}/hire-creator',
 };
 

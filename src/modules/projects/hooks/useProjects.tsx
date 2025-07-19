@@ -1,6 +1,7 @@
 import ApiRoutes from '@common/defs/api-routes';
 import { Project, PROJECT_STATUS } from '../defs/types';
 import useItems, {
+  UseItems,
   UseItemsHook,
   UseItemsOptions,
   defaultOptions,

@@ -120,20 +120,24 @@ const Topbar = () => {
         },
       ],
     },
-    {
-      label: t('topbar:user'),
-      dropdown: [
-        {
-          label: t('topbar:profile'),
-          link: Routes.Users.Me,
-          onClick: () => router.push(Routes.Users.Me),
-        },
-        {
-          label: t('topbar:logged.logout'),
-          onClick: () => logout(),
-        },
-      ],
-    },
+    ...(user
+      ? [
+          {
+            label: t('topbar:user'),
+            dropdown: [
+              {
+                label: t('topbar:profile'),
+                link: Routes.Users.Me,
+                onClick: () => router.push(Routes.Users.Me),
+              },
+              {
+                label: t('topbar:logged.logout'),
+                onClick: () => logout(),
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 
   const toggleDropdown = () => {
