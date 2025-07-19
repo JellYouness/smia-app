@@ -1,4 +1,14 @@
-import { Stack, SxProps, Theme, Step, StepButton, Stepper, StepLabel, Button } from '@mui/material';
+import {
+  Stack,
+  SxProps,
+  Theme,
+  Step,
+  StepButton,
+  Stepper,
+  StepLabel,
+  Button,
+  Box,
+} from '@mui/material';
 import { useRouter } from 'next/router';
 import { Ref, useEffect, useRef, useState } from 'react';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -36,20 +46,36 @@ interface FormStepperProps<FormData, FORM_STEP_ID> {
   id: string;
   steps: FormStep<FORM_STEP_ID>[];
   onSubmit: (data: FormData) => Promise<boolean>;
+  onSaveDraft?: (data: FormData) => Promise<boolean>;
   abortLabel?: string;
   previousLabel?: string;
   nextLabel?: string;
   endLabel?: string;
   sx?: SxProps<Theme>;
   vertical?: boolean;
+  initialData?: FormData;
 }
 const FormStepper = <FormData extends AnyObject, FORM_STEP_ID>({
   vertical = false,
   ...props
 }: FormStepperProps<FormData, FORM_STEP_ID>) => {
-  const { id, steps, onSubmit, abortLabel, previousLabel, nextLabel, endLabel, sx } = props;
+  const {
+    id,
+    steps,
+    onSubmit,
+    onSaveDraft,
+    abortLabel,
+    previousLabel,
+    nextLabel,
+    endLabel,
+    sx,
+    initialData,
+  } = props;
   const [activeStepId, setActiveStepId] = useState<FORM_STEP_ID>(steps[0].id);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [seeded, setSeeded] = useState(false);
+  const seededRef = useRef(false);
+  const savingDraftRef = useRef(false);
   const router = useRouter();
   const formRef = useRef<FormStepRef>();
   const { t } = useTranslation(['common']);
@@ -73,6 +99,17 @@ const FormStepper = <FormData extends AnyObject, FORM_STEP_ID>({
       }
     }
   }, [loaded]);
+
+  useEffect(() => {
+    if (loaded && initialData && !seeded) {
+      steps.forEach((s) => setStepData(s.id, initialData));
+      setSeeded(true);
+    }
+    if (loaded && !initialData && !seeded) {
+      setSeeded(true);
+    }
+  }, [loaded, initialData, seeded, steps, setStepData]);
+
   if (!activeStep) {
     router.push(Routes.Common.NotFound);
     return null;
@@ -91,23 +128,33 @@ const FormStepper = <FormData extends AnyObject, FORM_STEP_ID>({
     if (data) {
       setStepData(activeStepId, data);
     }
+
     if (!isLastStep) {
       const nextStepId = steps[steps.findIndex((s) => s.id === activeStepId) + 1].id;
       setActiveStepId(nextStepId);
       setLastVisitedStepId(nextStepId);
-    } else {
-      const allData = getAllData();
-      if (allData) {
-        setIsSubmitting(true);
-        onSubmit(allData).then((success) => {
-          if (success) {
-            reset();
-          }
-          setIsSubmitting(false);
-        });
-      }
+      return;
     }
+
+    const allData = { ...(getAllData() ?? {}), ...(data ?? {}) };
+
+    setIsSubmitting(true);
+    const handler = savingDraftRef.current && onSaveDraft ? onSaveDraft : onSubmit;
+
+    handler(allData as FormData).then((success) => {
+      if (success) {
+        reset();
+      }
+      setIsSubmitting(false);
+      savingDraftRef.current = false;
+    });
   };
+
+  const handleSaveDraft = async () => {
+    savingDraftRef.current = true;
+    await formRef.current?.submit();
+  };
+
   const getPreviousLabel = () => {
     if (isFirstStep && abortLabel) {
       return abortLabel;
@@ -132,6 +179,9 @@ const FormStepper = <FormData extends AnyObject, FORM_STEP_ID>({
     }
     return isLastStep ? t('common:finish') : t('common:next');
   };
+
+  const ready = loaded && seeded;
+
   return (
     <>
       <Stack sx={sx} gap={4} flexDirection={vertical ? 'row' : 'column'}>
@@ -160,8 +210,9 @@ const FormStepper = <FormData extends AnyObject, FORM_STEP_ID>({
           ))}
         </Stepper>
         <Stack gap={4} flex={1}>
-          {loaded ? (
+          {ready ? (
             <activeStep.component
+              key={activeStep.id as string}
               ref={formRef}
               previous={onPrevious}
               next={next}
@@ -170,7 +221,11 @@ const FormStepper = <FormData extends AnyObject, FORM_STEP_ID>({
           ) : (
             <Skeleton variant="rounded" height={200} />
           )}
-          <Stack direction="row" alignItems="center">
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent={isFirstStep ? 'flex-end' : 'space-between'}
+          >
             {!isFirstStep && (
               <Button
                 onClick={onPrevious}
@@ -191,20 +246,31 @@ const FormStepper = <FormData extends AnyObject, FORM_STEP_ID>({
               </Button>
             )}
 
-            <Button
-              type="submit"
-              variant="contained"
-              onClick={onNext}
-              disabled={isSubmitting}
-              sx={{
-                paddingY: 1.5,
-                paddingX: 2.5,
-                marginLeft: 'auto',
-              }}
-              endIcon={<ArrowForwardIcon />}
-            >
-              {getNextLabel()}
-            </Button>
+            <Box display="flex" gap={2} alignItems="center">
+              {isLastStep && onSaveDraft && (
+                <Button
+                  onClick={handleSaveDraft}
+                  variant="outlined"
+                  disabled={isSubmitting}
+                  sx={{ py: 1.5, px: 2.5 }}
+                >
+                  {t('common:save_draft')}
+                </Button>
+              )}
+              <Button
+                type="submit"
+                variant="contained"
+                onClick={onNext}
+                disabled={isSubmitting}
+                sx={{
+                  paddingY: 1.5,
+                  paddingX: 2.5,
+                }}
+                endIcon={<ArrowForwardIcon />}
+              >
+                {getNextLabel()}
+              </Button>
+            </Box>
           </Stack>
         </Stack>
       </Stack>

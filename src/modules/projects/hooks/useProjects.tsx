@@ -10,16 +10,16 @@ import useItems, {
   SortParam,
   FilterParam,
 } from '@common/hooks/useItems';
-import { Id } from '@common/defs/types';
-import useApi, { FetchApiOptions } from '@common/hooks/useApi';
+import { Any, Id } from '@common/defs/types';
+import useApi, { ApiResponse, FetchApiOptions } from '@common/hooks/useApi';
 
 export interface CreateOneInput {
   title: string;
-  description?: string;
-  status: PROJECT_STATUS;
-  startDate?: string;
-  endDate?: string;
-  budget?: number;
+  description: string;
+  status?: PROJECT_STATUS;
+  startDate: string;
+  endDate: string;
+  budget: number;
   clientId?: Id;
   creatorId?: Id;
   ambassadorId?: Id;
@@ -35,6 +35,12 @@ export interface UpdateOneInput {
   clientId?: Id;
   creatorId?: Id;
   ambassadorId?: Id;
+}
+
+export interface InviteCreatorInput {
+  projectId: Id;
+  creatorId: Id;
+  message?: string;
 }
 
 export type UpsertOneInput = CreateOneInput | UpdateOneInput;
@@ -64,6 +70,10 @@ export interface UseProjectsHook extends UseItemsHook<Project, CreateOneInput, U
     filters?: FilterParam[],
     options?: FetchApiOptions
   ) => Promise<ItemsResponse<Project>>;
+  inviteCreator: (
+    input: InviteCreatorInput,
+    options?: FetchApiOptions
+  ) => Promise<ApiResponse<Any>>;
 }
 
 export type UseProjects = (opts?: UseItemsOptions) => UseProjectsHook;
@@ -82,7 +92,7 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     options?: FetchApiOptions
   ) => {
     const endpoint = apiRoutes.ReadAllByCreator.replace('{creatorId}', creatorId.toString());
-    const data: Record<string, any> = {
+    const data: Record<string, Any> = {
       page: page || 1,
       perPage: pageSize || 50,
     };
@@ -110,7 +120,7 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     options?: FetchApiOptions
   ) => {
     const endpoint = apiRoutes.ReadAllByClient.replace('{clientId}', clientId.toString());
-    const data: Record<string, any> = {
+    const data: Record<string, Any> = {
       page: page || 1,
       perPage: pageSize || 50,
     };
@@ -141,7 +151,7 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
       '{ambassadorId}',
       ambassadorId.toString()
     );
-    const data: Record<string, any> = {
+    const data: Record<string, Any> = {
       page: page || 1,
       perPage: pageSize || 50,
     };
@@ -160,11 +170,26 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     return response;
   };
 
+  const inviteCreator = async (input: InviteCreatorInput, options?: FetchApiOptions) => {
+    const endpoint = ApiRoutes.Projects.InviteCreator;
+    const response = await fetchApi(endpoint, {
+      method: 'POST',
+      data: {
+        project_id: input.projectId,
+        creator_id: input.creatorId,
+        message: input.message ?? null,
+      },
+      ...options,
+    });
+    return response;
+  };
+
   const hook: UseProjectsHook = {
     ...useItemsHook,
     readAllByCreator,
     readAllByClient,
     readAllByAmbassador,
+    inviteCreator,
   };
 
   return hook;

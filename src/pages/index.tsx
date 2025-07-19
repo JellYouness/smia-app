@@ -8,12 +8,15 @@ import { useTranslation } from 'react-i18next';
 import CreatorDashboard from '@modules/creators/components/CreatorDashboard';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { ROLE } from '@modules/permissions/defs/types';
+import { useRouter } from 'next/router';
+import { Add } from '@mui/icons-material';
+import ClientDashboard from '@modules/clients/components/ClientDashboard';
 
 const Index: NextPage = () => {
   const { t } = useTranslation(['home']);
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (user) {
@@ -23,7 +26,8 @@ const Index: NextPage = () => {
     }
   }, [user]);
 
-  const isCreator = user?.rolesNames.includes(ROLE.CREATOR);
+  const isCreator = user?.userType === 'CREATOR';
+  const isClient = user?.userType === 'CLIENT';
 
   return (
     <>
@@ -42,6 +46,23 @@ const Index: NextPage = () => {
         </Box>
       )}
       {!loading && isCreator && <CreatorDashboard />}
+      {!loading && isClient && (
+        <>
+          <PageHeader
+            title={`${t('home:greeting', 'Hello')}, ${user?.firstName ?? ''}`}
+            action={{
+              label: t('client:create_project', 'Create a project'),
+              onClick: () => router.push(Routes.Projects.CreateOne),
+              permission: {
+                entity: 'projects',
+                action: 'create',
+              },
+              startIcon: <Add />,
+            }}
+          />
+          <ClientDashboard user={user!} />
+        </>
+      )}
     </>
   );
 };
@@ -53,6 +74,7 @@ export const getStaticProps = async ({ locale }: { locale: string }) => ({
       'footer',
       'leftbar',
       'home',
+      'client',
       'project',
       'user',
       'common',

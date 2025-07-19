@@ -1,12 +1,11 @@
 import { CrudApiRoutes } from '@common/defs/types';
 
-const prefix = '/creators';
-const ApiRoutes: CrudApiRoutes = {
-  CreateOne: prefix,
-  ReadAll: prefix,
-  ReadOne: prefix + '/{id}',
-  UpdateOne: prefix + '/{id}',
-  DeleteOne: prefix + '/{id}',
+export const CreatorsApiRoutes: CrudApiRoutes = {
+  CreateOne: '/creators',
+  ReadAll: '/creators',
+  ReadOne: '/creators/{id}',
+  UpdateOne: '/creators/{id}',
+  DeleteOne: '/creators/{id}',
 };
 
-export default ApiRoutes;
+export default CreatorsApiRoutes;

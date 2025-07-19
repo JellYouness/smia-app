@@ -43,7 +43,7 @@ const useApi = () => {
         });
       }
       const method = options?.method ?? (options?.data ? 'POST' : 'GET');
-      const url = `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${endpoint}`;
       const verbose = options?.verbose ?? false;
       if (verbose) {
         console.log(`useApi: requesting ${url}`, options);

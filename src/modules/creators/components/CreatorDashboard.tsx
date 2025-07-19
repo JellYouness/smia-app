@@ -91,13 +91,19 @@ const CreatorDashboard: React.FC = () => {
         return 'primary';
       case PROJECT_STATUS.COMPLETED:
         return 'success';
-      case PROJECT_STATUS.PENDING:
+      case PROJECT_STATUS.DRAFT:
         return 'warning';
       case PROJECT_STATUS.CANCELLED:
         return 'error';
       default:
         return 'default';
     }
+  };
+
+  const expertiseColorMap: Record<string, string> = {
+    EXPERT: theme.palette.success.main,
+    INTERMEDIATE: theme.palette.warning.main,
+    BEGINNER: theme.palette.info.main,
   };
 
   const getStatusLabel = (status: PROJECT_STATUS) => {
@@ -210,17 +216,19 @@ const CreatorDashboard: React.FC = () => {
   };
 
   // Filter projects based on tab
-  const filteredProjects = filterProjects(
-    tab === 'ongoing'
-      ? projects.filter((project) => project.status === PROJECT_STATUS.IN_PROGRESS)
-      : tab === 'completed'
-      ? projects.filter((project) => project.status === PROJECT_STATUS.COMPLETED)
-      : projects.filter(
-          (project) =>
-            project.status !== PROJECT_STATUS.IN_PROGRESS &&
-            project.status !== PROJECT_STATUS.COMPLETED
-        )
-  );
+  let filtered = [];
+
+  if (tab === 'ongoing') {
+    filtered = projects.filter((p) => p.status === PROJECT_STATUS.IN_PROGRESS);
+  } else if (tab === 'completed') {
+    filtered = projects.filter((p) => p.status === PROJECT_STATUS.COMPLETED);
+  } else {
+    filtered = projects.filter(
+      (p) => p.status !== PROJECT_STATUS.IN_PROGRESS && p.status !== PROJECT_STATUS.COMPLETED
+    );
+  }
+
+  const filteredProjects = filterProjects(filtered);
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: '90%', margin: '0 auto' }}>
@@ -389,7 +397,7 @@ const CreatorDashboard: React.FC = () => {
           </Box>
 
           {/* Project Cards */}
-          {loadingProjects ? (
+          {loadingProjects && (
             <Box
               sx={{
                 display: 'flex',
@@ -412,7 +420,9 @@ const CreatorDashboard: React.FC = () => {
                 {t('project:loading_projects_hint')}
               </Typography>
             </Box>
-          ) : filteredProjects.length > 0 ? (
+          )}
+
+          {!loadingProjects && filteredProjects.length > 0 && (
             <Grid container spacing={3}>
               {filteredProjects.map((project) => (
                 <Grid item xs={12} key={project.id}>
@@ -497,7 +507,9 @@ const CreatorDashboard: React.FC = () => {
                 </Grid>
               ))}
             </Grid>
-          ) : (
+          )}
+
+          {!loadingProjects && filteredProjects.length === 0 && (
             <Card
               sx={{
                 textAlign: 'center',
@@ -805,11 +817,8 @@ const CreatorDashboard: React.FC = () => {
                                   height: 8,
                                   borderRadius: '50%',
                                   backgroundColor:
-                                    expertise.expertiseLevel === 'EXPERT'
-                                      ? theme.palette.success.main
-                                      : expertise.expertiseLevel === 'INTERMEDIATE'
-                                      ? theme.palette.warning.main
-                                      : theme.palette.info.main,
+                                    expertiseColorMap[expertise.expertiseLevel] ??
+                                    theme.palette.info.main,
                                 }}
                               />
                               <Typography variant="body2" color="text.secondary">

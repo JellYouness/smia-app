@@ -12,5 +12,56 @@
     "in_progress": "En progreso",
     "completed": "Completado",
     "pending": "Pendiente"
-  }
+  },
+  "common": {
+    "create_new_one": "Crear nuevo proyecto",
+    "new_one": "Nuevo proyecto",
+    "read_all": "Todos los proyectos",
+    "items": "Proyectos",
+    "edit_one": "Editar proyecto"
+  },
+  "steps": {
+    "step1": {
+      "step_title": "Detalles del proyecto",
+      "pro_tip": "Consejo profesional",
+      "tip": "Elija un título de proyecto claro y descriptivo y proporcione un resumen detallado. Esto ayuda a los creadores y miembros del equipo a comprender rápidamente los objetivos de su proyecto.",
+      "title": "Título del proyecto",
+      "description": "Descripción del proyecto"
+    },
+    "step2": {
+      "step_title": "Recursos del proyecto",
+      "pro_tip": "Consejo profesional",
+      "tip": "Elija una fecha de inicio y fin para su proyecto. Esto ayuda a los creadores y miembros del equipo a comprender rápidamente los objetivos de su proyecto.",
+      "timeline_title": "Cronograma",
+      "budget_title": "Presupuesto",
+      "start_date": "Fecha de inicio",
+      "end_date": "Fecha de fin",
+      "budget": "Presupuesto"
+    }
+  },
+  "budget": "Presupuesto",
+  "timeline": "Cronograma",
+  "created": "Creado",
+  "status": "Estado",
+  "draft": "Borrador",
+  "in_progress": "En progreso",
+  "completed": "Completado",
+  "edit_project": "Editar proyecto",
+  "delete_project": "Eliminar proyecto",
+  "view_details": "Ver detalles",
+  "resume_creation": "Continuar creación de proyecto",
+  "hire_creator": "Contratar un creador",
+  "loading_project_form": "Configuración del formulario de proyecto...",
+  "loading_project_form_description": "Por favor, espere mientras cargamos todo lo que necesita para crear su proyecto. Esto solo debería tomar un momento.",
+  "loading_project_details_title": "Cargando detalles del proyecto...",
+  "loading_project_details_description": "Por favor, espere mientras cargamos los detalles del proyecto. Esto solo debería tomar un momento.",
+  "invite_creators": "Invitar creadores",
+  "proposals": "Propuestas",
+  "hire": "Contratar",
+  "invite_to_project": "Invitar a un creador",
+  "invite_message_default": "Hola {{creator}},\n\nMe gustaría invitarte a ver el proyecto que hemos publicado. Si estás disponible e interesado, no dudes en enviar una propuesta. \n\nSaludos,",
+  "revert_to_default_message": "Revertir a un mensaje por defecto",
+  "send_invitation": "Enviar invitación",
+  "no_creators_found": "No se encontraron creadores",
+  "no_creators_description": "No se encontraron creadores para este proyecto. Por favor, inténtelo de nuevo más tarde."
 }

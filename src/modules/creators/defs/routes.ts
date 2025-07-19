@@ -1,12 +1,10 @@
 import { CrudAppRoutes } from '@common/defs/types';
 
-const prefix = '/creators';
-const Routes: CrudAppRoutes = {
-  ReadAll: prefix,
-  ReadOne: prefix + '/{id}',
-  CreateOne: prefix + '/create',
-  UpdateOne: prefix + '/{id}',
-  DeleteOne: prefix + '/{id}',
+export const CreatorsRoutes: CrudAppRoutes = {
+  ReadOne: '/creators/{id}',
+  ReadAll: '/admin/creators',
+  CreateOne: '/admin/creators/create',
+  UpdateOne: '/admin/creators/{id}',
 };
 
-export default Routes;
+export default CreatorsRoutes;

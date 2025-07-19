@@ -21,6 +21,8 @@
   "email": "Correo electrónico",
   "email_format_incorrect": "El formato del correo electrónico es incorrecto",
   "field_required": "El campo es obligatorio",
+  "field_positive": "El campo debe ser un número mayor que 0",
+  "end_after_start": "La fecha de fin debe ser después de la fecha de inicio",
   "field_too_long": "El campo es demasiado largo",
   "field_invalid": "El campo no es válido",
   "field_choose_values_table": "Por favor, elija al menos un elemento de la tabla",
@@ -117,5 +119,10 @@
   "female": "Femenino",
   "other": "Otro",
   "address_information": "Información de dirección",
-  "personal_information": "Información personal"
+  "personal_information": "Información personal",
+  "save_draft": "Guardar como borrador",
+  "language_proficiency": "Nivel de proficiencia",
+  "invited": "Invitado",
+  "years_experience": "años de experiencia",
+  "skills": "Habilidades"
 }

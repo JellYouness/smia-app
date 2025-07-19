@@ -1,2 +1,3 @@
-const namespace = 'creators';
-export default namespace;
+const Creators = 'creators';
+
+export default Creators;

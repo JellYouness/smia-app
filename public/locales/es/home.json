@@ -1,3 +1,5 @@
 {
-  "dashboard": "Tablero"
+  "dashboard": "Tablero",
+  "loading": "Cargando...",
+  "greeting": "Hola"
 }

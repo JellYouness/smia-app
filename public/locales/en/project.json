@@ -12,5 +12,56 @@
     "in_progress": "In Progress",
     "completed": "Completed",
     "pending": "Pending"
-  }
+  },
+  "common": {
+    "create_new_one": "Create New Project",
+    "new_one": "New Project",
+    "read_all": "All Projects",
+    "items": "Projects",
+    "edit_one": "Edit Project"
+  },
+  "steps": {
+    "step1": {
+      "step_title": "Project Details",
+      "pro_tip": "Pro Tip",
+      "tip": "Choose a clear, descriptive project title and provide a detailed summary. This helps creators and team members quickly understand your project's goals.",
+      "title": "Project Title",
+      "description": "Project Description"
+    },
+    "step2": {
+      "step_title": "Project Resources",
+      "pro_tip": "Pro Tip",
+      "tip": "Choose a start and end date for your project. This helps creators and team members quickly understand your project's goals.",
+      "timeline_title": "Timeline",
+      "budget_title": "Budget",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "budget": "Budget"
+    }
+  },
+  "budget": "Budget",
+  "timeline": "Timeline",
+  "created": "Created",
+  "status": "Status",
+  "draft": "Draft",
+  "in_progress": "In Progress",
+  "completed": "Completed",
+  "edit_project": "Edit Project",
+  "delete_project": "Delete Project",
+  "view_details": "View Details",
+  "resume_creation": "Resume Project Creation",
+  "hire_creator": "Hire a Creator",
+  "loading_project_form": "Setting up your project form...",
+  "loading_project_form_description": "Please wait while we load everything you need to create your project. This should only take a moment.",
+  "loading_project_details_title": "Loading project details...",
+  "loading_project_details_description": "Please wait while we load the project details. This should only take a moment.",
+  "invite_creators": "Invite Creators",
+  "proposals": "Proposals",
+  "hire": "Hire",
+  "invite_to_project": "Invite to Project",
+  "invite_message_default": "Hi {{creator}},\n\nI’d like to invite you to take a look at the project we’ve posted. If you’re available and interested, feel free to submit a proposal. \n\nBest regards,",
+  "revert_to_default_message": "Revert to a default message",
+  "send_invitation": "Send Invitation",
+  "no_creators_found": "No creators found",
+  "no_creators_description": "No creators found for this project. Please try again later."
 }

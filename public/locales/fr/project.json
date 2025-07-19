@@ -12,5 +12,57 @@
     "in_progress": "En cours",
     "completed": "Terminé",
     "pending": "En attente"
-  }
+  },
+  "common": {
+    "create_new_one": "Créer un nouveau projet",
+    "new_one": "Nouveau projet",
+    "read_all": "Tous les projets",
+    "items": "Projets",
+    "edit_one": "Modifier le projet"
+  },
+  "steps": {
+    "step1": {
+      "step_title": "Détails du projet",
+      "pro_tip": "Astuce",
+      "tip": "Choisissez un titre de projet clair et descriptif et fournissez un résumé détaillé. Cela aide les créateurs et les membres de l'équipe à comprendre rapidement les objectifs de votre projet.",
+      "title": "Titre du projet",
+      "description": "Description du projet"
+    },
+    "step2": {
+      "step_title": "Ressources du projet",
+      "pro_tip": "Astuce",
+      "tip": "Choisissez une date de début et de fin pour votre projet. Cela aide les créateurs et les membres de l'équipe à comprendre rapidement les objectifs de votre projet.",
+      "timeline_title": "Timeline",
+      "budget_title": "Budget",
+      "start_date": "Date de début",
+      "end_date": "Date de fin",
+      "budget": "Budget"
+    }
+  },
+  "budget": "Budget",
+  "timeline": "Chronologie",
+  "created": "Créé le",
+  "status": "Statut",
+  "draft": "Brouillon",
+  "in_progress": "En cours",
+  "completed": "Terminé",
+  "edit_project": "Modifier le projet",
+  "delete_project": "Supprimer le projet",
+  "view_details": "Voir les détails",
+  "resume_creation": "Continuer la création du projet",
+  "hire_creator": "Engager un créateur",
+  "loading_project_form": "Configuration du formulaire de projet...",
+  "loading_project_form_description": "Veuillez patienter pendant que nous chargeons tout ce dont vous avez besoin pour créer votre projet. Cela ne devrait prendre qu'un moment.",
+  "loading_project_details_title": "Chargement des détails du projet...",
+  "loading_project_details_description": "Veuillez patienter pendant que nous chargeons les détails du projet. Cela ne devrait prendre qu'un moment.",
+  "invite_creators": "Inviter des créateurs",
+  "proposals": "Propositions",
+  "hire": "Engager",
+  "invite_to_project": "Inviter un créateur",
+  "invite_message_default": "Bonjour {{creator}},\n\nJe vous invite à regarder le projet que nous avons publié. Si vous êtes disponible et intéressé, n'hésitez pas à soumettre une proposition. \n\nCordialement,",
+  "revert_to_default_message": "Revenir à un message par défaut",
+  "send_invitation": "Envoyer une invitation",
+  "language_proficiency": "Niveau de compétence linguistique",
+  "no_creators_found": "Aucun créateur trouvé",
+  "no_creators_description": "Aucun créateur trouvé pour ce projet. Veuillez réessayer plus tard."
 }
