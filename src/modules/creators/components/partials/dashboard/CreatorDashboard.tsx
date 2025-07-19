@@ -6,10 +6,11 @@ import useAuth from '@modules/auth/hooks/api/useAuth';
 import useProjects from '@modules/projects/hooks/useProjects';
 import { useTranslation } from 'react-i18next';
 import { Creator } from '@modules/users/defs/types';
-import CreatorDetailsDashboard from './CreatorDetailsDashboard';
-import DashboardProjects from './DashboardProjects';
+import ProjectsPanel from './ProjectsPanel';
+import DetailsPanel from './DetailsPanel';
+import OffersPanel from './OffersPanel';
 
-const CreatorDashboard: React.FC = () => {
+const CreatorDashboard = () => {
   const { t } = useTranslation(['project', 'user', 'common']);
   const theme = useTheme();
   const { readAllByCreator } = useProjects();
@@ -112,13 +113,14 @@ const CreatorDashboard: React.FC = () => {
 
       <Grid container spacing={4}>
         {/* Left: Projects */}
-        <Grid item xs={12} md={9}>
-          <DashboardProjects projects={projects} loadingProjects={loadingProjects} />
+        <Grid item xs={12} md={9} sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <ProjectsPanel projects={projects} loadingProjects={loadingProjects} />
+          <OffersPanel creator={creator} />
         </Grid>
 
         {/* Right: Profile & Stats */}
         <Grid item xs={12} md={3}>
-          <CreatorDetailsDashboard creator={creator} user={user} projects={projects} />
+          <DetailsPanel creator={creator} user={user} projects={projects} />
         </Grid>
       </Grid>
     </Box>

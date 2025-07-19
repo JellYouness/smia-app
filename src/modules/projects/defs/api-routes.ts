@@ -12,6 +12,13 @@ const ApiRoutes: CrudApiRoutes = {
   ReadAllByAmbassador: prefix + '/ambassador/{ambassadorId}',
 
   InviteCreator: prefix + '/invite-creator',
+  ReadAllInvitesByCreator: prefix + '/invites/creator/{creatorId}',
+  DeclineInvite: prefix + '/invites/{id}/decline',
+  AcceptInvite: prefix + '/invites/{id}/accept',
+
+  ReadAllProposalsByCreator: prefix + '/proposals/creator/{creatorId}',
+  AddProposalComment: prefix + '/proposals/{proposalId}/comments',
+  ReadAllCommentsByProposal: prefix + '/proposals/{proposalId}/comments',
 };
 
 export default ApiRoutes;
