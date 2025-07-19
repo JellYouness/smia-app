@@ -4,25 +4,20 @@ import { useTranslation } from 'react-i18next';
 import useProjects from '@modules/projects/hooks/useProjects';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { Project } from '@modules/projects/defs/types';
+import InviteCreatorsStep from './hire/InviteCreatorsStep';
 
 interface HireCreatorStepperProps {
   active: StepKey;
   onStepChange?: (step: StepKey) => void;
 }
 
-const messages: Record<StepKey, string> = {
-  invite: 'Welcome to the invite step',
-  review: 'You are now on the review step',
-  hire: 'Ready to hire your creator',
-};
-
 const HireCreatorStepper = ({ active, onStepChange }: HireCreatorStepperProps) => {
   const { t } = useTranslation(['project', 'common']);
   const { readOne } = useProjects();
   const router = useRouter();
   const { id } = router.query;
-
-  const theme = useTheme();
+  const [project, setProject] = useState<Project | null>(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -31,7 +26,10 @@ const HireCreatorStepper = ({ active, onStepChange }: HireCreatorStepperProps) =
       return;
     }
     setLoading(true);
-    const project = await readOne(Number(id));
+    const response = await readOne(Number(id));
+    if (response.success && response.data) {
+      setProject(response.data.item);
+    }
     setLoading(false);
   };
 
@@ -71,9 +69,19 @@ const HireCreatorStepper = ({ active, onStepChange }: HireCreatorStepperProps) =
 
   return (
     <Box>
-      <HireStepperBar active={active} onStepChange={onStepChange} />
-      <Box sx={{ mt: 2, textAlign: 'center' }}>
-        <Typography variant="body2">{messages[active]}</Typography>
+      <HireStepperBar
+        active={active}
+        onStepChange={onStepChange}
+        proposalsCount={project?.proposalsCount ?? 0}
+        hiresCount={project?.hiresCount ?? 0}
+      />
+
+      <Box sx={{ mt: 4 }}>
+        {active === 'invite' && (
+          <InviteCreatorsStep projectId={Number(id)} project={project as Project} />
+        )}
+        {active === 'review' && <Typography>Review step coming soon…</Typography>}
+        {active === 'hire' && <Typography>Hire step coming soon…</Typography>}
       </Box>
     </Box>
   );

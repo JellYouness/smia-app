@@ -225,5 +225,13 @@
   "list_equipment_help": "Listez votre équipement pour aider les clients à comprendre vos capacités.",
   "no_regional_expertise": "Aucune expertise régionale ajoutée pour le moment.",
   "issued_by": "Délivré par",
-  "date": "Date"
+  "date": "Date",
+  "unverified": "Non vérifié",
+  "pending": "En attente",
+  "featured": "Destacé",
+  "verified": "Vérifié",
+  "available": "Disponible",
+  "limited": "Limité",
+  "unavailable": "Non disponible",
+  "busy": "Occupé"
 }

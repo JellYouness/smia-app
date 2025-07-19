@@ -28,9 +28,12 @@ import {
   ThumbUp as ThumbUpIcon,
   ThumbDown as ThumbDownIcon,
 } from '@mui/icons-material';
-import { formatDistanceToNow } from 'date-fns';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { Notification, NotificationType } from '../defs/types';
 import { useMarkAsRead, useDeleteNotification } from '../hooks/useNotifications';
+
+dayjs.extend(relativeTime);
 
 interface NotificationItemProps {
   notification: Notification;
@@ -170,9 +173,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
               {getNotificationMessage()}
             </Typography>
             <Typography variant="caption" color="text.disabled">
-              {formatDistanceToNow(new Date(notification.createdAt), {
-                addSuffix: true,
-              })}
+              {dayjs(notification.createdAt).fromNow()}
             </Typography>
           </Box>
         }
