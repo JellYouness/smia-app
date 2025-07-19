@@ -31,7 +31,9 @@ import { NotificationItem } from '@modules/notifications/components/Notification
 import { NotificationFilters } from '@modules/notifications/defs/types';
 import { useTranslation } from 'react-i18next';
 import { NextPage } from 'next';
-import withAuth from '@modules/auth/hocs/withAuth';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
+import Routes from '@common/defs/routes';
 
 const NotificationsPage: NextPage = () => {
   const { t } = useTranslation(['notifications']);
@@ -42,12 +44,12 @@ const NotificationsPage: NextPage = () => {
 
   const {
     data: notificationsData,
-    loading: isLoading,
+    isLoading,
     error,
     refetch: refetchNotifications,
   } = useNotifications(filters);
   const { data: typesData } = useNotificationTypes();
-  const { markAllAsRead, loading: markAllLoading } = useMarkAllAsRead();
+  const { mutate: markAllAsRead, isPending: markAllLoading } = useMarkAllAsRead();
 
   const notifications = notificationsData?.notifications || [];
   const pagination = notificationsData?.pagination;
@@ -67,9 +69,7 @@ const NotificationsPage: NextPage = () => {
   };
 
   const handleMarkAllAsRead = async () => {
-    await markAllAsRead(() => {
-      refetchNotifications();
-    });
+    markAllAsRead();
   };
 
   const handleNotificationAction = () => {
@@ -236,4 +236,13 @@ const NotificationsPage: NextPage = () => {
   );
 };
 
-export default withAuth(NotificationsPage);
+export default withAuth(NotificationsPage, {
+  mode: AUTH_MODE.LOGGED_IN,
+  redirectUrl: Routes.Auth.Login,
+});
+
+export const getStaticProps = async ({ locale }: { locale: string }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ['notifications', 'common', 'topbar'])),
+  },
+});

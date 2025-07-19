@@ -35,5 +35,10 @@
     "welcome": "Bienvenido",
     "reminder": "Recordatorio",
     "security_alert": "Alerta de seguridad"
+  },
+  "messages": {
+    "new_message_from": "Nuevo mensaje de {{sender}}",
+    "new_message_in": "Nuevo mensaje en {{conversation}}",
+    "new_message_received": "Nuevo mensaje recibido"
   }
 }

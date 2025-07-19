@@ -14,7 +14,14 @@ const LoginPage: NextPage = () => {
 
 export const getStaticProps = async ({ locale }: { locale: string }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['topbar', 'footer', 'leftbar', 'sign-in', 'common'])),
+    ...(await serverSideTranslations(locale, [
+      'topbar',
+      'footer',
+      'leftbar',
+      'sign-in',
+      'common',
+      'notifications',
+    ])),
   },
 });
 export default withAuth(LoginPage, { mode: AUTH_MODE.LOGGED_OUT, redirectUrl: Routes.Common.Home });

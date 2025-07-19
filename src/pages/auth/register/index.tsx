@@ -121,7 +121,7 @@ const RegisterSelectionPage: NextPage = () => {
 export const getStaticProps = async ({ locale }: { locale: string }) => {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['auth', 'common', 'topbar'])),
+      ...(await serverSideTranslations(locale, ['auth', 'common', 'topbar', 'notifications'])),
     },
   };
 };

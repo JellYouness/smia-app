@@ -159,6 +159,6 @@ export default withAuth(MyProfile, { mode: AUTH_MODE.LOGGED_IN, redirectUrl: Rou
 
 export const getStaticProps = async ({ locale }: { locale: string }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['user', 'common', 'topbar'])),
+    ...(await serverSideTranslations(locale, ['user', 'common', 'topbar', 'notifications'])),
   },
 });

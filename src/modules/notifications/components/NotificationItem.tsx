@@ -29,6 +29,7 @@ import {
   ThumbDown as ThumbDownIcon,
 } from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { Notification, NotificationType } from '../defs/types';
 import { useMarkAsRead, useDeleteNotification } from '../hooks/useNotifications';
 
@@ -98,24 +99,53 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   onMarkAsRead,
   onDelete,
 }) => {
-  const { markAsRead, loading: markAsReadLoading } = useMarkAsRead();
-  const { deleteNotification, loading: deleteLoading } = useDeleteNotification();
+  const { t } = useTranslation(['notifications']);
+  const { mutate: markAsRead, isPending: markAsReadLoading } = useMarkAsRead();
+  const { mutate: deleteNotification, isPending: deleteLoading } = useDeleteNotification();
 
   const handleMarkAsRead = async () => {
     if (!notification.readAt) {
-      await markAsRead(notification.id.toString(), onMarkAsRead);
+      markAsRead(notification.id.toString());
+      if (onMarkAsRead) {
+        onMarkAsRead();
+      }
     }
   };
 
   const handleDelete = async () => {
-    await deleteNotification(notification.id.toString(), onDelete);
+    deleteNotification(notification.id.toString());
+    if (onDelete) {
+      onDelete();
+    }
   };
 
   const getNotificationTitle = () => {
+    // Handle message notifications specifically
+    if (notification.type === NotificationType.MESSAGE_RECEIVED) {
+      const senderName = notification.data.sender_name;
+      const conversationName = notification.data.conversation_name;
+
+      if (senderName) {
+        return t('notifications:messages.new_message_from', { sender: senderName });
+      }
+      if (conversationName) {
+        return t('notifications:messages.new_message_in', { conversation: conversationName });
+      }
+      return t('notifications:messages.new_message_received');
+    }
+
     return notification.data.title || notification.data.message || 'Notification';
   };
 
   const getNotificationMessage = () => {
+    // Handle message notifications specifically
+    if (notification.type === NotificationType.MESSAGE_RECEIVED) {
+      const messagePreview = notification.data.message_preview;
+      if (messagePreview) {
+        return messagePreview;
+      }
+    }
+
     return notification.data.message || notification.data.description || '';
   };
 

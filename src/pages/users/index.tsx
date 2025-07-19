@@ -43,7 +43,14 @@ const UsersPage: NextPage = () => {
 
 export const getStaticProps = async ({ locale }: { locale: string }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['topbar', 'footer', 'leftbar', 'user', 'common'])),
+    ...(await serverSideTranslations(locale, [
+      'topbar',
+      'footer',
+      'leftbar',
+      'user',
+      'common',
+      'notifications',
+    ])),
   },
 });
 

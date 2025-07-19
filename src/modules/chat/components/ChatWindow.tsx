@@ -84,12 +84,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     }
   }, [selectedConversationId]);
 
-  // Auto-select first conversation if none is selected
-  useEffect(() => {
-    if (!selectedConversationId && Array.isArray(conversations) && conversations.length > 0) {
-      onConversationSelect(conversations[0].id.toString());
-    }
-  }, [conversations, selectedConversationId, onConversationSelect]);
+  // Removed auto-selection of first conversation - let user choose manually
 
   // Scroll to bottom of messages container
   const scrollToBottom = useCallback(() => {
@@ -257,6 +252,127 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     [user?.id]
   );
 
+  const renderConversationsList = useCallback(() => {
+    if (conversationsLoading) {
+      return (
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 2, flexShrink: 0 }}>
+          <CircularProgress />
+        </Box>
+      );
+    }
+
+    if (filteredConversations.length === 0) {
+      return (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            p: 4,
+            textAlign: 'center',
+            flex: 1,
+          }}
+        >
+          <Box
+            sx={{
+              width: 80,
+              height: 80,
+              borderRadius: '50%',
+              backgroundColor: 'grey.100',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2,
+            }}
+          >
+            <Typography variant="h4" color="grey.400">
+              💬
+            </Typography>
+          </Box>
+          <Typography variant="body1" color="text.primary" gutterBottom>
+            {t('chat:no_conversations')}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t('chat:no_conversations_description')}
+          </Typography>
+        </Box>
+      );
+    }
+
+    return (
+      <List sx={{ p: 0, flex: 1, overflow: 'auto' }}>
+        {filteredConversations.map((conversation: Conversation) => (
+          <ListItem
+            key={conversation.id}
+            button
+            selected={conversation.id.toString() === selectedConversationId}
+            onClick={() => handleConversationSelect(conversation.id.toString())}
+            disabled={isSelectingConversation}
+            sx={{
+              borderBottom: 1,
+              borderColor: 'divider',
+              backgroundColor: conversation.unreadCount ? 'action.hover' : 'transparent',
+              '&:hover': {
+                backgroundColor: conversation.unreadCount ? 'action.selected' : 'action.hover',
+              },
+              '&.Mui-selected': {
+                backgroundColor: 'primary.main',
+                color: 'primary.contrastText',
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                },
+              },
+            }}
+          >
+            <ListItemAvatar>
+              <Badge
+                badgeContent={conversation.unreadCount || 0}
+                color="primary"
+                invisible={!conversation.unreadCount}
+              >
+                <Avatar>{getConversationAvatar(conversation)}</Avatar>
+              </Badge>
+            </ListItemAvatar>
+            <ListItemText
+              primary={getConversationDisplayName(conversation)}
+              secondary={conversation.latestMessage?.content || t('chat:no_messages')}
+              primaryTypographyProps={{
+                fontWeight: conversation.unreadCount ? 'bold' : 'normal',
+              }}
+              secondaryTypographyProps={{
+                fontWeight: conversation.unreadCount ? 'bold' : 'normal',
+                color:
+                  conversation === selectedConversation ? 'primary.contrastText' : 'text.secondary',
+              }}
+            />
+            <IconButton size="small">
+              <MoreVert
+                sx={{
+                  color:
+                    conversation === selectedConversation
+                      ? 'primary.contrastText'
+                      : 'text.secondary',
+                }}
+                color={conversation === selectedConversation ? 'secondary' : 'primary'}
+              />
+            </IconButton>
+          </ListItem>
+        ))}
+      </List>
+    );
+  }, [
+    conversationsLoading,
+    filteredConversations,
+    selectedConversationId,
+    isSelectingConversation,
+    handleConversationSelect,
+    getConversationAvatar,
+    getConversationDisplayName,
+    selectedConversation,
+    t,
+  ]);
+
   return (
     <Grid container sx={{ height: '80vh', overflow: 'hidden' }}>
       {/* Conversations List */}
@@ -290,72 +406,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           />
         </Box>
 
-        {conversationsLoading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 2, flexShrink: 0 }}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <List sx={{ p: 0, flex: 1, overflow: 'auto' }}>
-            {filteredConversations.map((conversation: Conversation) => (
-              <ListItem
-                key={conversation.id}
-                button
-                selected={conversation.id.toString() === selectedConversationId}
-                onClick={() => handleConversationSelect(conversation.id.toString())}
-                disabled={isSelectingConversation}
-                sx={{
-                  borderBottom: 1,
-                  borderColor: 'divider',
-                  backgroundColor: conversation.unreadCount ? 'action.hover' : 'transparent',
-                  '&:hover': {
-                    backgroundColor: conversation.unreadCount ? 'action.selected' : 'action.hover',
-                  },
-                  '&.Mui-selected': {
-                    backgroundColor: 'primary.main',
-                    color: 'primary.contrastText',
-                    '&:hover': {
-                      backgroundColor: 'primary.dark',
-                    },
-                  },
-                }}
-              >
-                <ListItemAvatar>
-                  <Badge
-                    badgeContent={conversation.unreadCount || 0}
-                    color="primary"
-                    invisible={!conversation.unreadCount}
-                  >
-                    <Avatar>{getConversationAvatar(conversation)}</Avatar>
-                  </Badge>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={getConversationDisplayName(conversation)}
-                  secondary={conversation.latestMessage?.content || t('chat:no_messages')}
-                  primaryTypographyProps={{
-                    fontWeight: conversation.unreadCount ? 'bold' : 'normal',
-                  }}
-                  secondaryTypographyProps={{
-                    color:
-                      conversation === selectedConversation
-                        ? 'primary.contrastText'
-                        : 'text.secondary',
-                  }}
-                />
-                <IconButton size="small">
-                  <MoreVert
-                    sx={{
-                      color:
-                        conversation === selectedConversation
-                          ? 'primary.contrastText'
-                          : 'text.secondary',
-                    }}
-                    color={conversation === selectedConversation ? 'secondary' : 'primary'}
-                  />
-                </IconButton>
-              </ListItem>
-            ))}
-          </List>
-        )}
+        {renderConversationsList()}
       </Grid>
 
       {/* Messages Area */}
@@ -451,10 +502,37 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           </>
         ) : (
           <Box
-            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              p: 4,
+              textAlign: 'center',
+            }}
           >
-            <Typography variant="h6" color="text.secondary">
-              {t('chat:select_conversation')}
+            <Box
+              sx={{
+                width: 120,
+                height: 120,
+                borderRadius: '50%',
+                backgroundColor: 'grey.100',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mb: 3,
+              }}
+            >
+              <Typography variant="h2" color="grey.400">
+                💬
+              </Typography>
+            </Box>
+            <Typography variant="h5" color="text.primary" gutterBottom>
+              {t('chat:no_conversation_selected')}
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
+              {t('chat:select_conversation_description')}
             </Typography>
           </Box>
         )}
