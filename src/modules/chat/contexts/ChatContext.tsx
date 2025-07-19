@@ -54,9 +54,36 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       setIsConnected(false);
     });
 
+    // Subscribe to user-specific channel for global chat events
+    const userChannel = pusherInstance.subscribe(`private-user.${user.id}`);
+
+    // Handle new message received (for unread count updates)
+    const handleNewMessage = (data: { conversationId: string; message: Message }) => {
+      window.dispatchEvent(
+        new CustomEvent('chat:message:received', {
+          detail: { conversationId: data.conversationId, message: data.message },
+        })
+      );
+    };
+
+    // Handle message read (for unread count updates)
+    const handleMessageRead = (data: { conversationId: string }) => {
+      window.dispatchEvent(
+        new CustomEvent('chat:message:read', {
+          detail: { conversationId: data.conversationId },
+        })
+      );
+    };
+
+    userChannel.bind('message.received', handleNewMessage);
+    userChannel.bind('message.read', handleMessageRead);
+
     setPusher(pusherInstance);
 
     return () => {
+      userChannel.unbind('message.received', handleNewMessage);
+      userChannel.unbind('message.read', handleMessageRead);
+      pusherInstance.unsubscribe(`private-user.${user.id}`);
       pusherInstance.disconnect();
     };
   }, [user]);

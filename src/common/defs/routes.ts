@@ -20,10 +20,10 @@ const Routes = {
   Permissions,
   Users,
   Posts,
+  Projects,
   Creators,
   Clients,
   Ambassadors,
-  Projects,
   Notifications,
   Chat,
 };

@@ -19,6 +19,7 @@ const ResetPasswordPage: NextPage = () => {
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => ({
   props: {
     ...(await serverSideTranslations(locale || 'en', [
+      'notifications',
       'topbar',
       'footer',
       'leftbar',

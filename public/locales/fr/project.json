@@ -1,4 +1,18 @@
 {
+  "ongoing": "En cours",
+  "completed": "Terminé",
+  "other": "Autres",
+  "search_projects": "Rechercher des projets...",
+  "loading_projects": "Chargement de vos projets...",
+  "loading_projects_hint": "Veuillez patienter pendant que nous récupérons vos derniers projets.",
+  "no_projects_found": "Aucun projet trouvé",
+  "no_projects_match": "Aucun projet ne correspond à \"{{searchTerm}}\"",
+  "no_projects_available": "Aucun projet disponible",
+  "status": {
+    "in_progress": "En cours",
+    "completed": "Terminé",
+    "pending": "En attente"
+  },
   "common": {
     "create_new_one": "Créer un nouveau projet",
     "new_one": "Nouveau projet",

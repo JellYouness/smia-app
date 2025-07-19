@@ -252,6 +252,6 @@ export default withAuth(EditProfile, { mode: AUTH_MODE.LOGGED_IN, redirectUrl: R
 
 export const getStaticProps = async ({ locale }: { locale: string }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['user', 'common', 'topbar'])),
+    ...(await serverSideTranslations(locale, ['user', 'common', 'topbar', 'notifications'])),
   },
 });

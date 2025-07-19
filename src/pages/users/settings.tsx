@@ -579,7 +579,7 @@ const UserSettingsPage: NextPage = () => {
 
 export const getStaticProps = async ({ locale }: { locale: string }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['user', 'common', 'topbar'])),
+    ...(await serverSideTranslations(locale, ['user', 'common', 'topbar', 'notifications'])),
   },
 });
 
