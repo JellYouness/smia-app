@@ -104,7 +104,7 @@ const EmailVerificationPage: NextPage = () => {
 
 export const getServerSideProps = async ({ locale }: { locale: string }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['auth', 'common', 'topbar'])),
+    ...(await serverSideTranslations(locale, ['auth', 'common', 'topbar', 'notifications'])),
   },
 });
 

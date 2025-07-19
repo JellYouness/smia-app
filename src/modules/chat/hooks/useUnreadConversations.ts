@@ -1,11 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import useApi from '@common/hooks/useApi';
 import { API_ROUTES } from '../defs/api-routes';
+import { useEffect } from 'react';
 
 export const useUnreadConversations = () => {
   const api = useApi();
+  const queryClient = useQueryClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['unread-conversations'],
     queryFn: async () => {
       // We'll use the conversations endpoint and count unread ones
@@ -18,7 +20,35 @@ export const useUnreadConversations = () => {
       }
       return { unreadCount: 0 };
     },
-    // Refetch every 30 seconds to keep badge updated
-    refetchInterval: 30000,
+    staleTime: 10000, // Consider data fresh for 10 seconds
+    gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
   });
+
+  // Listen for real-time chat events to invalidate unread count
+  useEffect(() => {
+    const handleMessageSent = () => {
+      queryClient.invalidateQueries({ queryKey: ['unread-conversations'] });
+    };
+
+    const handleMessageReceived = () => {
+      queryClient.invalidateQueries({ queryKey: ['unread-conversations'] });
+    };
+
+    const handleMessageRead = () => {
+      queryClient.invalidateQueries({ queryKey: ['unread-conversations'] });
+    };
+
+    // Listen for chat events
+    window.addEventListener('chat:message:sent', handleMessageSent);
+    window.addEventListener('chat:message:received', handleMessageReceived);
+    window.addEventListener('chat:message:read', handleMessageRead);
+
+    return () => {
+      window.removeEventListener('chat:message:sent', handleMessageSent);
+      window.removeEventListener('chat:message:received', handleMessageReceived);
+      window.removeEventListener('chat:message:read', handleMessageRead);
+    };
+  }, [queryClient]);
+
+  return query;
 };

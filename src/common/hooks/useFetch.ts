@@ -25,7 +25,7 @@ const useFetch = <T>() => {
     setError(null); // Clear previous errors
     setResponse(null); // Clear previous response
     const displayProgress = options?.displayProgress ?? false;
-    const verbose = options?.verbose ?? true; // Enable verbose for debugging
+    const verbose = options?.verbose ?? false; // Disable verbose by default
 
     try {
       if (displayProgress) {

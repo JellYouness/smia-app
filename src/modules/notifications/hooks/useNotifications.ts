@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import useApi from '@common/hooks/useApi';
 import { API_ROUTES } from '../defs/api-routes';
 import {
@@ -10,225 +10,161 @@ import {
 
 export const useNotifications = (filters: NotificationFilters = {}) => {
   const api = useApi();
-  const [data, setData] = useState<NotificationResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchNotifications = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  return useQuery({
+    queryKey: ['notifications', filters.type, filters.read, filters.perPage, filters.page],
+    queryFn: async () => {
+      const queryParams = new URLSearchParams();
+      if (filters.type) {
+        queryParams.append('type', filters.type);
+      }
+      if (filters.read !== undefined) {
+        queryParams.append('read', filters.read.toString());
+      }
+      if (filters.perPage) {
+        queryParams.append('per_page', filters.perPage.toString());
+      }
+      if (filters.page) {
+        queryParams.append('page', filters.page.toString());
+      }
 
-    const queryParams = new URLSearchParams();
-    if (filters.type) {
-      queryParams.append('type', filters.type);
-    }
-    if (filters.read !== undefined) {
-      queryParams.append('read', filters.read.toString());
-    }
-    if (filters.perPage) {
-      queryParams.append('per_page', filters.perPage.toString());
-    }
-    if (filters.page) {
-      queryParams.append('page', filters.page.toString());
-    }
+      const url = `${API_ROUTES.NOTIFICATIONS.INDEX}?${queryParams.toString()}`;
 
-    const url = `${API_ROUTES.NOTIFICATIONS.INDEX}?${queryParams.toString()}`;
-
-    try {
       const response = await api<NotificationResponse>(url);
       if (response.success && response.data) {
-        setData(response.data);
-      } else {
-        setError(response.errors?.[0] || 'Failed to load notifications');
+        return response.data;
       }
-    } catch (err) {
-      setError('Failed to load notifications');
-    } finally {
-      setLoading(false);
-    }
-  }, [api, filters.type, filters.read, filters.perPage, filters.page]);
-
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
-
-  return { data, loading, error, refetch: fetchNotifications };
+      throw new Error(response.errors?.[0] || 'Failed to load notifications');
+    },
+    staleTime: 10000, // Consider data fresh for 10 seconds
+    gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
+  });
 };
 
 export const useNotification = (id: string) => {
   const api = useApi();
-  const [data, setData] = useState<{ data: Notification } | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchNotification = useCallback(async () => {
-    if (!id) {
-      return;
-    }
+  return useQuery({
+    queryKey: ['notification', id],
+    queryFn: async () => {
+      if (!id) {
+        throw new Error('Notification ID is required');
+      }
 
-    setLoading(true);
-    setError(null);
-
-    try {
       const response = await api<{ data: Notification }>(API_ROUTES.NOTIFICATIONS.SHOW(id));
       if (response.success && response.data) {
-        setData(response.data);
-      } else {
-        setError(response.errors?.[0] || 'Failed to load notification');
+        return response.data;
       }
-    } catch (err) {
-      setError('Failed to load notification');
-    } finally {
-      setLoading(false);
-    }
-  }, [api, id]);
-
-  useEffect(() => {
-    fetchNotification();
-  }, [fetchNotification]);
-
-  return { data, loading, error, refetch: fetchNotification };
+      throw new Error(response.errors?.[0] || 'Failed to load notification');
+    },
+    enabled: !!id,
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+  });
 };
 
 export const useNotificationTypes = () => {
   const api = useApi();
-  const [data, setData] = useState<{ data: NotificationTypeOption[] } | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchTypes = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
+  return useQuery({
+    queryKey: ['notification-types'],
+    queryFn: async () => {
       const response = await api<{ data: NotificationTypeOption[] }>(
         API_ROUTES.NOTIFICATIONS.TYPES
       );
       if (response.success && response.data) {
-        setData(response.data);
-      } else {
-        setError(response.errors?.[0] || 'Failed to load notification types');
+        return response.data;
       }
-    } catch (err) {
-      setError('Failed to load notification types');
-    } finally {
-      setLoading(false);
-    }
-  }, [api]);
-
-  useEffect(() => {
-    fetchTypes();
-  }, [fetchTypes]);
-
-  return { data, loading, error, refetch: fetchTypes };
+      throw new Error(response.errors?.[0] || 'Failed to load notification types');
+    },
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+  });
 };
 
 export const useUnreadCount = () => {
   const api = useApi();
-  const [data, setData] = useState<{ unreadCount: number } | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchUnreadCount = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
+  return useQuery({
+    queryKey: ['unread-count'],
+    queryFn: async () => {
       const response = await api<{ unreadCount: number }>(API_ROUTES.NOTIFICATIONS.UNREAD_COUNT);
       if (response.success && response.data) {
-        setData(response.data);
-      } else {
-        setError(response.errors?.[0] || 'Failed to load unread count');
+        return response.data;
       }
-    } catch (err) {
-      setError('Failed to load unread count');
-    } finally {
-      setLoading(false);
-    }
-  }, [api]);
-
-  useEffect(() => {
-    fetchUnreadCount();
-
-    // Refetch every 30 seconds
-    const interval = setInterval(fetchUnreadCount, 30000);
-    return () => clearInterval(interval);
-  }, [fetchUnreadCount]);
-
-  return { data, loading, error, refetch: fetchUnreadCount };
+      throw new Error(response.errors?.[0] || 'Failed to load unread count');
+    },
+    staleTime: 10000, // Consider data fresh for 10 seconds
+    gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
 };
 
 export const useMarkAsRead = () => {
   const api = useApi();
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const markAsRead = async (id: string, onSuccess?: () => void) => {
-    setLoading(true);
-    try {
+  return useMutation({
+    mutationFn: async (id: string) => {
       const response = await api(API_ROUTES.NOTIFICATIONS.MARK_AS_READ(id), {
         method: 'PATCH',
         displaySuccess: false,
       });
-      if (response.success && onSuccess) {
-        onSuccess();
+      if (!response.success) {
+        throw new Error('Failed to mark notification as read');
       }
-      return response.success;
-    } catch (err) {
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { markAsRead, loading };
+      return response;
+    },
+    onSuccess: () => {
+      // Invalidate notifications and unread count
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
+    },
+  });
 };
 
 export const useMarkAllAsRead = () => {
   const api = useApi();
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const markAllAsRead = async (onSuccess?: () => void) => {
-    setLoading(true);
-    try {
+  return useMutation({
+    mutationFn: async () => {
       const response = await api(API_ROUTES.NOTIFICATIONS.MARK_ALL_AS_READ, {
         method: 'PATCH',
         displaySuccess: false,
       });
-      if (response.success && onSuccess) {
-        onSuccess();
+      if (!response.success) {
+        throw new Error('Failed to mark all notifications as read');
       }
-      return response.success;
-    } catch (err) {
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { markAllAsRead, loading };
+      return response;
+    },
+    onSuccess: () => {
+      // Invalidate notifications and unread count
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
+    },
+  });
 };
 
 export const useDeleteNotification = () => {
   const api = useApi();
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const deleteNotification = async (id: string, onSuccess?: () => void) => {
-    setLoading(true);
-    try {
+  return useMutation({
+    mutationFn: async (id: string) => {
       const response = await api(API_ROUTES.NOTIFICATIONS.DELETE(id), {
         method: 'DELETE',
         displaySuccess: false,
       });
-      if (response.success && onSuccess) {
-        onSuccess();
+      if (!response.success) {
+        throw new Error('Failed to delete notification');
       }
-      return response.success;
-    } catch (err) {
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { deleteNotification, loading };
+      return response;
+    },
+    onSuccess: () => {
+      // Invalidate notifications and unread count
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
+    },
+  });
 };

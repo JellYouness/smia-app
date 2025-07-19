@@ -21,6 +21,7 @@ import type {} from '@mui/x-data-grid-pro/themeAugmentation';
 import type {} from '@mui/x-data-grid-premium/themeAugmentation';
 import { RoutingHistoryProvider } from '@common/contexts/RoutingHistoryContext';
 import { DialogProvider } from '@common/contexts/DialogContext';
+import { ChatProvider } from '@modules/chat/contexts/ChatContext';
 import { appWithTranslation } from 'next-i18next';
 import { frFR, enUS, esES } from '@mui/material/locale';
 import { getUserLanguage } from '@common/components/lib/utils/language';
@@ -132,8 +133,10 @@ const AppWrapper = (props: AppProps) => {
             <RoutingHistoryProvider>
               <SnackbarProvider>
                 <DialogProvider>
-                  <ProgressBar />
-                  <App {...props} />
+                  <ChatProvider>
+                    <ProgressBar />
+                    <App {...props} />
+                  </ChatProvider>
                 </DialogProvider>
               </SnackbarProvider>
             </RoutingHistoryProvider>

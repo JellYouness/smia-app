@@ -430,6 +430,12 @@ export default withAuth(CompleteProfile, {
 
 export const getStaticProps = async ({ locale }: { locale: string }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['user', 'common', 'topbar', 'auth'])),
+    ...(await serverSideTranslations(locale, [
+      'user',
+      'common',
+      'topbar',
+      'auth',
+      'notifications',
+    ])),
   },
 });
