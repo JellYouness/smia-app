@@ -224,5 +224,13 @@
   "list_equipment_help": "Lista tu equipo para ayudar a los clientes a entender tus capacidades.",
   "no_regional_expertise": "Aún no se ha agregado experiencia regional.",
   "issued_by": "Emitido por",
-  "date": "Fecha"
+  "date": "Fecha",
+  "unverified": "No verificado",
+  "pending": "Pendiente",
+  "featured": "Destacado",
+  "verified": "Verificado",
+  "available": "Disponible",
+  "limited": "Limitado",
+  "unavailable": "No disponible",
+  "busy": "Ocupado"
 }
