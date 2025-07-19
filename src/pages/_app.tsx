@@ -25,11 +25,23 @@ import { appWithTranslation } from 'next-i18next';
 import { frFR, enUS, esES } from '@mui/material/locale';
 import { getUserLanguage } from '@common/components/lib/utils/language';
 import { useRouter } from 'next/router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 // declare module '@mui/material/Button' { // If we add a color, then we need to add the color in each component
 //    interface ButtonPropsColorOverrides {
 //    }
 // }
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 const App = ({ Component, pageProps }: AppProps) => {
   const { initialized: authInitialized } = useAuth();
@@ -37,9 +49,12 @@ const App = ({ Component, pageProps }: AppProps) => {
     return <LoadingScreen />;
   }
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <QueryClientProvider client={queryClient}>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 };
 const AppWrapper = (props: AppProps) => {

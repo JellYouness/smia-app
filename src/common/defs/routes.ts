@@ -7,6 +7,7 @@ import Clients from '@modules/clients/defs/routes';
 import Ambassadors from '@modules/ambassadors/defs/routes';
 import Projects from '@modules/projects/defs/routes';
 import Notifications from '@modules/notifications/defs/routes';
+import Chat from '@modules/chat/defs/routes';
 
 const Common = {
   Home: '/',
@@ -24,6 +25,7 @@ const Routes = {
   Ambassadors,
   Projects,
   Notifications,
+  Chat,
 };
 
 export default Routes;

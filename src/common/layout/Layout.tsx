@@ -108,7 +108,8 @@ const Layout = (props: ILayoutProps) => {
               <Container
                 sx={{
                   flex: 1,
-                  paddingY: 6,
+                  paddingTop: 2,
+                  paddingBottom: 6,
                   transition: theme.transitions.create(['all'], {
                     easing: theme.transitions.easing.sharp,
                     duration: theme.transitions.duration.leavingScreen,
