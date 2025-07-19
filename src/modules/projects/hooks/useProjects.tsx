@@ -1,5 +1,11 @@
 import ApiRoutes from '@common/defs/api-routes';
-import { Project, PROJECT_STATUS } from '../defs/types';
+import {
+  Project,
+  PROJECT_STATUS,
+  ProjectInvite,
+  ProjectProposal,
+  ProjectProposalComment,
+} from '../defs/types';
 import useItems, {
   UseItems,
   UseItemsHook,
@@ -74,6 +80,48 @@ export interface UseProjectsHook extends UseItemsHook<Project, CreateOneInput, U
     input: InviteCreatorInput,
     options?: FetchApiOptions
   ) => Promise<ApiResponse<Any>>;
+  readAllInvitesByCreator: (
+    creatorId: Id,
+    page?: number,
+    pageSize?: number | 'all',
+    columnsSort?: SortParam,
+    filters?: FilterParam[],
+    options?: FetchApiOptions
+  ) => Promise<ItemsResponse<ProjectInvite>>;
+  declineInvite: (inviteId: Id, options?: FetchApiOptions) => Promise<ApiResponse<Any>>;
+  acceptInvite: (
+    inviteId: Id,
+    input: {
+      amount?: number;
+      currency?: string;
+      duration_days?: number;
+      cover_letter?: string;
+      attachments?: Any[];
+      meta?: Any;
+    },
+    options?: FetchApiOptions
+  ) => Promise<ApiResponse<Any>>;
+  readAllProposalsByCreator: (
+    creatorId: Id,
+    page?: number,
+    pageSize?: number | 'all',
+    columnsSort?: SortParam,
+    filters?: FilterParam[],
+    options?: FetchApiOptions
+  ) => Promise<ItemsResponse<ProjectProposal>>;
+  addCommentToProposal: (
+    proposalId: Id,
+    input: {
+      body: string;
+      parentId?: Id;
+      attachments?: Any[];
+    },
+    options?: FetchApiOptions
+  ) => Promise<ApiResponse<ProjectProposalComment>>;
+  readAllCommentsByProposal: (
+    proposalId: Id,
+    options?: FetchApiOptions
+  ) => Promise<ItemsResponse<ProjectProposalComment>>;
 }
 
 export type UseProjects = (opts?: UseItemsOptions) => UseProjectsHook;
@@ -184,12 +232,163 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     return response;
   };
 
+  const readAllInvitesByCreator = async (
+    creatorId: Id,
+    page?: number,
+    pageSize?: number | 'all',
+    columnsSort?: SortParam,
+    filters?: FilterParam[],
+    options?: FetchApiOptions
+  ) => {
+    const endpoint = ApiRoutes.Projects.ReadAllInvitesByCreator.replace(
+      '{creatorId}',
+      creatorId.toString()
+    );
+
+    const data: Record<string, Any> = {
+      page: page ?? 1,
+      perPage: pageSize ?? 50,
+    };
+
+    if (columnsSort) {
+      data['order[column]'] = columnsSort.column;
+      data['order[dir]'] = columnsSort.dir;
+    }
+    if (filters?.length) {
+      data.filters = filters;
+    }
+
+    const response = await fetchApi<ItemsData<ProjectInvite>>(endpoint, {
+      method: 'GET',
+      data,
+      ...options,
+    });
+    return response;
+  };
+
+  const declineInvite = async (inviteId: Id, options?: FetchApiOptions) => {
+    const endpoint = ApiRoutes.Projects.DeclineInvite.replace('{id}', inviteId.toString());
+
+    const response = await fetchApi(endpoint, {
+      method: 'PATCH',
+      data: { status: 'DECLINED' },
+      ...options,
+    });
+
+    return response;
+  };
+
+  const acceptInvite = async (
+    inviteId: Id,
+    input: {
+      amount?: number;
+      currency?: string;
+      duration_days?: number;
+      cover_letter?: string;
+      attachments?: Any[];
+      meta?: Any;
+    },
+    options?: FetchApiOptions
+  ) => {
+    const endpoint = ApiRoutes.Projects.AcceptInvite.replace('{id}', inviteId.toString());
+
+    const data = {
+      invite_id: inviteId,
+      ...input,
+    };
+
+    const response = await fetchApi(endpoint, {
+      method: 'POST',
+      data,
+      ...options,
+    });
+
+    return response;
+  };
+
+  const readAllProposalsByCreator = async (
+    creatorId: Id,
+    page?: number,
+    pageSize?: number | 'all',
+    columnsSort?: SortParam,
+    filters?: FilterParam[],
+    options?: FetchApiOptions
+  ) => {
+    const endpoint = ApiRoutes.Projects.ReadAllProposalsByCreator.replace(
+      '{creatorId}',
+      creatorId.toString()
+    );
+
+    const data: Record<string, Any> = {
+      page,
+      perPage: pageSize,
+    };
+    if (columnsSort) {
+      data['order[column]'] = columnsSort.column;
+      data['order[dir]'] = columnsSort.dir;
+    }
+    if (filters?.length) {
+      data.filters = filters;
+    }
+
+    const response = await fetchApi<ItemsData<ProjectProposal>>(endpoint, {
+      method: 'GET',
+      data,
+      ...options,
+    });
+
+    return response;
+  };
+
+  const addCommentToProposal = async (
+    proposalId: Id,
+    input: { body: string; parentId?: Id; attachments?: Any[] },
+    options?: FetchApiOptions
+  ) => {
+    const endpoint = ApiRoutes.Projects.AddProposalComment.replace(
+      '{proposalId}',
+      proposalId.toString()
+    );
+
+    const response = await fetchApi<ProjectProposalComment>(endpoint, {
+      method: 'POST',
+      data: {
+        body: input.body,
+        parent_id: input.parentId ?? null,
+        attachments: input.attachments ?? null,
+      },
+      ...options,
+    });
+
+    return response;
+  };
+
+  const readAllCommentsByProposal = async (proposalId: Id, options?: FetchApiOptions) => {
+    const endpoint = ApiRoutes.Projects.ReadAllCommentsByProposal.replace(
+      '{proposalId}',
+      proposalId.toString()
+    );
+
+    const response = await fetchApi<ItemsData<ProjectProposalComment>>(endpoint, {
+      method: 'GET',
+      ...options,
+    });
+
+    return response;
+  };
+
   const hook: UseProjectsHook = {
     ...useItemsHook,
     readAllByCreator,
     readAllByClient,
     readAllByAmbassador,
     inviteCreator,
+    readAllInvitesByCreator,
+    declineInvite,
+    acceptInvite,
+    readAllProposalsByCreator,
+    addCommentToProposal,
+    readAllCommentsByProposal,
   };
 
   return hook;

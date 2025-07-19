@@ -5,12 +5,12 @@ import useAuth from '@modules/auth/hooks/api/useAuth';
 import { NextPage } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'react-i18next';
-import CreatorDashboard from '@modules/creators/components/CreatorDashboard';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Add } from '@mui/icons-material';
 import ClientDashboard from '@modules/clients/components/ClientDashboard';
+import CreatorDashboard from '@modules/creators/components/partials/dashboard/CreatorDashboard';
 
 const Index: NextPage = () => {
   const { t } = useTranslation(['home']);

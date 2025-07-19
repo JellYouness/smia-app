@@ -26,18 +26,18 @@ import {
   useTheme,
 } from '@mui/material';
 import React from 'react';
-import { AvailabilityStatus, Creator, MediaType } from '../defs/types';
+import { AvailabilityStatus, Creator, MediaType } from '@modules/creators/defs/types';
 import { User } from '@modules/users/defs/types';
 import { Project, PROJECT_STATUS } from '@modules/projects/defs/types';
 import { useTranslation } from 'react-i18next';
 
-interface CreatorDetailsDashboardProps {
+interface DetailsPanelProps {
   creator: Creator;
   user: User;
   projects: Project[];
 }
 
-const CreatorDetailsDashboard = ({ creator, user, projects }: CreatorDetailsDashboardProps) => {
+const DetailsPanel = ({ creator, user, projects }: DetailsPanelProps) => {
   const theme = useTheme();
   const { t } = useTranslation(['common', 'user', 'project']);
 
@@ -389,4 +389,4 @@ const CreatorDetailsDashboard = ({ creator, user, projects }: CreatorDetailsDash
   );
 };
 
-export default CreatorDetailsDashboard;
+export default DetailsPanel;

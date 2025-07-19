@@ -24,12 +24,12 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface DashboardProjectsProps {
+interface ProjectsPanelProps {
   projects: Project[];
   loadingProjects: boolean;
 }
 
-const DashboardProjects = ({ projects, loadingProjects }: DashboardProjectsProps) => {
+const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
   const theme = useTheme();
   const { t } = useTranslation(['common', 'user', 'project']);
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,7 +89,7 @@ const DashboardProjects = ({ projects, loadingProjects }: DashboardProjectsProps
   };
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Box
         sx={{
           display: 'flex',
@@ -98,7 +98,6 @@ const DashboardProjects = ({ projects, loadingProjects }: DashboardProjectsProps
           alignItems: { xs: 'stretch', sm: 'center' },
           gap: 2,
           mb: 3,
-          position: 'sticky',
           top: theme.spacing(2),
           zIndex: 10,
           backgroundColor: alpha(theme.palette.background.default, 0.9),
@@ -234,16 +233,17 @@ const DashboardProjects = ({ projects, loadingProjects }: DashboardProjectsProps
             <Grid item xs={12} key={project.id}>
               <Card
                 sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.05)',
-                  borderRadius: 2,
-                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  borderRadius: 3,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                  border: '1px solid',
+                  borderColor: alpha(theme.palette.divider, 0.15),
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.1)',
+                    boxShadow: '0 6px 24px rgba(0,0,0,0.12)',
+                    transform: 'translateY(-2px)',
                   },
+                  position: 'relative',
+                  overflow: 'visible',
                 }}
               >
                 <CardContent>
@@ -343,8 +343,8 @@ const DashboardProjects = ({ projects, loadingProjects }: DashboardProjectsProps
           )}
         </Card>
       )}
-    </>
+    </Box>
   );
 };
 
-export default DashboardProjects;
+export default ProjectsPanel;
