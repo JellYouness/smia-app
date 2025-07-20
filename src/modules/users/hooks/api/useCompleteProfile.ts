@@ -20,7 +20,7 @@ interface CompleteProfileFormData {
   gender: string;
   preferredLanguage: string;
   timezone: string;
-  profilePicture: string;
+  profilePicture: File | null;
   notificationPreferences: {
     email: boolean;
     sms: boolean;
@@ -71,6 +71,131 @@ export const useCompleteProfile = () => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
 
+  // Step-specific validation schemas
+  const getStepValidationSchema = (step: number) => {
+    switch (step) {
+      case 0: // Personal Information
+        return Yup.object().shape({
+          phoneNumber: Yup.string()
+            .nullable()
+            .test('phone-format', t('user:invalid_phone_format'), (value) => {
+              if (!value) {
+                return true; // Optional field
+              }
+              // Handle international phone format from mui-tel-input
+              // Remove any non-digit characters except + at the beginning
+              const cleanValue = value.replace(/[^\d+]/g, '');
+              // Must start with + and have at least 7 digits (country code + number)
+              const phoneRegex = /^\+[1-9]\d{6,14}$/;
+              return phoneRegex.test(cleanValue);
+            }),
+          gender: Yup.string().nullable().oneOf(['MALE', 'FEMALE', 'OTHER']),
+          dateOfBirth: Yup.date()
+            .nullable()
+            .max(new Date(), t('user:date_of_birth_cannot_be_future')),
+          preferredLanguage: Yup.string().nullable(),
+          timezone: Yup.string().nullable(),
+          profilePicture: Yup.mixed()
+            .nullable()
+            .test('file-size', t('common:file_size_error', { maxSize: 5 }), (value) => {
+              if (!value) {
+                return true; // Optional field
+              }
+              if (value instanceof File) {
+                return value.size <= 5 * 1024 * 1024; // 5MB
+              }
+              return true;
+            })
+            .test('file-type', t('user:invalid_image_format'), (value) => {
+              if (!value) {
+                return true; // Optional field
+              }
+              if (value instanceof File) {
+                return value.type.startsWith('image/');
+              }
+              return true;
+            }),
+          bio: Yup.string().nullable().max(1000, t('common:bio_too_long')),
+        });
+
+      case 1: // Address
+        return Yup.object().shape({
+          address: Yup.string().nullable(),
+          city: Yup.string().nullable(),
+          state: Yup.string().nullable(),
+          country: Yup.string().nullable(),
+          postalCode: Yup.string().nullable(),
+        });
+
+      case 2: // Notifications
+        return Yup.object().shape({
+          notificationPreferences: Yup.object().shape({
+            email: Yup.boolean().required(),
+            sms: Yup.boolean().required(),
+            push: Yup.boolean().required(),
+          }),
+        });
+
+      case 3: // Privacy
+        return Yup.object().shape({
+          privacySettings: Yup.object().shape({
+            profileVisibility: Yup.string()
+              .required(t('user:profile_visibility_required'))
+              .oneOf(['PUBLIC', 'PRIVATE', 'FRIENDS']),
+            showEmail: Yup.boolean().required(),
+            showPhone: Yup.boolean().required(),
+            showAddress: Yup.boolean().required(),
+          }),
+        });
+
+      case 4: // Social Media
+        return Yup.object().shape({
+          socialMediaLinks: Yup.object().shape({
+            facebook: Yup.string().nullable().url(t('user:invalid_facebook_url')),
+            twitter: Yup.string().nullable().url(t('user:invalid_twitter_url')),
+            linkedin: Yup.string().nullable().url(t('user:invalid_linkedin_url')),
+            instagram: Yup.string().nullable().url(t('user:invalid_instagram_url')),
+          }),
+        });
+
+      case 5: // Emergency Contact
+        return Yup.object().shape({
+          emergencyContact: Yup.object().shape({
+            name: Yup.string().nullable(),
+            relationship: Yup.string().nullable(),
+            phone: Yup.string()
+              .nullable()
+              .test('phone-format', t('user:invalid_emergency_phone_format'), (value) => {
+                if (!value) {
+                  return true; // Optional field
+                }
+                // Handle international phone format from mui-tel-input
+                // Remove any non-digit characters except + at the beginning
+                const cleanValue = value.replace(/[^\d+]/g, '');
+                // Must start with + and have at least 7 digits (country code + number)
+                const phoneRegex = /^\+[1-9]\d{6,14}$/;
+                return phoneRegex.test(cleanValue);
+              }),
+            email: Yup.string().nullable().email(t('user:invalid_emergency_email_format')),
+          }),
+        });
+
+      case 6: // Preferences
+        return Yup.object().shape({
+          preferences: Yup.object().shape({
+            theme: Yup.string()
+              .required(t('user:theme_preference_required'))
+              .oneOf(['light', 'dark', 'auto']),
+            language: Yup.string().nullable(),
+            timezone: Yup.string().nullable(),
+          }),
+        });
+
+      default:
+        return Yup.object().shape({});
+    }
+  };
+
   const ProfileSchema = Yup.object().shape({
     phoneNumber: Yup.string().nullable(),
     address: Yup.string().nullable(),
@@ -83,7 +208,7 @@ export const useCompleteProfile = () => {
     gender: Yup.string().nullable().oneOf(['MALE', 'FEMALE', 'OTHER']),
     preferredLanguage: Yup.string().nullable(),
     timezone: Yup.string().nullable(),
-    profilePicture: Yup.string().nullable(),
+    profilePicture: Yup.mixed().nullable(),
     notificationPreferences: Yup.object().shape({
       email: Yup.boolean(),
       sms: Yup.boolean(),
@@ -145,7 +270,7 @@ export const useCompleteProfile = () => {
       gender: '',
       preferredLanguage: user?.preferred_language || '',
       timezone: user?.timezone || '',
-      profilePicture: '',
+      profilePicture: null,
       notificationPreferences: {
         email: true,
         sms: false,
@@ -183,7 +308,108 @@ export const useCompleteProfile = () => {
   const {
     handleSubmit,
     formState: { isSubmitting },
+    trigger,
+    getValues,
   } = methods;
+
+  // Function to validate a specific step
+  const validateStep = async (step: number): Promise<boolean> => {
+    try {
+      const stepSchema = getStepValidationSchema(step);
+      const currentValues = getValues();
+
+      // Get the fields that belong to this step
+      const stepFields = getStepFields(step);
+
+      // Validate only the fields for this step
+      const stepData = stepFields.reduce((acc, field) => {
+        const value = getNestedValue(currentValues, field);
+        setNestedValue(acc, field, value);
+        return acc;
+      }, {});
+
+      await stepSchema.validate(stepData, { abortEarly: false });
+      return true;
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        // Trigger validation for the step fields to show errors
+        const stepFields = getStepFields(step);
+        await trigger(stepFields as any);
+
+        // Show error message
+        const firstError = error.errors[0];
+        enqueueSnackbar(firstError, { variant: 'error' });
+      }
+      return false;
+    }
+  };
+
+  // Helper function to get fields for each step
+  const getStepFields = (step: number): string[] => {
+    switch (step) {
+      case 0: // Personal Information
+        return [
+          'phoneNumber',
+          'gender',
+          'dateOfBirth',
+          'preferredLanguage',
+          'timezone',
+          'profilePicture',
+          'bio',
+        ];
+      case 1: // Address
+        return ['address', 'city', 'state', 'country', 'postalCode'];
+      case 2: // Notifications
+        return [
+          'notificationPreferences.email',
+          'notificationPreferences.sms',
+          'notificationPreferences.push',
+        ];
+      case 3: // Privacy
+        return [
+          'privacySettings.profileVisibility',
+          'privacySettings.showEmail',
+          'privacySettings.showPhone',
+          'privacySettings.showAddress',
+        ];
+      case 4: // Social Media
+        return [
+          'socialMediaLinks.facebook',
+          'socialMediaLinks.twitter',
+          'socialMediaLinks.linkedin',
+          'socialMediaLinks.instagram',
+        ];
+      case 5: // Emergency Contact
+        return [
+          'emergencyContact.name',
+          'emergencyContact.relationship',
+          'emergencyContact.phone',
+          'emergencyContact.email',
+        ];
+      case 6: // Preferences
+        return ['preferences.theme', 'preferences.language', 'preferences.timezone'];
+      default:
+        return [];
+    }
+  };
+
+  // Helper function to get nested object value
+  const getNestedValue = (obj: any, path: string): any => {
+    return path.split('.').reduce((current, key) => current?.[key], obj);
+  };
+
+  // Helper function to set nested object value
+  const setNestedValue = (obj: any, path: string, value: any): void => {
+    const keys = path.split('.');
+    const lastKey = keys.pop()!;
+    const target = keys.reduce((current, key) => {
+      if (!current[key]) {
+        current[key] = {};
+      }
+      return current[key];
+    }, obj);
+    target[lastKey] = value;
+  };
 
   useEffect(() => {
     if (user) {
@@ -199,6 +425,27 @@ export const useCompleteProfile = () => {
   const onSubmit = async (data: CompleteProfileFormData) => {
     try {
       const token = localStorage.getItem('authToken');
+
+      // Handle file upload if profile picture is provided
+      let profilePictureUrl = null;
+      if (data.profilePicture instanceof File) {
+        const formData = new FormData();
+        formData.append('file', data.profilePicture);
+
+        const uploadResponse = await fetch(process.env.NEXT_PUBLIC_API_URL + '/uploads', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        if (uploadResponse.ok) {
+          const uploadResult = await uploadResponse.json();
+          profilePictureUrl = uploadResult.data?.url || null;
+        }
+      }
+
       const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/auth/complete-profile', {
         method: 'POST',
         headers: {
@@ -217,7 +464,7 @@ export const useCompleteProfile = () => {
           gender: data.gender || null,
           preferred_language: data.preferredLanguage,
           timezone: data.timezone,
-          profile_picture: data.profilePicture,
+          profile_picture: profilePictureUrl,
           notification_preferences: data.notificationPreferences,
           privacy_settings: data.privacySettings,
           social_media_links: data.socialMediaLinks,
@@ -257,5 +504,6 @@ export const useCompleteProfile = () => {
     isSubmitting,
     onSubmit: handleSubmit(onSubmit),
     handleSkip,
+    validateStep,
   };
 };

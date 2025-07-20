@@ -1,11 +1,13 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import useApi from '@common/hooks/useApi';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 import { API_ROUTES } from '../defs/api-routes';
 import { useEffect } from 'react';
 
 export const useUnreadConversations = () => {
   const api = useApi();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const query = useQuery({
     queryKey: ['unread-conversations'],
@@ -20,6 +22,7 @@ export const useUnreadConversations = () => {
       }
       return { unreadCount: 0 };
     },
+    enabled: !!user, // Only run when user is authenticated
     staleTime: 10000, // Consider data fresh for 10 seconds
     gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
   });

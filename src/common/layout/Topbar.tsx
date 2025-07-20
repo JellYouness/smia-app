@@ -35,7 +35,6 @@ import { NotificationDropdown } from '@modules/notifications/components/Notifica
 import { useUnreadCount } from '@modules/notifications/hooks/useNotifications';
 import { useUnreadConversations } from '@modules/chat/hooks/useUnreadConversations';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ChatIcon from '@mui/icons-material/Chat';
 

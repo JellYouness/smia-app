@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import useApi from '@common/hooks/useApi';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 import { API_ROUTES } from '../defs/api-routes';
 import {
   Notification,
@@ -10,6 +11,7 @@ import {
 
 export const useNotifications = (filters: NotificationFilters = {}) => {
   const api = useApi();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ['notifications', filters.type, filters.read, filters.perPage, filters.page],
@@ -36,6 +38,7 @@ export const useNotifications = (filters: NotificationFilters = {}) => {
       }
       throw new Error(response.errors?.[0] || 'Failed to load notifications');
     },
+    enabled: !!user, // Only run when user is authenticated
     staleTime: 10000, // Consider data fresh for 10 seconds
     gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
   });
@@ -65,6 +68,7 @@ export const useNotification = (id: string) => {
 
 export const useNotificationTypes = () => {
   const api = useApi();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ['notification-types'],
@@ -77,6 +81,7 @@ export const useNotificationTypes = () => {
       }
       throw new Error(response.errors?.[0] || 'Failed to load notification types');
     },
+    enabled: !!user, // Only run when user is authenticated
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
@@ -84,6 +89,7 @@ export const useNotificationTypes = () => {
 
 export const useUnreadCount = () => {
   const api = useApi();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ['unread-count'],
@@ -94,6 +100,7 @@ export const useUnreadCount = () => {
       }
       throw new Error(response.errors?.[0] || 'Failed to load unread count');
     },
+    enabled: !!user, // Only run when user is authenticated
     staleTime: 10000, // Consider data fresh for 10 seconds
     gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
     refetchInterval: 30000, // Refetch every 30 seconds

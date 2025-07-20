@@ -68,10 +68,6 @@ const LanguageChips: React.FC<LanguageChipsProps> = ({ languages }) => {
   return (
     <Box display="flex" alignItems="center" flexWrap="wrap" gap={1}>
       {languages.slice(0, 2).map((lang) => {
-        const config =
-          proficiencyConfig[lang.proficiency as keyof typeof proficiencyConfig] ||
-          proficiencyConfig.BASIC;
-
         return (
           <Chip
             key={lang.language}

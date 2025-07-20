@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import useApi from '@common/hooks/useApi';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 import { API_ROUTES } from '../defs/api-routes';
 import {
   Conversation,
@@ -14,6 +15,7 @@ import {
 
 export const useConversations = (perPage = 20) => {
   const api = useApi();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ['conversations', perPage],
@@ -23,6 +25,7 @@ export const useConversations = (perPage = 20) => {
       );
       return response.data;
     },
+    enabled: !!user, // Only run when user is authenticated
     staleTime: 10000, // Consider data fresh for 10 seconds
     gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
   });
@@ -30,6 +33,7 @@ export const useConversations = (perPage = 20) => {
 
 export const useMessages = (conversationId: string, beforeMessageId?: string, perPage = 50) => {
   const api = useApi();
+  const { user } = useAuth();
 
   return useQuery({
     queryKey: ['messages', conversationId, perPage, beforeMessageId],
@@ -41,7 +45,7 @@ export const useMessages = (conversationId: string, beforeMessageId?: string, pe
       const response = await api<MessagesResponse>(url);
       return response.data;
     },
-    enabled: !!conversationId,
+    enabled: !!conversationId && !!user, // Only run when conversationId exists and user is authenticated
     staleTime: 30000, // Consider data fresh for 30 seconds
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });

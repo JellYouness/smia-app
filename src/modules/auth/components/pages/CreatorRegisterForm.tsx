@@ -69,13 +69,7 @@ const CreatorRegisterForm = () => {
   const {
     handleSubmit,
     formState: { isSubmitting },
-    setValue,
-    watch,
   } = methods;
-
-  const watchedSkills = watch('skills');
-  const watchedMediaTypes = watch('mediaTypes');
-  const watchedRegions = watch('regions');
 
   const onSubmit = async (data: RegisterInput) => {
     const response = await register(
@@ -99,6 +93,7 @@ const CreatorRegisterForm = () => {
   };
 
   const updateLanguage = (index: number, field: 'language' | 'proficiency', value: string) => {
+    console.log('updateLanguage', index, field, value);
     const updatedLanguages = [...languages];
     updatedLanguages[index][field] = value;
     setLanguages(updatedLanguages);
@@ -249,7 +244,7 @@ const CreatorRegisterForm = () => {
                     onChange={(e) => updateLanguage(index, 'language', e.target.value)}
                     sx={{ flex: 1 }}
                   />
-                  <RHFSelect
+                  {/* <RHFSelect
                     name={`languages[${index}].proficiency`}
                     label={t('auth:proficiency')}
                     value={lang.proficiency}
@@ -261,7 +256,14 @@ const CreatorRegisterForm = () => {
                     <option value="Intermediate">Intermediate</option>
                     <option value="Advanced">Advanced</option>
                     <option value="Native">Native</option>
-                  </RHFSelect>
+                  </RHFSelect> */}
+                  <RHFAutocomplete
+                    name={`languages[${index}].proficiency`}
+                    label={t('auth:proficiency')}
+                    options={['Basic', 'Intermediate', 'Advanced', 'Native']}
+                    onChange={(_, value) => updateLanguage(index, 'proficiency', value as string)}
+                    sx={{ flex: 1 }}
+                  />
                   <LoadingButton
                     variant="outlined"
                     color="error"
@@ -275,22 +277,6 @@ const CreatorRegisterForm = () => {
               <LoadingButton variant="outlined" onClick={addLanguage} sx={{ mb: 2 }}>
                 {t('auth:add_language')}
               </LoadingButton>
-            </Grid>
-
-            {/* Biography */}
-            <Grid item xs={12}>
-              <Typography variant="h6" sx={{ mb: 2, mt: 2 }}>
-                {t('auth:biography')}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <RHFTextField
-                name="biography"
-                label={t('auth:biography')}
-                multiline
-                rows={4}
-                helperText={t('auth:biography_helper_text')}
-              />
             </Grid>
 
             {/* Terms and Conditions */}

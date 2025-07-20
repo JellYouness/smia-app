@@ -74,7 +74,6 @@ const FormStepper = <FormData extends AnyObject, FORM_STEP_ID>({
   const [activeStepId, setActiveStepId] = useState<FORM_STEP_ID>(steps[0].id);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [seeded, setSeeded] = useState(false);
-  const seededRef = useRef(false);
   const savingDraftRef = useRef(false);
   const router = useRouter();
   const formRef = useRef<FormStepRef>();
