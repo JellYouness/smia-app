@@ -134,5 +134,14 @@
   "language_proficiency": "Language Proficiency",
   "invited": "Invited",
   "years_experience": "years of experience",
-  "skills": "Skills"
+  "skills": "Skills",
+  "viewer": "Viewer",
+  "editor": "Editor",
+  "hourly_rate": "Hourly Rate",
+  "experience": "Experience",
+  "verification_status": "Verification Status",
+  "availability": "Availability",
+  "make_viewer": "Make Viewer",
+  "make_editor": "Make Editor",
+  "creators": "creators"
 }

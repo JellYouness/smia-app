@@ -79,6 +79,7 @@ const InviteCard: React.FC<InviteCardProps> = ({ invite, onAccept, onDecline }) 
           },
           position: 'relative',
           overflow: 'visible',
+          p: 2,
         }}
       >
         {invite.status === PROJECT_INVITE_STATUS.PENDING && (
@@ -117,7 +118,7 @@ const InviteCard: React.FC<InviteCardProps> = ({ invite, onAccept, onDecline }) 
                         label={invite.status}
                         size="small"
                         color={statusColour[invite.status]}
-                        variant="filled"
+                        variant="outlined"
                         sx={{
                           fontWeight: 600,
                         }}
@@ -129,7 +130,7 @@ const InviteCard: React.FC<InviteCardProps> = ({ invite, onAccept, onDecline }) 
                     label={invite.status}
                     size="small"
                     color={statusColour[invite.status]}
-                    variant="filled"
+                    variant="outlined"
                     sx={{
                       fontWeight: 600,
                       ...(invite.status === PROJECT_INVITE_STATUS.PENDING && {

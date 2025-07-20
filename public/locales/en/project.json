@@ -63,5 +63,9 @@
   "revert_to_default_message": "Revert to a default message",
   "send_invitation": "Send Invitation",
   "no_creators_found": "No creators found",
-  "no_creators_description": "No creators found for this project. Please try again later."
+  "no_creators_description": "No creators found for this project. Please try again later.",
+  "confirmed_soft_hire": "Confirmed (soft-hire)",
+  "assigned_active_hire": "Assigned (active hire)",
+  "no_hired_creators_title": "No hired creators yet",
+  "no_hired_creators_description": "You haven't hired any creators for this project yet. Review proposals to start hiring."
 }

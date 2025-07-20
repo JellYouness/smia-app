@@ -1,11 +1,13 @@
 import { Box, Typography, useTheme, CircularProgress } from '@mui/material';
 import HireStepperBar, { StepKey } from './HireStepperBar';
 import { useTranslation } from 'react-i18next';
-import useProjects from '@modules/projects/hooks/useProjects';
-import { useEffect, useState } from 'react';
+import useProjects, { projectCacheKey } from '@modules/projects/hooks/useProjects';
 import { useRouter } from 'next/router';
 import { Project } from '@modules/projects/defs/types';
 import InviteCreatorsStep from './hire/InviteCreatorsStep';
+import ReviewProposalsStep from './hire/ReviewProposalsStep';
+import HiredCreatorStep from './hire/HiredCreatorStep';
+import useSWR from 'swr';
 
 interface HireCreatorStepperProps {
   active: StepKey;
@@ -17,27 +19,15 @@ const HireCreatorStepper = ({ active, onStepChange }: HireCreatorStepperProps) =
   const { readOne } = useProjects();
   const router = useRouter();
   const { id } = router.query;
-  const [project, setProject] = useState<Project | null>(null);
 
-  const [loading, setLoading] = useState(true);
+  // Use SWR to get live project data
+  const { data: projectData, isLoading } = useSWR(id ? projectCacheKey(Number(id)) : null, () =>
+    readOne(Number(id))
+  );
 
-  const fetchProject = async () => {
-    if (!id) {
-      return;
-    }
-    setLoading(true);
-    const response = await readOne(Number(id));
-    if (response.success && response.data) {
-      setProject(response.data.item);
-    }
-    setLoading(false);
-  };
+  const project = projectData?.data?.item;
 
-  useEffect(() => {
-    fetchProject();
-  }, [id]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <Box
         sx={{
@@ -80,8 +70,12 @@ const HireCreatorStepper = ({ active, onStepChange }: HireCreatorStepperProps) =
         {active === 'invite' && (
           <InviteCreatorsStep projectId={Number(id)} project={project as Project} />
         )}
-        {active === 'review' && <Typography>Review step coming soon…</Typography>}
-        {active === 'hire' && <Typography>Hire step coming soon…</Typography>}
+        {active === 'review' && (
+          <ReviewProposalsStep projectId={Number(id)} project={project as Project} />
+        )}
+        {active === 'hire' && (
+          <HiredCreatorStep projectId={Number(id)} project={project as Project} />
+        )}
       </Box>
     </Box>
   );
