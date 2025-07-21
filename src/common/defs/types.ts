@@ -65,4 +65,5 @@ export interface NavItem {
   namespace?: string;
   permission?: CRUD_ACTION;
   children?: NavItem[];
+  createButton?: boolean;
 }

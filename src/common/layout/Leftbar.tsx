@@ -87,6 +87,7 @@ const Leftbar = (props: LeftbarProps) => {
               icon: <AddRounded />,
               link: menuItem.routes.CreateOne,
             },
+            createButton: item.createButton ?? true,
           };
         }
 
@@ -205,7 +206,7 @@ const Leftbar = (props: LeftbarProps) => {
                       >
                         <StyledListItemIcon>{item.icon}</StyledListItemIcon>
                         <ListItemText disableTypography primary={item.text} />
-                        {item.suffix && (
+                        {item.suffix && item.createButton && (
                           <Tooltip title={item.suffix.tooltip}>
                             <IconButton
                               size="small"

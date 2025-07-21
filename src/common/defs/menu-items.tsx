@@ -1,7 +1,7 @@
 import Routes from '@common/defs/routes';
 import { CRUD_ACTION, NavGroup } from '@common/defs/types';
 import DashboardCustomizeRoundedIcon from '@mui/icons-material/DashboardCustomizeRounded';
-import { Group, Star, Settings, School, AdminPanelSettings } from '@mui/icons-material';
+import { Group, Star, Settings, School, AdminPanelSettings, RateReview } from '@mui/icons-material';
 import Namespaces from './namespaces';
 
 export const menuItems: NavGroup[] = [
@@ -20,6 +20,7 @@ export const menuItems: NavGroup[] = [
         permission: CRUD_ACTION.READ,
         namespace: Namespaces.Creators,
         routes: Routes.Creators,
+        createButton: false,
       },
       {
         text: 'Clients',
@@ -28,6 +29,7 @@ export const menuItems: NavGroup[] = [
         permission: CRUD_ACTION.READ,
         namespace: Namespaces.Clients,
         routes: Routes.Clients,
+        createButton: false,
       },
       {
         text: 'Ambassadors',
@@ -36,12 +38,20 @@ export const menuItems: NavGroup[] = [
         permission: CRUD_ACTION.READ,
         namespace: Namespaces.Ambassadors,
         routes: Routes.Ambassadors,
+        createButton: false,
       },
     ],
   },
   {
     text: 'Admin',
     items: [
+      {
+        text: 'Applications',
+        icon: <RateReview />,
+        link: '/admin/applications',
+        permission: CRUD_ACTION.READ,
+        namespace: Namespaces.Creators,
+      },
       {
         text: 'System Administrators',
         icon: <AdminPanelSettings />,

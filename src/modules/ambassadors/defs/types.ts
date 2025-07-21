@@ -121,6 +121,9 @@ export interface Ambassador extends CrudObject {
   businessState: string;
   businessPostalCode: string;
   businessCountry: string;
+  reviewNotes?: string;
+  reviewedAt?: string;
+  reviewedBy?: number;
 }
 
 export type MediaType = 'PHOTO' | 'VIDEO' | 'ARTICLE' | 'AUDIO' | 'DESIGN' | 'OTHER';

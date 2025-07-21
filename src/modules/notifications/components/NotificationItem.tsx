@@ -65,6 +65,14 @@ const getNotificationIcon = (type: NotificationType) => {
       return <PaymentIcon />;
     case NotificationType.ACCOUNT_VERIFIED:
       return <VerifiedIcon />;
+    case NotificationType.APPLICATION_SUBMITTED:
+      return <DescriptionIcon />;
+    case NotificationType.APPLICATION_APPROVED:
+      return <CheckCircleIcon />;
+    case NotificationType.APPLICATION_REJECTED:
+      return <ThumbDownIcon />;
+    case NotificationType.APPLICATION_PENDING:
+      return <ScheduleIcon />;
     case NotificationType.WELCOME:
       return <CelebrationIcon />;
     case NotificationType.REMINDER:
@@ -84,13 +92,17 @@ const getNotificationColor = (type: NotificationType) => {
       return 'primary';
     case NotificationType.PROPOSAL_ACCEPTED:
     case NotificationType.ACCOUNT_VERIFIED:
+    case NotificationType.APPLICATION_APPROVED:
     case NotificationType.PAYMENT_RECEIVED:
       return 'success';
     case NotificationType.PROPOSAL_REJECTED:
+    case NotificationType.APPLICATION_REJECTED:
     case NotificationType.SECURITY_ALERT:
       return 'error';
     case NotificationType.SYSTEM_ANNOUNCEMENT:
     case NotificationType.WELCOME:
+    case NotificationType.APPLICATION_PENDING:
+    case NotificationType.APPLICATION_SUBMITTED:
       return 'warning';
     default:
       return 'default';

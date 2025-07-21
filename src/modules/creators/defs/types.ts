@@ -98,6 +98,10 @@ export interface Creator extends CrudObject {
   education: Education[];
   professionalBackground: ProfessionalBackground[];
   achievements: string[];
+  reviewNotes?: string;
+  reviewedAt?: string;
+  reviewedBy?: number;
+  user?: User;
 }
 
 export interface Ambassador extends CrudObject {
