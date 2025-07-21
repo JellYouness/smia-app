@@ -17,7 +17,7 @@ import {
   Tooltip,
   Skeleton,
 } from '@mui/material';
-import { Project, ProjectCreator } from '@modules/projects/defs/types';
+import { Project, PROJECT_CREATOR_PERMISSION, ProjectCreator } from '@modules/projects/defs/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -71,7 +71,7 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
     setSelectedCreator(null);
   };
 
-  const handlePermissionChange = async (newPermission: 'viewer' | 'editor') => {
+  const handlePermissionChange = async (newPermission: PROJECT_CREATOR_PERMISSION) => {
     if (!selectedCreator) {
       return;
     }
@@ -98,7 +98,7 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
     }
 
     const isUpdating = updatingCreatorId === creator.id;
-    const isEditor = projectCreator.permission === 'editor';
+    const isEditor = projectCreator.permission === PROJECT_CREATOR_PERMISSION.EDITOR;
 
     return (
       <Grid item xs={12} sm={6} md={4} key={projectCreator.id}>
@@ -402,8 +402,8 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
         }}
       >
         <MenuItem
-          onClick={() => handlePermissionChange('viewer')}
-          disabled={selectedCreator?.permission === 'viewer'}
+          onClick={() => handlePermissionChange(PROJECT_CREATOR_PERMISSION.VIEWER)}
+          disabled={selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.VIEWER}
           sx={{
             display: 'flex',
             alignItems: 'center',
@@ -413,13 +413,17 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
         >
           <Visibility
             fontSize="small"
-            color={selectedCreator?.permission === 'viewer' ? 'disabled' : 'inherit'}
+            color={
+              selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.VIEWER
+                ? 'disabled'
+                : 'inherit'
+            }
           />
           <Typography variant="body2">{t('common:make_viewer')}</Typography>
         </MenuItem>
         <MenuItem
-          onClick={() => handlePermissionChange('editor')}
-          disabled={selectedCreator?.permission === 'editor'}
+          onClick={() => handlePermissionChange(PROJECT_CREATOR_PERMISSION.EDITOR)}
+          disabled={selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.EDITOR}
           sx={{
             display: 'flex',
             alignItems: 'center',
@@ -429,7 +433,11 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
         >
           <Edit
             fontSize="small"
-            color={selectedCreator?.permission === 'editor' ? 'disabled' : 'inherit'}
+            color={
+              selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.EDITOR
+                ? 'disabled'
+                : 'inherit'
+            }
           />
           <Typography variant="body2">{t('common:make_editor')}</Typography>
         </MenuItem>

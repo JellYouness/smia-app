@@ -16,7 +16,7 @@ export interface ProjectCreator {
   creatorId: Id;
   role?: string;
   status?: string;
-  permission: 'viewer' | 'editor';
+  permission: PROJECT_CREATOR_PERMISSION;
   creator?: Creator;
 }
 
@@ -111,4 +111,9 @@ export interface ProjectUpdate extends CrudObject {
 export enum PROJECT_UPDATE_TYPE {
   UPDATE = 'UPDATE',
   REPORT_REQUEST = 'REPORT_REQUEST',
+}
+
+export enum PROJECT_CREATOR_PERMISSION {
+  VIEWER = 'VIEWER',
+  EDITOR = 'EDITOR',
 }

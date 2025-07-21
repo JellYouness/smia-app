@@ -38,7 +38,7 @@ const InviteMessageModal = ({ open, creator, onClose, onSubmit }: InviteMessageM
 
   const defaultMsg = creator
     ? t('project:invite_message_default', {
-        creator: creator.user.firstName,
+        creator: creator.user?.firstName,
       })
     : '';
 
@@ -103,8 +103,8 @@ const InviteMessageModal = ({ open, creator, onClose, onSubmit }: InviteMessageM
           </Typography>
 
           <Stack direction="row" alignItems="center" spacing={2} mb={3}>
-            <Avatar src={creator.user.profileImage ?? undefined} sx={{ width: 56, height: 56 }}>
-              {creator.user.firstName[0]}
+            <Avatar src={creator.user?.profileImage ?? undefined} sx={{ width: 56, height: 56 }}>
+              {creator.user?.firstName[0]}
             </Avatar>
             <Box>
               <Link
@@ -112,7 +112,7 @@ const InviteMessageModal = ({ open, creator, onClose, onSubmit }: InviteMessageM
                 underline="none"
                 sx={{ fontWeight: 600, color: 'primary.main' }}
               >
-                {creator.user.firstName} {creator.user.lastName}
+                {creator.user?.firstName} {creator.user?.lastName}
               </Link>
               <Typography variant="body2" color="text.secondary">
                 {summary}

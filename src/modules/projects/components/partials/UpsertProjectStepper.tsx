@@ -105,26 +105,51 @@ const UpsertProjectStepper = ({
         if (updatesRes.success && updatesRes.data?.items?.length) {
           const updates: string[] = [];
           if (data.title && data.title !== project.title) {
-            updates.push(`Project title updated to ‘${data.title}’.`);
+            updates.push(`Project title updated: '${project.title}' → '${data.title}'.`);
           }
           if (data.description && data.description !== project.description) {
-            updates.push('Project description was revised.');
+            updates.push(
+              `Project description updated:\nBefore: "${project.description || ''}"\nAfter: "${
+                data.description || ''
+              }"`
+            );
           }
-          if (typeof data.budget === 'number' && data.budget !== project.budget) {
-            updates.push(`Budget adjusted to $${data.budget}.`);
+
+          const oldBudgetNum = parseFloat(String(project.budget ?? 0));
+          const newBudgetNum = Number(data.budget ?? 0);
+
+          if (!Number.isNaN(newBudgetNum) && newBudgetNum !== oldBudgetNum) {
+            const fmt = (n: number) =>
+              n.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              });
+
+            updates.push(`Budget updated: $${fmt(oldBudgetNum)} → $${fmt(newBudgetNum)}.`);
           }
+
           const startChanged = !isSameDay(data.startDate, project.startDate);
           const endChanged = !isSameDay(data.endDate, project.endDate);
           if (startChanged && endChanged) {
             updates.push(
-              `Timeline updated: ${dayjs(data.startDate).format('MMM D, YYYY')} → ${dayjs(
+              `Timeline updated:\nStart: ${dayjs(project.startDate).format(
+                'MMM D, YYYY'
+              )} → ${dayjs(data.startDate).format('MMM D, YYYY')}\nEnd: ${dayjs(
+                project.endDate
+              ).format('MMM D, YYYY')} → ${dayjs(data.endDate).format('MMM D, YYYY')}`
+            );
+          } else if (startChanged) {
+            updates.push(
+              `Start date updated: ${dayjs(project.startDate).format('MMM D, YYYY')} → ${dayjs(
+                data.startDate
+              ).format('MMM D, YYYY')}.`
+            );
+          } else if (endChanged) {
+            updates.push(
+              `End date updated: ${dayjs(project.endDate).format('MMM D, YYYY')} → ${dayjs(
                 data.endDate
               ).format('MMM D, YYYY')}.`
             );
-          } else if (startChanged) {
-            updates.push(`Start date moved to ${dayjs(data.startDate).format('MMM D, YYYY')}.`);
-          } else if (endChanged) {
-            updates.push(`End date moved to ${dayjs(data.endDate).format('MMM D, YYYY')}.`);
           }
           if (updates.length) {
             await Promise.all(

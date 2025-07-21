@@ -6,6 +6,7 @@ const Labels: CrudLabels = {
   ReadAll: 'common.read_all',
   Items: 'common.items',
   EditOne: 'common.edit_one',
+  ReadOne: 'common.read_one',
 };
 
 export default Labels;
