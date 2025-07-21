@@ -34,9 +34,16 @@ interface ProjectCardProps {
   hideAction?: boolean;
   onEdit?: (project: Project) => void;
   onDelete?: (project: Project) => void;
+  browsing?: boolean;
 }
 
-const ProjectCard = ({ project, hideAction = false, onEdit, onDelete }: ProjectCardProps) => {
+const ProjectCard = ({
+  project,
+  hideAction = false,
+  onEdit,
+  onDelete,
+  browsing = false,
+}: ProjectCardProps) => {
   const router = useRouter();
   const { t } = useTranslation(['client', 'common', 'project']);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -126,7 +133,17 @@ const ProjectCard = ({ project, hideAction = false, onEdit, onDelete }: ProjectC
         display: 'flex',
         flexDirection: 'column',
         transition: 'box-shadow 0.2s',
-        '&:hover': { boxShadow: 3 },
+        boxShadow: 5,
+        '&:hover': {
+          boxShadow: 10,
+          cursor: browsing ? 'pointer' : 'default',
+          backgroundColor: browsing ? 'action.hover' : 'transparent',
+        },
+      }}
+      onClick={() => {
+        if (browsing) {
+          router.push(Routes.Projects.ReadOne.replace('{id}', project.id.toString()));
+        }
       }}
     >
       <CardContent sx={{ flexGrow: 1 }}>
@@ -134,91 +151,94 @@ const ProjectCard = ({ project, hideAction = false, onEdit, onDelete }: ProjectC
           <Typography variant="h6" fontWeight={600} sx={{ wordBreak: 'break-word' }}>
             {project.title}
           </Typography>
+          {!browsing && (
+            <>
+              <IconButton
+                aria-label="project actions"
+                aria-controls="project-actions-menu"
+                aria-haspopup="true"
+                onClick={handleMenuClick}
+                size="small"
+                sx={{
+                  alignSelf: 'flex-start',
+                  mt: -1,
+                  mr: -1,
+                }}
+              >
+                <MoreVert />
+              </IconButton>
 
-          <IconButton
-            aria-label="project actions"
-            aria-controls="project-actions-menu"
-            aria-haspopup="true"
-            onClick={handleMenuClick}
-            size="small"
-            sx={{
-              alignSelf: 'flex-start',
-              mt: -1,
-              mr: -1,
-            }}
-          >
-            <MoreVert />
-          </IconButton>
-
-          <Menu
-            id="project-actions-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleMenuClose}
-            MenuListProps={{
-              'aria-labelledby': 'project-actions-button',
-            }}
-          >
-            <MenuItem
-              onClick={() => {
-                handleMenuClose();
-                router.push({
-                  pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
-                  query: { step: 'invite' },
-                });
-              }}
-            >
-              <PersonAdd fontSize="small" sx={{ mr: 1.5 }} />
-              <Typography variant="body2">{t('project:invite_creators')}</Typography>
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleMenuClose();
-                router.push({
-                  pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
-                  query: { step: 'review' },
-                });
-              }}
-            >
-              <RateReview fontSize="small" sx={{ mr: 1.5 }} />
-              <Typography variant="body2">{t('project:proposals')}</Typography>
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleMenuClose();
-                router.push({
-                  pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
-                  query: { step: 'hire' },
-                });
-              }}
-            >
-              <WorkOutline fontSize="small" sx={{ mr: 1.5 }} />
-              <Typography variant="body2">{t('project:hire')}</Typography>
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleMenuClose();
-                router.push({
-                  pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
-                  query: { step: 'kickoff' },
-                });
-              }}
-            >
-              <RocketLaunch fontSize="small" sx={{ mr: 1.5 }} />
-              <Typography variant="body2">{t('project:kickoff', 'Kick-off')}</Typography>
-            </MenuItem>
-            <Divider sx={{ my: 1 }} />
-            <MenuItem onClick={handleEditClick}>
-              <Edit fontSize="small" sx={{ mr: 1.5 }} />
-              <Typography variant="body2">{t('project:edit_project')}</Typography>
-            </MenuItem>
-            <MenuItem onClick={handleDeleteClick}>
-              <Delete fontSize="small" sx={{ mr: 1.5, color: 'error.main' }} />
-              <Typography variant="body2" color="error">
-                {t('project:delete_project')}
-              </Typography>
-            </MenuItem>
-          </Menu>
+              <Menu
+                id="project-actions-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleMenuClose}
+                MenuListProps={{
+                  'aria-labelledby': 'project-actions-button',
+                }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    router.push({
+                      pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
+                      query: { step: 'invite' },
+                    });
+                  }}
+                >
+                  <PersonAdd fontSize="small" sx={{ mr: 1.5 }} />
+                  <Typography variant="body2">{t('project:invite_creators')}</Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    router.push({
+                      pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
+                      query: { step: 'review' },
+                    });
+                  }}
+                >
+                  <RateReview fontSize="small" sx={{ mr: 1.5 }} />
+                  <Typography variant="body2">{t('project:proposals')}</Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    router.push({
+                      pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
+                      query: { step: 'hire' },
+                    });
+                  }}
+                >
+                  <WorkOutline fontSize="small" sx={{ mr: 1.5 }} />
+                  <Typography variant="body2">{t('project:hire')}</Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    router.push({
+                      pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
+                      query: { step: 'kickoff' },
+                    });
+                  }}
+                >
+                  <RocketLaunch fontSize="small" sx={{ mr: 1.5 }} />
+                  <Typography variant="body2">{t('project:kickoff', 'Kick-off')}</Typography>
+                </MenuItem>
+                <Divider sx={{ my: 1 }} />
+                <MenuItem onClick={handleEditClick}>
+                  <Edit fontSize="small" sx={{ mr: 1.5 }} />
+                  <Typography variant="body2">{t('project:edit_project')}</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleDeleteClick}>
+                  <Delete fontSize="small" sx={{ mr: 1.5, color: 'error.main' }} />
+                  <Typography variant="body2" color="error">
+                    {t('project:delete_project')}
+                  </Typography>
+                </MenuItem>
+              </Menu>
+            </>
+          )}
         </Box>
 
         <Typography
@@ -272,7 +292,7 @@ const ProjectCard = ({ project, hideAction = false, onEdit, onDelete }: ProjectC
         </Grid>
       </CardContent>
 
-      {!hideAction && (
+      {!hideAction && !browsing && (
         <Box sx={{ p: 2, pt: 0 }}>
           <Button fullWidth variant="outlined" onClick={handleActionClick}>
             {actionLabel}

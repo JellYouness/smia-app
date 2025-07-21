@@ -150,6 +150,12 @@ const Topbar = () => {
       link: '/creators',
       onClick: () => router.push('/creators'),
     },
+    // Add Browse Projects
+    {
+      label: 'Browse Projects',
+      link: '/projects',
+      onClick: () => router.push('/projects'),
+    },
   ];
 
   const toggleDropdown = () => {
@@ -536,6 +542,26 @@ const Topbar = () => {
               </ListItem>
             );
           })}
+          {/* Add Browse Projects to mobile drawer */}
+          <ListItem key="browse-projects" disablePadding>
+            <ListItemButton
+              onClick={() => {
+                setShowDrawer(false);
+                router.push('/projects');
+              }}
+              sx={{ width: '100%' }}
+            >
+              <ListItemText
+                primaryTypographyProps={{
+                  ...(router.pathname === '/projects' && {
+                    color: 'primary.main',
+                  }),
+                }}
+              >
+                Browse Projects
+              </ListItemText>
+            </ListItemButton>
+          </ListItem>
           <ListItem key="profile" disablePadding>
             <ListItemButton
               onClick={() => router.push(Routes.Users.Me)}

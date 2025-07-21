@@ -143,6 +143,13 @@ export interface UseProjectsHook extends UseItemsHook<Project, CreateOneInput, U
     permission: PROJECT_CREATOR_PERMISSION,
     options?: FetchApiOptions
   ) => Promise<ApiResponse<Any>>;
+  readAllPublicProjects: (
+    page?: number,
+    pageSize?: number | 'all',
+    columnsSort?: SortParam,
+    filters?: FilterParam[],
+    options?: FetchApiOptions
+  ) => Promise<ItemsResponse<Project>>;
 }
 
 export type UseProjects = (opts?: UseItemsOptions) => UseProjectsHook;
@@ -520,6 +527,33 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     return response;
   };
 
+  const readAllPublicProjects = async (
+    page?: number,
+    pageSize?: number | 'all',
+    columnsSort?: SortParam,
+    filters?: FilterParam[],
+    options?: FetchApiOptions
+  ) => {
+    const endpoint = apiRoutes.ReadAllPublic;
+    const data: Record<string, Any> = {
+      page: page || 1,
+      perPage: pageSize || 50,
+    };
+    if (columnsSort) {
+      data['order[column]'] = columnsSort.column;
+      data['order[dir]'] = columnsSort.dir;
+    }
+    if (filters && filters.length > 0) {
+      data.filters = JSON.stringify(filters); // Serialize filters as JSON string
+    }
+    const response = await fetchApi<ItemsData<Project>>(endpoint, {
+      method: 'GET',
+      data,
+      ...options,
+    });
+    return response;
+  };
+
   const hook: UseProjectsHook = {
     ...useItemsHook,
     readAllByCreator,
@@ -536,6 +570,7 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     approveProposal,
     declineProposal,
     updateCreatorPermission,
+    readAllPublicProjects, // <-- add here
   };
 
   return hook;
