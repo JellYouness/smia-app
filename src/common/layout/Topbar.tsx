@@ -97,6 +97,11 @@ const Topbar = () => {
       onClick: () => router.push(Routes.Common.Home),
     },
     {
+      label: 'Browse Creators',
+      link: '/creators',
+      onClick: () => router.push('/creators'),
+    },
+    {
       label: t('topbar:language'),
       dropdown: [
         {
@@ -137,6 +142,14 @@ const Topbar = () => {
           },
         ]
       : []),
+  ];
+
+  const directoryNavItems: TopbarItem[] = [
+    {
+      label: 'Browse Creators',
+      link: '/creators',
+      onClick: () => router.push('/creators'),
+    },
   ];
 
   const toggleDropdown = () => {
@@ -292,6 +305,12 @@ const Topbar = () => {
               >
                 {t('topbar:org_switcher', 'Select Org/Project')}
               </Button> */}
+              {(user.userType === 'CLIENT' || user.userType === 'AMBASSADOR') &&
+                directoryNavItems.map((item, index) => (
+                  <Button key={index} variant="text" onClick={() => router.push(item.link || '')}>
+                    {item.label}
+                  </Button>
+                ))}
             </Box>
           </Stack>
 

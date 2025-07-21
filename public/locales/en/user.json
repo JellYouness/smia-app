@@ -313,5 +313,6 @@
   "emergency_contact_phone_help": "Phone number where we can reach your emergency contact",
   "emergency_contact_email": "Emergency Contact Email",
   "enter_emergency_contact_email": "Enter emergency contact email address",
-  "emergency_contact_email_help": "Email address where we can reach your emergency contact"
+  "emergency_contact_email_help": "Email address where we can reach your emergency contact",
+  "view_profile": "View Profile"
 }
