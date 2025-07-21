@@ -18,6 +18,10 @@ import useItems, {
 } from '@common/hooks/useItems';
 import { Any, Id } from '@common/defs/types';
 import useApi, { ApiResponse, FetchApiOptions } from '@common/hooks/useApi';
+import { mutate } from 'swr';
+
+// Cache key helper for project data
+export const projectCacheKey = (id: Id) => ['/projects', id];
 
 export interface CreateOneInput {
   title: string;
@@ -109,6 +113,14 @@ export interface UseProjectsHook extends UseItemsHook<Project, CreateOneInput, U
     filters?: FilterParam[],
     options?: FetchApiOptions
   ) => Promise<ItemsResponse<ProjectProposal>>;
+  readAllProposalsByProject: (
+    projectId: Id,
+    page?: number,
+    pageSize?: number | 'all',
+    columnsSort?: SortParam,
+    filters?: FilterParam[],
+    options?: FetchApiOptions
+  ) => Promise<ItemsResponse<ProjectProposal>>;
   addCommentToProposal: (
     proposalId: Id,
     input: {
@@ -122,6 +134,14 @@ export interface UseProjectsHook extends UseItemsHook<Project, CreateOneInput, U
     proposalId: Id,
     options?: FetchApiOptions
   ) => Promise<ItemsResponse<ProjectProposalComment>>;
+  approveProposal: (proposalId: Id, options?: FetchApiOptions) => Promise<ApiResponse<Any>>;
+  declineProposal: (proposalId: Id, options?: FetchApiOptions) => Promise<ApiResponse<Any>>;
+  updateCreatorPermission: (
+    projectId: Id,
+    creatorId: Id,
+    permission: 'viewer' | 'editor',
+    options?: FetchApiOptions
+  ) => Promise<ApiResponse<Any>>;
 }
 
 export type UseProjects = (opts?: UseItemsOptions) => UseProjectsHook;
@@ -340,6 +360,41 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     return response;
   };
 
+  const readAllProposalsByProject = async (
+    projectId: Id,
+    page?: number,
+    pageSize?: number | 'all',
+    columnsSort?: SortParam,
+    filters?: FilterParam[],
+    options?: FetchApiOptions
+  ) => {
+    const endpoint = ApiRoutes.Projects.ReadAllProposalsByProject.replace(
+      '{projectId}',
+      projectId.toString()
+    );
+
+    const data: Record<string, Any> = {
+      page,
+      perPage: pageSize,
+    };
+
+    if (columnsSort) {
+      data['order[column]'] = columnsSort.column;
+      data['order[dir]'] = columnsSort.dir;
+    }
+    if (filters?.length) {
+      data.filters = filters;
+    }
+
+    const response = await fetchApi<ItemsData<ProjectProposal>>(endpoint, {
+      method: 'GET',
+      data,
+      ...options,
+    });
+
+    return response;
+  };
+
   const addCommentToProposal = async (
     proposalId: Id,
     input: { body: string; parentId?: Id; attachments?: Any[] },
@@ -377,6 +432,93 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     return response;
   };
 
+  const approveProposal = async (proposalId: Id, options?: FetchApiOptions) => {
+    // Note: This would need projectId to be passed or extracted from the proposal
+    // For now, we'll just revalidate all project caches
+    const endpoint = ApiRoutes.Projects.ApproveProposal.replace(
+      '{proposalId}',
+      proposalId.toString()
+    );
+    const response = await fetchApi(endpoint, {
+      method: 'PATCH',
+      data: { status: 'ACCEPTED' },
+      ...options,
+    });
+
+    // Revalidate all project caches since proposal status affects project counts
+    // In a real implementation, you'd want to pass projectId and use projectCacheKey(projectId)
+    mutate((key) => Array.isArray(key) && key[0] === '/projects');
+
+    return response;
+  };
+
+  const declineProposal = async (proposalId: Id, options?: FetchApiOptions) => {
+    // Note: This would need projectId to be passed or extracted from the proposal
+    // For now, we'll just revalidate all project caches
+    const endpoint = ApiRoutes.Projects.DeclineProposal.replace(
+      '{proposalId}',
+      proposalId.toString()
+    );
+    const response = await fetchApi(endpoint, {
+      method: 'PATCH',
+      data: { status: 'DECLINED' },
+      ...options,
+    });
+
+    // Revalidate all project caches since proposal status affects project counts
+    // In a real implementation, you'd want to pass projectId and use projectCacheKey(projectId)
+    mutate((key) => Array.isArray(key) && key[0] === '/projects');
+
+    return response;
+  };
+
+  const updateCreatorPermission = async (
+    projectId: Id,
+    creatorId: Id,
+    permission: 'viewer' | 'editor',
+    options?: FetchApiOptions
+  ) => {
+    // 2.1 optimistic update
+    mutate(
+      projectCacheKey(projectId),
+      (prev?: ApiResponse<{ item: Project }>) => {
+        if (!prev?.data?.item) {
+          return prev;
+        }
+        return {
+          ...prev,
+          data: {
+            ...prev.data,
+            item: {
+              ...prev.data.item,
+              projectCreators:
+                prev.data.item.projectCreators?.map((pc) =>
+                  pc.creatorId === creatorId ? { ...pc, permission } : pc
+                ) || [],
+            },
+          },
+        };
+      },
+      false // skip re-validation for instant paint
+    );
+
+    // 2.2 real API call
+    const endpoint = ApiRoutes.Projects.UpdateCreatorPermission.replace(
+      '{id}',
+      projectId.toString()
+    ).replace('{creatorId}', creatorId.toString());
+    const response = await fetchApi(endpoint, {
+      method: 'PATCH',
+      data: { permission },
+      ...options,
+    });
+
+    // 2.3 hard re-validate on success/failure to keep source-of-truth
+    mutate(projectCacheKey(projectId));
+
+    return response;
+  };
+
   const hook: UseProjectsHook = {
     ...useItemsHook,
     readAllByCreator,
@@ -387,8 +529,12 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     declineInvite,
     acceptInvite,
     readAllProposalsByCreator,
+    readAllProposalsByProject,
     addCommentToProposal,
     readAllCommentsByProposal,
+    approveProposal,
+    declineProposal,
+    updateCreatorPermission,
   };
 
   return hook;

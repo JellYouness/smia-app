@@ -231,7 +231,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {t('invite:invitations')}
-                <Chip label={countInvites} size="small" color="primary" />
+                <Chip label={countInvites} size="small" variant="outlined" color="primary" />
               </Box>
             }
           />
@@ -240,7 +240,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {t('proposal:proposals')}
-                <Chip label={countProposals} size="small" color="success" />
+                <Chip label={countProposals} size="small" variant="outlined" color="primary" />
               </Box>
             }
           />

@@ -19,13 +19,14 @@ import {
 import { OpenInNewOutlined, ChatBubbleOutline, ExpandMore, Send, Close } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Routes from '@common/defs/routes';
 import { useRouter } from 'next/router';
 
 import { ProjectProposal, ProjectProposalComment } from '@modules/projects/defs/types';
 import useProjects from '@modules/projects/hooks/useProjects';
 import ProposalComment from './ProposalComment';
+import { countComments } from '@modules/creators/defs/utils';
 
 interface ProposalCardProps {
   proposal: ProjectProposal;
@@ -79,6 +80,8 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal }) => {
     }
   };
 
+  const totalComments = useMemo(() => countComments(comments), [comments]);
+
   const handleReplyClick = (comment: ProjectProposalComment) => {
     setReplyingTo(comment);
     setTimeout(() => {
@@ -129,6 +132,7 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal }) => {
         '&:hover': {
           boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
         },
+        p: 2,
       }}
     >
       <CardContent sx={{ p: 2.5 }}>
@@ -255,7 +259,7 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal }) => {
                   fontSize: '0.875rem',
                 }}
               >
-                {t('proposal:comments')} ({comments.length})
+                {t('proposal:comments')} ({totalComments})
               </Typography>
             </Stack>
 
@@ -322,7 +326,7 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal }) => {
                 </Box>
               )}
 
-              <Stack direction="row" spacing={0.5} alignItems="flex-end">
+              <Stack direction="row" spacing={0.5} alignItems="center">
                 <TextField
                   id="comment-textfield"
                   fullWidth

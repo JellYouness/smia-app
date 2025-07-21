@@ -1,12 +1,23 @@
 import { Any, CrudObject, Id } from '@common/defs/types';
+import { Ambassador } from '@modules/ambassadors/defs/types';
 import { Creator } from '@modules/creators/defs/types';
-import { User } from '@modules/users/defs/types';
+import { Client, User } from '@modules/users/defs/types';
 
 export enum PROJECT_STATUS {
   DRAFT = 'draft',
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
+}
+
+export interface ProjectCreator {
+  id: Id;
+  projectId: Id;
+  creatorId: Id;
+  role?: string;
+  status?: string;
+  permission: 'viewer' | 'editor';
+  creator?: Creator;
 }
 
 export interface Project extends CrudObject {
@@ -25,6 +36,7 @@ export interface Project extends CrudObject {
   proposalsCount?: number;
   hiresCount?: number;
   invitedCreatorIds?: number[];
+  projectCreators?: ProjectCreator[];
 }
 
 export interface ProjectInvite {
@@ -82,4 +94,21 @@ export interface ProjectProposalComment extends CrudObject {
 
   parent?: ProjectProposalComment;
   children?: ProjectProposalComment[];
+}
+
+export interface ProjectUpdate extends CrudObject {
+  projectId: Id;
+  clientId: Id;
+  ambassadorId: Id;
+  body: string;
+  type: PROJECT_UPDATE_TYPE;
+
+  project?: Project;
+  client?: Client;
+  ambassador?: Ambassador;
+}
+
+export enum PROJECT_UPDATE_TYPE {
+  UPDATE = 'UPDATE',
+  REPORT_REQUEST = 'REPORT_REQUEST',
 }

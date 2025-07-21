@@ -1,3 +1,5 @@
+import { ProjectProposalComment } from '@modules/projects/defs/types';
+
 export const creatorStatusColour = {
   PENDING: 'info',
   ACCEPTED: 'success',
@@ -11,3 +13,6 @@ export const proposalStatusColour = {
   REJECTED: 'error',
   WITHDRAWN: 'warning',
 } as const;
+
+export const countComments = (items: ProjectProposalComment[]): number =>
+  items.reduce((total, c) => total + 1 + (c.children ? countComments(c.children) : 0), 0);
