@@ -3,7 +3,7 @@ import { alpha, styled } from '@mui/material/styles';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type StepKey = 'invite' | 'review' | 'hire';
+export type StepKey = 'invite' | 'review' | 'hire' | 'kickoff';
 
 interface HireStepperBarProps {
   active: StepKey;
@@ -90,6 +90,7 @@ const HireStepperBar = ({
     { key: 'invite', label: t('project:invite_creators') },
     { key: 'review', label: t('project:proposals'), count: proposalsCount },
     { key: 'hire', label: t('project:hire'), count: hiresCount },
+    { key: 'kickoff', label: t('project:kickoff', 'Kick-off') },
   ];
 
   const activeIdx = steps.findIndex((s) => s.key === active);
