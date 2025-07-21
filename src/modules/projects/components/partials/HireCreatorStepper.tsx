@@ -7,6 +7,7 @@ import { Project } from '@modules/projects/defs/types';
 import InviteCreatorsStep from './hire/InviteCreatorsStep';
 import ReviewProposalsStep from './hire/ReviewProposalsStep';
 import HiredCreatorStep from './hire/HiredCreatorStep';
+import KickoffProjectStep from './hire/KickoffProjectStep';
 import useSWR from 'swr';
 
 interface HireCreatorStepperProps {
@@ -75,6 +76,9 @@ const HireCreatorStepper = ({ active, onStepChange }: HireCreatorStepperProps) =
         )}
         {active === 'hire' && (
           <HiredCreatorStep projectId={Number(id)} project={project as Project} />
+        )}
+        {active === 'kickoff' && (
+          <KickoffProjectStep projectId={Number(id)} project={project as Project} />
         )}
       </Box>
     </Box>

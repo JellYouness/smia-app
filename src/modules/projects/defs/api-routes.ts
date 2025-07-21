@@ -1,6 +1,8 @@
 import { CrudApiRoutes } from '@common/defs/types';
 
 const prefix = '/projects';
+const projectUpdatesPrefix = '/project-updates';
+
 const ApiRoutes: CrudApiRoutes = {
   CreateOne: prefix,
   ReadAll: prefix,
@@ -23,6 +25,15 @@ const ApiRoutes: CrudApiRoutes = {
   ApproveProposal: prefix + '/proposals/{proposalId}/approve',
   DeclineProposal: prefix + '/proposals/{proposalId}/decline',
   UpdateCreatorPermission: prefix + '/{id}/creators/{creatorId}/permission',
+};
+
+export const ProjectUpdatesApiRoutes = {
+  CreateOne: projectUpdatesPrefix,
+  ReadAll: projectUpdatesPrefix,
+  ReadOne: projectUpdatesPrefix + '/{id}',
+  UpdateOne: projectUpdatesPrefix + '/{id}',
+  DeleteOne: projectUpdatesPrefix + '/{id}',
+  ReadAllByProject: projectUpdatesPrefix + '/project/{projectId}',
 };
 
 export default ApiRoutes;

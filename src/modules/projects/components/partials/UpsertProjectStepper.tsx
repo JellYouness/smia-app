@@ -6,13 +6,16 @@ import FormStepper, {
 } from '@common/components/lib/navigation/FormStepper';
 import Routes from '@common/defs/routes';
 import useProjects, { CreateOneInput } from '@modules/projects/hooks/useProjects';
+import useProjectUpdates from '@modules/projects/hooks/useProjectUpdates';
+import { PROJECT_UPDATE_TYPE, Project, PROJECT_STATUS } from '@modules/projects/defs/types';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import { Project, PROJECT_STATUS } from '@modules/projects/defs/types';
+
 import { useEffect, useMemo, useState } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import StepProjectResources from './create/StepProjectResources';
 import StepProjectDetails from './create/StepProjectDetails';
+import dayjs from 'dayjs';
 
 enum CREATE_PROJECT_STEP_ID {
   DETAILS = 'details',
@@ -22,9 +25,19 @@ enum CREATE_PROJECT_STEP_ID {
 interface UpsertProjectStepperProps {
   projectId?: number;
   projectOwnerId: number;
+  quickEdit?: boolean;
+  onComplete?: () => void;
 }
 
-const UpsertProjectStepper = ({ projectId, projectOwnerId }: UpsertProjectStepperProps) => {
+const isSameDay = (a?: string | Date, b?: string | Date) =>
+  !!a && !!b && dayjs(a).isSame(dayjs(b), 'day');
+
+const UpsertProjectStepper = ({
+  projectId,
+  projectOwnerId,
+  quickEdit,
+  onComplete,
+}: UpsertProjectStepperProps) => {
   const { readOne, createOne, updateOne } = useProjects();
   const router = useRouter();
   const { t } = useTranslation(['project', 'common']);
@@ -70,6 +83,7 @@ const UpsertProjectStepper = ({ projectId, projectOwnerId }: UpsertProjectSteppe
   );
 
   const isEdit = Boolean(project);
+  const { createOne: createProjectUpdate, readAllByProject } = useProjectUpdates();
 
   const upsert = async (data: CreateOneInput, statusOverride?: PROJECT_STATUS) => {
     const payload: CreateOneInput = {
@@ -86,7 +100,52 @@ const UpsertProjectStepper = ({ projectId, projectOwnerId }: UpsertProjectSteppe
   const onSubmit = async (data: CreateOneInput) => {
     const res = await upsert(data, PROJECT_STATUS.IN_PROGRESS);
     if (res.success) {
-      router.push(Routes.Common.Home);
+      if (isEdit && project) {
+        const updatesRes = await readAllByProject(project.id, 1, 1);
+        if (updatesRes.success && updatesRes.data?.items?.length) {
+          const updates: string[] = [];
+          if (data.title && data.title !== project.title) {
+            updates.push(`Project title updated to ‘${data.title}’.`);
+          }
+          if (data.description && data.description !== project.description) {
+            updates.push('Project description was revised.');
+          }
+          if (typeof data.budget === 'number' && data.budget !== project.budget) {
+            updates.push(`Budget adjusted to $${data.budget}.`);
+          }
+          const startChanged = !isSameDay(data.startDate, project.startDate);
+          const endChanged = !isSameDay(data.endDate, project.endDate);
+          if (startChanged && endChanged) {
+            updates.push(
+              `Timeline updated: ${dayjs(data.startDate).format('MMM D, YYYY')} → ${dayjs(
+                data.endDate
+              ).format('MMM D, YYYY')}.`
+            );
+          } else if (startChanged) {
+            updates.push(`Start date moved to ${dayjs(data.startDate).format('MMM D, YYYY')}.`);
+          } else if (endChanged) {
+            updates.push(`End date moved to ${dayjs(data.endDate).format('MMM D, YYYY')}.`);
+          }
+          if (updates.length) {
+            await Promise.all(
+              updates.map((body) =>
+                createProjectUpdate({
+                  clientId: projectOwnerId,
+                  projectId: project.id,
+                  body,
+                  type: PROJECT_UPDATE_TYPE.UPDATE,
+                })
+              )
+            );
+          }
+        }
+      }
+      if (!quickEdit) {
+        router.push(Routes.Common.Home);
+      }
+      if (onComplete) {
+        onComplete();
+      }
       return true;
     }
     return false;
@@ -95,7 +154,12 @@ const UpsertProjectStepper = ({ projectId, projectOwnerId }: UpsertProjectSteppe
   const onSaveDraft = async (data: CreateOneInput) => {
     const res = await upsert(data, PROJECT_STATUS.DRAFT);
     if (res.success) {
-      router.push(Routes.Common.Home);
+      if (!quickEdit) {
+        router.push(Routes.Common.Home);
+      }
+      if (onComplete) {
+        onComplete();
+      }
       return true;
     }
     return false;
@@ -139,7 +203,7 @@ const UpsertProjectStepper = ({ projectId, projectOwnerId }: UpsertProjectSteppe
       id={`upsert-project-${projectId ?? 'new'}`}
       steps={steps}
       onSubmit={onSubmit}
-      onSaveDraft={onSaveDraft}
+      {...(quickEdit ? {} : { onSaveDraft })}
       initialData={initialData as CreateOneInput}
     />
   );

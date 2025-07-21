@@ -28,8 +28,10 @@ const HireCreatorPage: NextPage = () => {
     }
   }, [user]);
 
+  const validSteps: StepKey[] = ['invite', 'review', 'hire', 'kickoff'];
+
   useEffect(() => {
-    if (step === 'review' || step === 'hire') {
+    if (typeof step === 'string' && validSteps.includes(step as StepKey)) {
       setCurrentStep(step as StepKey);
     } else {
       setCurrentStep('invite');
