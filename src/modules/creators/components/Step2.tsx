@@ -32,7 +32,7 @@ const CreateUserStep2 = forwardRef((props: CreateUserStep2Props, ref: Ref<FormSt
       .required(t('common:field_required')),
   });
   const defaultValues: Omit<CreateOneInput, 'email' | 'password'> = {
-    role: data?.role || ROLE.USER,
+    role: data?.role || ROLE.CREATOR,
   };
   useImperativeHandle(ref, () => ({
     submit: async () => {

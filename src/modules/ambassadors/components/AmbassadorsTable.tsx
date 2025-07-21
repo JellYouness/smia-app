@@ -1,6 +1,4 @@
 import ItemsTable from '@common/components/partials/ItemsTable';
-import { Ambassador } from '@modules/users/defs/types';
-import { AmbassadorsApiRoutes } from '@modules/ambassadors/defs/api-routes';
 import { AmbassadorsRoutes } from '@modules/ambassadors/defs/routes';
 import useItems from '@common/hooks/useItems';
 import { GridColumns } from '@mui/x-data-grid';
@@ -11,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { CheckCircle, Cancel, VerifiedUser, Visibility } from '@mui/icons-material';
 import { useRouter } from 'next/router';
+import ApiRoutes from '../defs/api-routes';
 
 interface Row extends CrudRow {
   email: string;
@@ -79,7 +78,7 @@ const AmbassadorsTable = () => {
     };
   };
 
-  const useAmbassadors = (options?: any) => useItems(AmbassadorsApiRoutes, options);
+  const useAmbassadors = (options?: any) => useItems(ApiRoutes, options);
 
   return (
     <ItemsTable<any, any, any, Row>

@@ -1,6 +1,7 @@
 import ApiRoutes from '@common/defs/api-routes';
 import {
   Project,
+  PROJECT_CREATOR_PERMISSION,
   PROJECT_STATUS,
   ProjectInvite,
   ProjectProposal,
@@ -139,7 +140,7 @@ export interface UseProjectsHook extends UseItemsHook<Project, CreateOneInput, U
   updateCreatorPermission: (
     projectId: Id,
     creatorId: Id,
-    permission: 'viewer' | 'editor',
+    permission: PROJECT_CREATOR_PERMISSION,
     options?: FetchApiOptions
   ) => Promise<ApiResponse<Any>>;
 }
@@ -475,7 +476,7 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
   const updateCreatorPermission = async (
     projectId: Id,
     creatorId: Id,
-    permission: 'viewer' | 'editor',
+    permission: PROJECT_CREATOR_PERMISSION,
     options?: FetchApiOptions
   ) => {
     // 2.1 optimistic update

@@ -155,7 +155,7 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
                       {/* Avatar and Basic Info */}
                       <Box display="flex" alignItems="center" flexGrow={1} mb={{ xs: 2, sm: 0 }}>
                         <Avatar
-                          src={creator.user.profileImage || ''}
+                          src={creator.user?.profileImage || ''}
                           sx={{
                             bgcolor: theme.palette.primary.main,
                             width: 56,
@@ -163,12 +163,12 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
                             mr: 2,
                           }}
                         >
-                          {creator.user.firstName[0]}
-                          {creator.user.lastName[0]}
+                          {creator.user?.firstName[0]}
+                          {creator.user?.lastName[0]}
                         </Avatar>
                         <Box>
                           <Typography variant="subtitle1" fontWeight="bold">
-                            {creator.user.firstName} {creator.user.lastName}
+                            {creator.user?.firstName} {creator.user?.lastName}
                           </Typography>
 
                           <Box display="flex" alignItems="center">

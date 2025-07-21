@@ -1,6 +1,4 @@
 import ItemsTable from '@common/components/partials/ItemsTable';
-import { Creator } from '@modules/users/defs/types';
-import { CreatorsApiRoutes } from '@modules/creators/defs/api-routes';
 import { CreatorsRoutes } from '@modules/creators/defs/routes';
 import useItems from '@common/hooks/useItems';
 import { GridColumns } from '@mui/x-data-grid';
@@ -11,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { CheckCircle, Cancel, VerifiedUser, Visibility } from '@mui/icons-material';
 import { useRouter } from 'next/router';
+import ApiRoutes from '../defs/api-routes';
 
 interface Row extends CrudRow {
   email: string;
@@ -79,7 +78,7 @@ const CreatorsTable = () => {
     };
   };
 
-  const useCreators = (options?: any) => useItems(CreatorsApiRoutes, options);
+  const useCreators = (options?: any) => useItems(ApiRoutes, options);
 
   return (
     <ItemsTable<any, any, any, Row>
