@@ -15,6 +15,9 @@ import UpdatesTimeline from '@modules/projects/components/UpdatesTimeline';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import useSWR from 'swr';
 import { useMemo, useState, useEffect } from 'react';
+import CustomBreadcrumbs from '@common/components/lib/navigation/CustomBreadCrumbs';
+import PageHeader from '@common/components/lib/partials/PageHeader';
+import Labels from '@common/defs/labels';
 
 const ProjectDetailsPage: NextPage = () => {
   const { t } = useTranslation(['project', 'common', 'user']);
@@ -55,6 +58,14 @@ const ProjectDetailsPage: NextPage = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 6 }}>
+      <PageHeader title={t(`project:${Labels.Projects.ReadOne}`)} />
+      <CustomBreadcrumbs
+        links={[
+          { name: t('common:dashboard'), href: Routes.Common.Home },
+          { name: project ? project.title : t(`project:${Labels.Projects.ReadOne}`) },
+        ]}
+      />
+
       {/* Project Details Section */}
       <ProjectDetailsSection project={project} />
 
