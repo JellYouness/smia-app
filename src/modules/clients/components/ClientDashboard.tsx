@@ -67,12 +67,10 @@ const ClientDashboard = ({ user }: ClientDashboardProps) => {
     fetchProjects();
   };
 
-  console.log(projects);
-
   if (loading) {
     return (
       <Box sx={{ mt: 5, width: '100%' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
           <Typography variant="h3" fontWeight={500} letterSpacing={0.5} color="text.primary">
             {t('client:projects', 'Projects')}
           </Typography>
@@ -215,6 +213,8 @@ const ClientDashboard = ({ user }: ClientDashboardProps) => {
             sx={{
               overflow: 'hidden',
               px: 2,
+              pt: 0.5,
+              pb: 3,
             }}
           >
             <Box
@@ -256,7 +256,7 @@ const ClientDashboard = ({ user }: ClientDashboardProps) => {
 
   return (
     <Box sx={{ mt: 5, width: '100%', position: 'relative' }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
         <Typography variant="h3" fontWeight={500}>
           {t('client:projects')}
         </Typography>

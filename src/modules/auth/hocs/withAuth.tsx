@@ -21,8 +21,12 @@ const withAuth = (Component: React.ComponentType<Props>, options: WithAuthOption
     const authEnabled = process.env.NEXT_PUBLIC_AUTH_ENABLED === 'true';
     if (authEnabled) {
       const router = useRouter();
+      const { isReady } = router;
       const { user } = useAuth();
       const mode = options.mode ?? AUTH_MODE.LOGGED_IN;
+      if (!isReady) {
+        return null;
+      }
       if (mode === AUTH_MODE.LOGGED_IN && !user) {
         // if login coming from home page then dont add url query param
         if (router.pathname === Routes.Common.Home) {
@@ -32,14 +36,14 @@ const withAuth = (Component: React.ComponentType<Props>, options: WithAuthOption
         // if login coming from any other page then add url query param to redirect back to the same page after login
         router.push({
           pathname: options.redirectUrl ? options.redirectUrl : Routes.Auth.Login,
-          query: { url: encodeURIComponent(router.asPath) },
+          query: { url: router.asPath },
         });
         return null;
       }
       if (mode === AUTH_MODE.LOGGED_OUT && user) {
         // if there is a url query param then redirect to that url after login
         if (router.query.url) {
-          router.push(decodeURIComponent(router.query.url as string));
+          router.push(router.query.url as string);
           return null;
         }
         router.push(options.redirectUrl ?? Routes.Common.Home);
