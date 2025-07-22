@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Menu,
-  MenuItem,
   List,
   Typography,
   Box,
@@ -15,11 +14,9 @@ import {
 import {
   Notifications as NotificationsIcon,
   CheckCircle as CheckCircleIcon,
-  ClearAll as ClearAllIcon,
 } from '@mui/icons-material';
 import { useNotifications, useMarkAllAsRead } from '../hooks/useNotifications';
 import { NotificationItem } from './NotificationItem';
-import { NotificationFilters } from '../defs/types';
 import router from 'next/router';
 import Routes from '@common/defs/routes';
 
@@ -38,22 +35,20 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   unreadCount,
   onUnreadCountChange,
 }) => {
-  const [filters, setFilters] = useState<NotificationFilters>({
-    perPage: 10,
-  });
-
   const {
     data: notificationsData,
-    loading: isLoading,
+    isLoading,
     error,
     refetch: refetchNotifications,
-  } = useNotifications(filters);
-  const { markAllAsRead, loading: markAllLoading } = useMarkAllAsRead();
+  } = useNotifications();
+  const { mutate: markAllAsRead, isPending: markAllLoading } = useMarkAllAsRead();
 
   const handleMarkAllAsRead = () => {
-    markAllAsRead(() => {
-      refetchNotifications();
-      onUnreadCountChange();
+    markAllAsRead(undefined, {
+      onSuccess: () => {
+        refetchNotifications();
+        onUnreadCountChange();
+      },
     });
   };
 
@@ -61,6 +56,12 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     refetchNotifications();
     onUnreadCountChange();
   };
+  useEffect(() => {
+    if (open) {
+      refetchNotifications();
+    }
+  }, [open]);
+
   const notifications = notificationsData?.notifications || [];
 
   return (
@@ -145,22 +146,20 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       </Box>
 
       {/* Footer */}
-      {notifications.length > 0 && (
-        <>
-          <Divider />
-          <Box sx={{ p: 1.5 }}>
-            <Button
-              fullWidth
-              variant="text"
-              size="small"
-              onClick={() => router.push(Routes.Notifications.Index)}
-              sx={{ textTransform: 'none' }}
-            >
-              View all notifications
-            </Button>
-          </Box>
-        </>
-      )}
+      {notifications.length > 0 && [
+        <Divider key="footer-divider" />,
+        <Box sx={{ p: 1.5 }} key="footer-box">
+          <Button
+            fullWidth
+            variant="text"
+            size="small"
+            onClick={() => router.push(Routes.Notifications.Index)}
+            sx={{ textTransform: 'none' }}
+          >
+            View all notifications
+          </Button>
+        </Box>,
+      ]}
     </Menu>
   );
 };

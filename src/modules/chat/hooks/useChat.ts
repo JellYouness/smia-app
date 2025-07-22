@@ -178,3 +178,33 @@ export const useMarkAsRead = () => {
     },
   });
 };
+
+export const useGetOrCreateProjectConversation = () => {
+  const api = useApi();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      projectId,
+      name,
+      userIds,
+    }: {
+      projectId: number;
+      name?: string;
+      userIds?: number[];
+    }) => {
+      const response = await api<Conversation>(API_ROUTES.CHAT.CREATE_PROJECT, {
+        method: 'POST',
+        data: {
+          project_id: projectId,
+          ...(name ? { name } : {}),
+          ...(userIds ? { user_ids: userIds } : {}),
+        },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    },
+  });
+};

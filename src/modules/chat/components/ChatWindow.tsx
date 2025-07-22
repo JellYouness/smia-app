@@ -31,11 +31,13 @@ import { useQueryClient } from '@tanstack/react-query';
 interface ChatWindowProps {
   selectedConversationId?: string;
   onConversationSelect: (conversationId: string) => void;
+  onProjectPage?: boolean;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({
   selectedConversationId,
   onConversationSelect,
+  onProjectPage = false,
 }) => {
   const { t } = useTranslation(['common', 'chat']);
   const { user } = useAuth();
@@ -376,43 +378,45 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   return (
     <Grid container sx={{ height: '80vh', overflow: 'hidden' }}>
       {/* Conversations List */}
-      <Grid
-        item
-        xs={4}
-        sx={{
-          borderRight: 1,
-          borderLeft: 1,
-          borderBottom: 1,
-          borderColor: 'divider',
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-        }}
-      >
-        <Box sx={{ p: 2, flexShrink: 0 }}>
-          <Typography variant="h6" gutterBottom>
-            {t('chat:conversations')}
-          </Typography>
-          <TextField
-            fullWidth
-            size="small"
-            placeholder={t('chat:search_conversations')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />,
-            }}
-            sx={{ mb: 2 }}
-          />
-        </Box>
+      {!onProjectPage && (
+        <Grid
+          item
+          xs={4}
+          sx={{
+            borderRight: 1,
+            borderLeft: 1,
+            borderBottom: 1,
+            borderColor: 'divider',
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+          }}
+        >
+          <Box sx={{ p: 2, flexShrink: 0 }}>
+            <Typography variant="h6" gutterBottom>
+              {t('chat:conversations')}
+            </Typography>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder={t('chat:search_conversations')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} />,
+              }}
+              sx={{ mb: 2 }}
+            />
+          </Box>
 
-        {renderConversationsList()}
-      </Grid>
+          {renderConversationsList()}
+        </Grid>
+      )}
 
       {/* Messages Area */}
       <Grid
         item
-        xs={8}
+        xs={onProjectPage ? 12 : 8}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -436,12 +440,19 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 gap: 2,
               }}
             >
-              <Avatar>{getConversationAvatar(selectedConversation as Conversation)}</Avatar>
-              <Typography variant="h6">
-                {selectedConversation
-                  ? getConversationDisplayName(selectedConversation)
-                  : t('chat:loading')}
-              </Typography>
+              {selectedConversation ? (
+                <>
+                  <Avatar>{getConversationAvatar(selectedConversation)}</Avatar>
+                  <Typography variant="h6">
+                    {getConversationDisplayName(selectedConversation)}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <Avatar>?</Avatar>
+                  <Typography variant="h6">{t('chat:loading')}</Typography>
+                </>
+              )}
             </Box>
 
             {/* Messages */}
@@ -461,6 +472,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                         key={message.id}
                         message={message}
                         isOwnMessage={message.senderId === user?.id}
+                        isTypeProject={selectedConversation?.type === 'project'}
                       />
                     ))
                   ) : (
@@ -544,9 +556,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 interface MessageBubbleProps {
   message: Message;
   isOwnMessage: boolean;
+  isTypeProject?: boolean;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMessage }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMessage, isTypeProject }) => {
   return (
     <Box
       sx={{
@@ -559,15 +572,19 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMessage }) 
         sx={{
           p: 1.5,
           maxWidth: '70%',
-          backgroundColor: isOwnMessage ? 'grey.100' : 'primary.main',
-          color: isOwnMessage ? 'text.primary' : 'white',
+          backgroundColor: isOwnMessage ? 'primary.main' : 'grey.100',
+          color: isOwnMessage ? 'white' : 'text.primary',
         }}
       >
-        {/* {!isOwnMessage && (
-          <Typography variant="caption" sx={{ display: 'block', mb: 0.5, opacity: 0.7 }}>
+        {!isOwnMessage && isTypeProject && (
+          <Typography
+            variant="caption"
+            color="primary.main"
+            sx={{ display: 'block', mb: 0.5, fontWeight: 600 }}
+          >
             {message.sender.firstName} {message.sender.lastName}
           </Typography>
-        )} */}
+        )}
         <Typography variant="body2">{message.content}</Typography>
         <Typography variant="caption" sx={{ display: 'block', mt: 0.5, opacity: 0.7 }}>
           {new Date(message.createdAt).toLocaleTimeString([], {
