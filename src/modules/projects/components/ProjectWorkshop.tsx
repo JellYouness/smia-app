@@ -4,8 +4,8 @@ import BoardPane from './BoardPane';
 import AssetsPane from './AssetsPane';
 import PaneHeader from './PaneHeader';
 import Splitter from './WorkspaceSplitter';
-import { useWorkspaceLayout } from '../hooks/useWorkspaceLayout';
 import { useEffect } from 'react';
+import useWorkspaceLayout from '../hooks/useWorkspaceLayout';
 
 interface ProjectWorkshopProps {
   projectId: number;
