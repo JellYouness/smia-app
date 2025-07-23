@@ -1,83 +1,7 @@
 import { CrudObject } from '@common/defs/types';
-import { ROLE } from '@modules/permissions/defs/types';
-
-export interface User extends CrudObject {
-  email: string;
-  rolesNames: ROLE[];
-  permissionsNames: string[];
-  firstName: string;
-  lastName: string;
-  username: string;
-  phoneNumber: string;
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-  profilePicture: string;
-  bio: string;
-  title?: string;
-  dateOfBirth: string;
-  gender: string;
-  preferredLanguage: string;
-  timezone: string;
-  userType?: 'CLIENT' | 'CREATOR' | 'AMBASSADOR' | 'ADMIN';
-  notificationPreferences: {
-    email: boolean;
-    sms: boolean;
-    push: boolean;
-  };
-  privacySettings: {
-    profileVisibility: 'PUBLIC' | 'PRIVATE' | 'CONNECTIONS';
-    showEmail: boolean;
-    showPhone: boolean;
-    showAddress: boolean;
-  };
-  socialMediaLinks: {
-    linkedin?: string;
-    twitter?: string;
-    facebook?: string;
-    instagram?: string;
-  };
-  emergencyContact: {
-    name: string;
-    relationship: string;
-    phone: string;
-  };
-  preferences: {
-    theme: 'LIGHT' | 'DARK' | 'SYSTEM';
-    language: string;
-    notifications: boolean;
-  };
-  // Relations avec les différents types d'utilisateurs
-  creator?: Creator;
-  client?: Client;
-  ambassador?: Ambassador;
-  systemAdministrator?: SystemAdministrator;
-}
-
-export interface AdminPermissions {
-  manageUsers: boolean;
-  manageProjects: boolean;
-  manageMedia: boolean;
-  manageDistribution: boolean;
-  manageBilling: boolean;
-  manageSupport: boolean;
-  manageSystem: boolean;
-}
-
-export interface SystemAdministrator extends CrudObject {
-  userId: number;
-  accessLevel: AccessLevel;
-  adminPermissions: AdminPermissions;
-  departments: Department[];
-  auditLog: boolean;
-  lastPermissionUpdate: string;
-  restrictedIpAccess: boolean;
-  allowedIpAddresses: string[];
-  emergencyContact: string;
-  securityClearance: SecurityClearance;
-}
+// ignore circular dependency
+// eslint-disable-next-line import/no-cycle
+import { User } from '@modules/users/defs/types';
 
 export interface Creator extends CrudObject {
   userId: number;
@@ -104,43 +28,9 @@ export interface Creator extends CrudObject {
   user?: User;
 }
 
-export interface Ambassador extends CrudObject {
-  userId: number;
-  teamMembers: number[];
-  teamName: string;
-  specializations: string[];
-  regionalExpertise: RegionalExpertise[];
-  serviceOfferings: string[];
-  clientCount: number;
-  projectCapacity: number;
-  applicationStatus: ApplicationStatus;
-  applicationDate: string;
-  verificationDocuments: string[];
-  commissionRate: number;
-  teamDescription: string;
-  featuredWork: FeaturedWork[];
-  yearsInBusiness: number;
-  businessStreet: string;
-  businessCity: string;
-  businessState: string;
-  businessPostalCode: string;
-  businessCountry: string;
-}
-
 export type MediaType = 'PHOTO' | 'VIDEO' | 'ARTICLE' | 'AUDIO' | 'DESIGN' | 'OTHER';
 export type VerificationStatus = 'UNVERIFIED' | 'PENDING' | 'VERIFIED' | 'FEATURED';
 export type AvailabilityStatus = 'AVAILABLE' | 'LIMITED' | 'UNAVAILABLE' | 'BUSY';
-export type ApplicationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
-export type AccessLevel = 'STANDARD' | 'ELEVATED' | 'SUPER';
-export type SecurityClearance = 'BASIC' | 'SENSITIVE' | 'CONFIDENTIAL';
-export type Department =
-  | 'USERS'
-  | 'PROJECTS'
-  | 'MEDIA'
-  | 'DISTRIBUTION'
-  | 'BILLING'
-  | 'SUPPORT'
-  | 'SYSTEM';
 
 export interface PortfolioItem {
   title: string;
@@ -188,34 +78,4 @@ export interface EquipmentInfo {
 export interface FeaturedWork {
   projectId: number;
   description: string;
-}
-
-export interface BusinessAddress {
-  street: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-}
-
-export interface Client extends CrudObject {
-  userId: number;
-  companyName: string;
-  companySize: string;
-  industry: string;
-  websiteUrl: string;
-  billingStreet: string;
-  billingCity: string;
-  billingState: string;
-  billingPostalCode: string;
-  billingCountry: string;
-  taxIdentifier: string;
-  budget: number;
-  preferredCreators: number[];
-  projectCount: number;
-  defaultProjectSettings: {
-    budget?: number;
-    timeline?: string;
-    requirements?: string;
-  };
 }

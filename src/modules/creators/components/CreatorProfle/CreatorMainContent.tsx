@@ -5,10 +5,13 @@ import { Star } from '@mui/icons-material';
 import CardList from '@modules/users/components/CardList';
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
+import { User } from '@modules/users/defs/types';
+import { ProfessionalBackground } from '@modules/creators/defs/types';
+import { TFunction } from 'i18next';
 
 interface CreatorMainContentProps {
-  user: any;
-  t: any;
+  user: User;
+  t: TFunction;
   readOnly?: boolean;
 }
 
@@ -17,9 +20,23 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
   return (
     <Stack spacing={0}>
       {/* About Section */}
-      <SectionCard title={user?.profile?.title || t('user:about')} readOnly={readOnly}>
+      <SectionCard title={t('user:about')} readOnly={readOnly}>
+        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
+          {user?.profile?.title || <Skeleton width="80%" />}
+        </Typography>
+
+        <Typography variant="body1" sx={{ mt: 1, fontWeight: 600 }}>
+          {t('user:bio')}:
+        </Typography>
         <Typography variant="body1" sx={{ mt: 1 }}>
-          {user?.profile?.bio || t('user:no_bio_provided')}
+          {user?.profile?.bio || <Skeleton width="80%" />}
+        </Typography>
+
+        <Typography variant="body1" sx={{ mt: 1, fontWeight: 600 }}>
+          {t('user:short_bio')}:
+        </Typography>
+        <Typography variant="body1" sx={{ mt: 1 }}>
+          {user?.profile?.shortBio || <Skeleton width="80%" />}
         </Typography>
       </SectionCard>
 
@@ -250,7 +267,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       >
         <Stack spacing={3}>
           {creator.professionalBackground && creator.professionalBackground.length > 0 ? (
-            creator.professionalBackground.map((job: any, index: number) => (
+            creator.professionalBackground.map((job: ProfessionalBackground, index: number) => (
               <Box
                 key={index}
                 sx={{

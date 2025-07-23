@@ -1,7 +1,8 @@
 import ApiRoutes from '@common/defs/api-routes';
 import { ROLE } from '@modules/permissions/defs/types';
-import { User } from '@modules/users/defs/types';
 import useItems, { UseItems, UseItemsOptions, defaultOptions } from '@common/hooks/useItems';
+import { Client } from '../defs/types';
+import { Any } from '@common/defs/types';
 
 export interface CreateOneInput {
   email: string;
@@ -101,7 +102,7 @@ export interface UpdateOneInput {
   profile?: {
     title?: string;
     bio?: string;
-    [key: string]: any;
+    [key: string]: Any;
   };
   // Creator-specific fields
   creator?: {
@@ -142,19 +143,19 @@ export interface UpdateOneInput {
       degree: string;
       institution: string;
     }>;
-    [key: string]: any;
+    [key: string]: Any;
   };
 }
 
 export type UpsertOneInput = CreateOneInput | UpdateOneInput;
 
-const useUsers: UseItems<User, CreateOneInput, UpdateOneInput> = (
+const useClients: UseItems<Client, CreateOneInput, UpdateOneInput> = (
   opts: UseItemsOptions = defaultOptions
 ) => {
   const apiRoutes = ApiRoutes.Users;
-  const useItemsHook = useItems<User, CreateOneInput, UpdateOneInput>(apiRoutes, opts);
+  const useItemsHook = useItems<Client, CreateOneInput, UpdateOneInput>(apiRoutes, opts);
 
   return useItemsHook;
 };
 
-export default useUsers;
+export default useClients;

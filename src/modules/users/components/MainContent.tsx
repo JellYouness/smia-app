@@ -6,15 +6,15 @@ import { Any } from '@common/defs/types';
 import JsonDataRenderer from './JsonDataRenderer';
 import CardList from './CardList';
 import SectionCard from './SectionCard';
-import EditAboutDialog from '@modules/creators/components/EditAboutDialog';
-import EditSkillsDialog from '@modules/creators/components/EditSkillsDialog';
-import EditPortfolioDialog from '@modules/creators/components/EditPortfolioDialog';
-import EditCertificationsDialog from '@modules/creators/components/EditCertificationsDialog';
-import EditEmploymentDialog from '@modules/creators/components/EditEmploymentDialog';
-import EditAchievementsDialog from '@modules/creators/components/EditAchievementsDialog';
-import EditEquipmentDialog from '@modules/creators/components/EditEquipmentDialog';
-import EditRegionalExpertiseDialog from '@modules/creators/components/EditRegionalExpertiseDialog';
-import EditMediaTypesDialog from '@modules/creators/components/EditMediaTypesDialog';
+import EditAboutDialog from '@modules/creators/components/CreatorProfle/EditAboutDialog';
+import EditSkillsDialog from '@modules/creators/components/CreatorProfle/EditSkillsDialog';
+import EditPortfolioDialog from '@modules/creators/components/CreatorProfle/EditPortfolioDialog';
+import EditCertificationsDialog from '@modules/creators/components/CreatorProfle/EditCertificationsDialog';
+import EditEmploymentDialog from '@modules/creators/components/CreatorProfle/EditEmploymentDialog';
+import EditAchievementsDialog from '@modules/creators/components/CreatorProfle/EditAchievementsDialog';
+import EditEquipmentDialog from '@modules/creators/components/CreatorProfle/EditEquipmentDialog';
+import EditRegionalExpertiseDialog from '@modules/creators/components/CreatorProfle/EditRegionalExpertiseDialog';
+import EditMediaTypesDialog from '@modules/creators/components/CreatorProfle/EditMediaTypesDialog';
 import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
 
 interface MainContentProps {

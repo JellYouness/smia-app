@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Stack, Typography, Chip, Skeleton, Divider, IconButton } from '@mui/material';
+import { Box, Stack, Typography, Skeleton, Divider, IconButton } from '@mui/material';
 import {
   Work,
   Star,
@@ -8,8 +8,6 @@ import {
   LinkedIn,
   Twitter,
   Facebook,
-  Instagram,
-  GitHub,
   Language as LanguageIcon,
   School,
   Edit,
@@ -17,15 +15,11 @@ import {
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
 import ProfilePicture from '@modules/users/components/ProfilePicture';
-import EditSectionDialog from '@modules/users/components/EditSectionDialog';
-import EditLanguagesDialog from '@modules/creators/components/EditLanguagesDialog';
-import EditEducationDialog from '@modules/creators/components/EditEducationDialog';
+import EditLanguagesDialog from '@modules/creators/components/CreatorProfle/EditLanguagesDialog';
+import EditEducationDialog from '@modules/creators/components/CreatorProfle/EditEducationDialog';
 import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
-
-interface Language {
-  language: string;
-  proficiency: string;
-}
+import LanguageChips from '@modules/projects/components/partials/LanguageChips';
+import EditSocialMediaDialog from '@modules/clients/components/ClientProfile/EditSocialMediaDialog';
 
 interface CreatorSidebarProps {
   user: Any;
@@ -42,12 +36,24 @@ const CreatorSidebar = ({
 }: CreatorSidebarProps) => {
   const [openLanguages, setOpenLanguages] = useState(false);
   const [openEducation, setOpenEducation] = useState(false);
+  const [openSocialMedia, setOpenSocialMedia] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { updateLanguages, updateEducation } = useProfileUpdates();
+  const { updateLanguages, updateEducation, updateSocialMedia } = useProfileUpdates();
 
   // Remove parseJsonData and parseLanguagesData
-  const languagesData = user?.creator?.languages || [];
+  let languagesData = [];
+  if (user?.creator?.languages) {
+    try {
+      if (Array.isArray(user.creator.languages)) {
+        languagesData = user.creator.languages;
+      } else {
+        languagesData = JSON.parse(user.creator.languages);
+      }
+    } catch {
+      languagesData = [];
+    }
+  }
   const educationData = user?.creator?.education || [];
 
   const handleSaveLanguages = async (data: Any) => {
@@ -73,6 +79,20 @@ const CreatorSidebar = ({
       }
     } catch (error) {
       console.error('Error saving education data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveSocialMedia = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateSocialMedia(user.id, data);
+      if (response.success) {
+        setOpenSocialMedia(false);
+      }
+    } catch (error) {
+      console.error('Error saving social media data:', error);
     } finally {
       setLoading(false);
     }
@@ -149,43 +169,7 @@ const CreatorSidebar = ({
               <Edit sx={{ fontSize: 16 }} />
             </IconButton>
           </Box>
-          <Stack spacing={1}>
-            {languagesData.map((lang: Any, index: number) => (
-              <Box
-                key={index}
-                sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                  {lang.language}
-                </Typography>
-                <Chip label={lang.proficiency} size="small" color="secondary" variant="outlined" />
-              </Box>
-            ))}
-            {/* <JsonDataRenderer
-              data={languagesData}
-              renderItem={(lang, index) => (
-                <Box
-                  key={index}
-                  sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                >
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {lang.language}
-                  </Typography>
-                  <Chip
-                    label={lang.proficiency}
-                    size="small"
-                    color="secondary"
-                    variant="outlined"
-                  />
-                </Box>
-              )}
-              fallback={
-                <Typography variant="body2" color="text.secondary">
-                  No languages added yet
-                </Typography>
-              }
-            /> */}
-          </Stack>
+          <LanguageChips languages={languagesData} />
         </Box>
 
         <Divider />
@@ -258,14 +242,24 @@ const CreatorSidebar = ({
         <Divider />
 
         {/* Social Media Links */}
-        <Box sx={{ p: 2 }}>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-            Social Media
-          </Typography>
+        <Box sx={{ p: 2, pt: 0 }}>
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Social Media
+            </Typography>
+            <IconButton size="small" onClick={() => setOpenSocialMedia(true)}>
+              <Edit sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Box>
           <Stack spacing={1}>
-            {user?.profile?.socialMediaLinks?.linkedin && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <LinkedIn sx={{ fontSize: 20, color: '#0077b5' }} />
+            {/* LinkedIn */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <LinkedIn
+                color={user?.profile?.socialMediaLinks?.linkedin ? 'primary' : 'disabled'}
+              />
+              {user?.profile?.socialMediaLinks?.linkedin ? (
                 <Link
                   href={user.profile.socialMediaLinks.linkedin}
                   target="_blank"
@@ -275,11 +269,16 @@ const CreatorSidebar = ({
                     LinkedIn
                   </Typography>
                 </Link>
-              </Box>
-            )}
-            {user?.profile?.socialMediaLinks?.twitter && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Twitter sx={{ fontSize: 20, color: '#1DA1F2' }} />
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  LinkedIn (Not added)
+                </Typography>
+              )}
+            </Box>
+            {/* Twitter */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Twitter color={user?.profile?.socialMediaLinks?.twitter ? 'primary' : 'disabled'} />
+              {user?.profile?.socialMediaLinks?.twitter ? (
                 <Link
                   href={user.profile.socialMediaLinks.twitter}
                   target="_blank"
@@ -289,11 +288,18 @@ const CreatorSidebar = ({
                     Twitter
                   </Typography>
                 </Link>
-              </Box>
-            )}
-            {user?.profile?.socialMediaLinks?.facebook && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Facebook sx={{ fontSize: 20, color: '#1877F2' }} />
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Twitter (Not added)
+                </Typography>
+              )}
+            </Box>
+            {/* Facebook */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Facebook
+                color={user?.profile?.socialMediaLinks?.facebook ? 'primary' : 'disabled'}
+              />
+              {user?.profile?.socialMediaLinks?.facebook ? (
                 <Link
                   href={user.profile.socialMediaLinks.facebook}
                   target="_blank"
@@ -303,45 +309,12 @@ const CreatorSidebar = ({
                     Facebook
                   </Typography>
                 </Link>
-              </Box>
-            )}
-            {user?.profile?.socialMediaLinks?.instagram && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Instagram sx={{ fontSize: 20, color: '#E4405F' }} />
-                <Link
-                  href={user.profile.socialMediaLinks.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
-                    Instagram
-                  </Typography>
-                </Link>
-              </Box>
-            )}
-            {user?.profile?.socialMediaLinks?.github && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <GitHub sx={{ fontSize: 20, color: '#333' }} />
-                <Link
-                  href={user.profile.socialMediaLinks.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
-                    GitHub
-                  </Typography>
-                </Link>
-              </Box>
-            )}
-            {!user?.profile?.socialMediaLinks?.linkedin &&
-              !user?.profile?.socialMediaLinks?.twitter &&
-              !user?.profile?.socialMediaLinks?.facebook &&
-              !user?.profile?.socialMediaLinks?.instagram &&
-              !user?.profile?.socialMediaLinks?.github && (
+              ) : (
                 <Typography variant="body2" color="text.secondary">
-                  No social media links added yet
+                  Facebook (Not added)
                 </Typography>
               )}
+            </Box>
           </Stack>
         </Box>
       </Stack>
@@ -360,6 +333,14 @@ const CreatorSidebar = ({
         open={openEducation}
         onClose={() => setOpenEducation(false)}
         onSave={handleSaveEducation}
+        loading={loading}
+        user={user}
+      />
+
+      <EditSocialMediaDialog
+        open={openSocialMedia}
+        onClose={() => setOpenSocialMedia(false)}
+        onSave={handleSaveSocialMedia}
         loading={loading}
         user={user}
       />

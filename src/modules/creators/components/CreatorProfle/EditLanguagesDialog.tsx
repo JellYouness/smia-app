@@ -38,7 +38,19 @@ const EditLanguagesDialog = ({
   onSave,
   loading,
 }: EditLanguagesDialogProps) => {
-  const [languages, setLanguages] = useState<Language[]>(user?.creator?.languages || []);
+  const [languages, setLanguages] = useState<Language[]>(() => {
+    if (user?.creator?.languages) {
+      try {
+        if (Array.isArray(user.creator.languages)) {
+          return user.creator.languages;
+        }
+        return JSON.parse(user.creator.languages);
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  });
   const proficiencyLevels = ['Beginner', 'Elementary', 'Intermediate', 'Advanced', 'Native/Fluent'];
 
   const methods = useForm({

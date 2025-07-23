@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import useItems from '@common/hooks/useItems';
 import { ClientsApiRoutes } from '@modules/clients/defs/api-routes';
-import ClientMainContent from '@modules/clients/components/ClientMainContent';
+import ClientMainContent from '@modules/clients/components/ClientProfile/ClientMainContent';
 import { useTranslation } from 'react-i18next';
 import { GetServerSideProps } from 'next';
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';

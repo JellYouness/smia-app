@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { CheckCircle, Cancel, VerifiedUser, Visibility } from '@mui/icons-material';
 import { useRouter } from 'next/router';
-import ApiRoutes from '../defs/api-routes';
+import ApiRoutes from '../../defs/api-routes';
 
 interface Row extends CrudRow {
   email: string;

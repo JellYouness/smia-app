@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import CreatorsTable from '@modules/creators/components/CreatorsTable';
+import CreatorsTable from '@modules/creators/components/CreatorProfle/CreatorsTable';
 import PageHeader from '@common/components/lib/partials/PageHeader';
 import CustomBreadcrumbs from '@common/components/lib/navigation/CustomBreadCrumbs';
 import Routes from '@common/defs/routes';

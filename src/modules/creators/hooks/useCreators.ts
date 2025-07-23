@@ -1,8 +1,8 @@
 import ApiRoutes from '@common/defs/api-routes';
 import { ROLE } from '@modules/permissions/defs/types';
-import { User } from '@modules/users/defs/types';
 import useItems, { UseItems, UseItemsOptions, defaultOptions } from '@common/hooks/useItems';
 import { Creator } from '../defs/types';
+import { Any } from '@common/defs/types';
 
 export interface CreateOneInput {
   email: string;
@@ -102,7 +102,7 @@ export interface UpdateOneInput {
   profile?: {
     title?: string;
     bio?: string;
-    [key: string]: any;
+    [key: string]: Any;
   };
   // Creator-specific fields
   creator?: {
@@ -143,7 +143,7 @@ export interface UpdateOneInput {
       degree: string;
       institution: string;
     }>;
-    [key: string]: any;
+    [key: string]: Any;
   };
 }
 

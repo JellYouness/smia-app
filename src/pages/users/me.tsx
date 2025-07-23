@@ -9,8 +9,8 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Skeleton from '@mui/material/Skeleton';
 import { ClientSidebar, ClientMainContent } from '@modules/users/components';
 import AmbassadorMainContent from '@modules/ambassadors/components/AmbassadorMainContent';
-import CreatorMainContent from '@modules/creators/components/CreatorMainContent';
-import CreatorSidebar from '@modules/creators/components/CreatorSidebar';
+import CreatorMainContent from '@modules/creators/components/CreatorProfle/CreatorMainContent';
+import CreatorSidebar from '@modules/creators/components/CreatorProfle/CreatorSidebar';
 
 const MyProfile: NextPage = () => {
   const { user, initialized } = useAuth();
@@ -41,7 +41,7 @@ const MyProfile: NextPage = () => {
   const isClient = user?.userType === 'CLIENT' || user?.client;
   const isCreator = user?.userType === 'CREATOR' || user?.creator;
   const isAmbassador = user?.userType === 'AMBASSADOR' || user?.ambassador;
-  const isAdmin = user?.userType === 'ADMIN' || user?.admin;
+  // const isAdmin = user?.userType === 'ADMIN' || user?.admin;
 
   // Show loading state while auth is initializing
   if (!initialized) {

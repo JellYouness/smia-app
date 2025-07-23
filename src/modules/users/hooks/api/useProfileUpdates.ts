@@ -6,7 +6,7 @@ import { Any } from '@common/defs/types';
 interface ProfileUpdateResponse {
   success: boolean;
   message: string;
-  data?: any;
+  data?: Any;
 }
 
 const useProfileUpdates = () => {
@@ -239,6 +239,10 @@ const useProfileUpdates = () => {
           ...options,
         }
       );
+      // Fallback: parse if string
+      if (response.data && typeof response.data?.data?.languages === 'string') {
+        response.data.data.languages = JSON.parse(response.data.data.languages);
+      }
       return response;
     } finally {
       setLoading(false);
@@ -372,6 +376,143 @@ const useProfileUpdates = () => {
     }
   };
 
+  // Add new update methods for client profile sections
+  const updateBudgetProjects = async (
+    userId: number,
+    data: {
+      budget: 'SMALL' | 'MEDIUM' | 'LARGE' | 'ENTERPRISE';
+      projectCount: number;
+      preferredCreators: number[];
+    },
+    options?: FetchApiOptions
+  ): Promise<ApiResponse<ProfileUpdateResponse>> => {
+    setLoading(true);
+    try {
+      // Update budget
+      await fetchApi<ProfileUpdateResponse>(
+        ApiRoutes.Users.UpdateBudget.replace('{id}', userId.toString()),
+        {
+          method: 'PUT',
+          data: { budget: data.budget },
+          ...options,
+        }
+      );
+      // Update preferred creators and project count (assuming a PATCH to UpdateOne)
+      const response = await fetchApi<ProfileUpdateResponse>(
+        ApiRoutes.Users.UpdateOne.replace('{id}', userId.toString()),
+        {
+          method: 'PATCH',
+          data: {
+            client: {
+              preferredCreators: data.preferredCreators,
+              projectCount: data.projectCount,
+            },
+          },
+          ...options,
+        }
+      );
+      return response;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateDefaultProjectSettings = async (
+    userId: number,
+    data: { notificationFrequency: string; timeline: string; communicationPreference: string },
+    options?: FetchApiOptions
+  ): Promise<ApiResponse<ProfileUpdateResponse>> => {
+    setLoading(true);
+    try {
+      const response = await fetchApi<ProfileUpdateResponse>(
+        ApiRoutes.Users.UpdateProjectSettings.replace('{id}', userId.toString()),
+        {
+          method: 'PUT',
+          data: {
+            default_project_settings: {
+              notificationFrequency: data.notificationFrequency,
+              timeline: data.timeline,
+              communicationPreference: data.communicationPreference,
+            },
+          },
+          ...options,
+        }
+      );
+      return response;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateContactInfo = async (
+    userId: number,
+    data: { contactPhone: string; contactEmail: string; city: string; country: string },
+    options?: FetchApiOptions
+  ): Promise<ApiResponse<ProfileUpdateResponse>> => {
+    setLoading(true);
+    try {
+      const response = await fetchApi<ProfileUpdateResponse>(
+        ApiRoutes.Users.UpdateOne.replace('{id}', userId.toString()),
+        {
+          method: 'PATCH',
+          data: {
+            profile: {
+              contactPhone: data.contactPhone,
+              contactEmail: data.contactEmail,
+              city: data.city,
+              country: data.country,
+            },
+          },
+          ...options,
+        }
+      );
+      return response;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add updateClientLanguages for client language JSON array
+  const updateClientLanguages = async (
+    userId: number,
+    languages: Array<{ language: string; proficiency: string }>,
+    options?: FetchApiOptions
+  ): Promise<ApiResponse<ProfileUpdateResponse>> => {
+    setLoading(true);
+    try {
+      const response = await fetchApi<ProfileUpdateResponse>(`/users/${userId}/client-languages`, {
+        method: 'PUT',
+        data: { languages },
+        ...options,
+      });
+      // Fallback: parse if string
+      if (response.data && typeof response.data?.data?.languages === 'string') {
+        response.data.data.languages = JSON.parse(response.data.data.languages);
+      }
+      return response;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateSocialMedia = async (
+    userId: number,
+    data: { socialMediaLinks: Array<{ platform: string; url: string }> },
+    options?: FetchApiOptions
+  ): Promise<ApiResponse<ProfileUpdateResponse>> => {
+    setLoading(true);
+    try {
+      const response = await fetchApi<ProfileUpdateResponse>(`/users/${userId}/social-media`, {
+        method: 'PATCH',
+        data: { profile: { socialMediaLinks: data.socialMediaLinks } },
+        ...options,
+      });
+      return response;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     updateAbout,
@@ -389,6 +530,11 @@ const useProfileUpdates = () => {
     updateBilling,
     updateBudget,
     updateProjectSettings,
+    updateBudgetProjects,
+    updateDefaultProjectSettings,
+    updateContactInfo,
+    updateClientLanguages,
+    updateSocialMedia,
   };
 };
 

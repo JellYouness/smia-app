@@ -33,6 +33,7 @@ const EditAboutDialog = ({
   const AboutSchema = Yup.object().shape({
     title: Yup.string().max(255, 'Title is too long'),
     bio: Yup.string().max(1000, 'Bio is too long'),
+    shortBio: Yup.string().max(255, 'Short bio is too long'),
   });
 
   const methods = useForm({
@@ -40,6 +41,7 @@ const EditAboutDialog = ({
     defaultValues: {
       title: user?.profile?.title || '',
       bio: user?.profile?.bio || '',
+      shortBio: user?.profile?.shortBio || '',
     },
   });
 
@@ -74,6 +76,14 @@ const EditAboutDialog = ({
                   label="Bio"
                   multiline
                   rows={6}
+                  placeholder="Tell us about yourself, your experience, and what you do..."
+                  helperText="Share your story, experience, and what makes you unique"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <RHFTextField
+                  name="shortBio"
+                  label="Short Bio"
                   placeholder="Tell us about yourself, your experience, and what you do..."
                   helperText="Share your story, experience, and what makes you unique"
                 />

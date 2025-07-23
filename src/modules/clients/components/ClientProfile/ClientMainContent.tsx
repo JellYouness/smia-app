@@ -4,14 +4,20 @@ import { AttachMoney } from '@mui/icons-material';
 import Link from 'next/link';
 import { Any } from '@common/defs/types';
 import SectionCard from '@modules/users/components/SectionCard';
-import EditAboutDialog from '@modules/creators/components/EditAboutDialog';
-import EditCompanyDialog from '@modules/clients/components/EditCompanyDialog';
-import EditBillingDialog from '@modules/clients/components/EditBillingDialog';
+import EditAboutDialog from '@modules/creators/components/CreatorProfle/EditAboutDialog';
+import EditCompanyDialog from '@modules/clients/components/ClientProfile/EditCompanyDialog';
+import EditBillingDialog from '@modules/clients/components/ClientProfile/EditBillingDialog';
+import EditBudgetProjectsDialog from './EditBudgetProjectsDialog';
+import EditDefaultProjectSettingsDialog from './EditDefaultProjectSettingsDialog';
+import EditContactInfoDialog from './EditContactInfoDialog';
+
 import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
+import { User } from '@modules/users/defs/types';
+import { TFunction } from 'i18next';
 
 interface ClientMainContentProps {
-  user: Any;
-  t: Any;
+  user: User;
+  t: TFunction;
   readOnly?: boolean;
 }
 
@@ -20,8 +26,18 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
   const [openCompany, setOpenCompany] = useState(false);
   const [openBilling, setOpenBilling] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [openBudgetProjects, setOpenBudgetProjects] = useState(false);
+  const [openDefaultProjectSettings, setOpenDefaultProjectSettings] = useState(false);
+  const [openContactInfo, setOpenContactInfo] = useState(false);
 
-  const { updateAbout, updateCompany, updateBilling } = useProfileUpdates();
+  const {
+    updateAbout,
+    updateCompany,
+    updateBilling,
+    updateBudgetProjects,
+    updateDefaultProjectSettings,
+    updateContactInfo,
+  } = useProfileUpdates();
 
   const handleSaveAbout = async (data: Any) => {
     try {
@@ -77,18 +93,90 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
     }
   };
 
+  const handleSaveBudgetProjects = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateBudgetProjects(user.id, {
+        budget: data.budget, // pass as string
+        projectCount: Number(data.projectCount),
+        preferredCreators: data.preferredCreators,
+      });
+      if (response.success) {
+        setOpenBudgetProjects(false);
+      }
+    } catch (error) {
+      console.error('Error saving budget & projects data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveDefaultProjectSettings = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateDefaultProjectSettings(user.id, data);
+      if (response.success) {
+        setOpenDefaultProjectSettings(false);
+      }
+    } catch (error) {
+      console.error('Error saving default project settings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveContactInfo = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateContactInfo(user.id, data);
+      if (response.success) {
+        setOpenContactInfo(false);
+      }
+    } catch (error) {
+      console.error('Error saving contact info:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Stack spacing={0}>
       {/* Title/About Section */}
-      <SectionCard title={user?.profile?.title || t('user:about')} readOnly={readOnly}>
+      <SectionCard title={t('user:about')} readOnly={readOnly} onEdit={() => setOpenAbout(true)}>
+        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
+          {user?.profile?.title || <Skeleton width="80%" />}
+        </Typography>
+
+        <Typography variant="body1" sx={{ mt: 1, fontWeight: 600 }}>
+          {t('user:bio')}:
+        </Typography>
         <Typography variant="body1" sx={{ mt: 1 }}>
           {user?.profile?.bio || <Skeleton width="80%" />}
         </Typography>
+
+        <Typography variant="body1" sx={{ mt: 1, fontWeight: 600 }}>
+          {t('user:short_bio')}:
+        </Typography>
+        <Typography variant="body1" sx={{ mt: 1 }}>
+          {user?.profile?.shortBio || <Skeleton width="80%" />}
+        </Typography>
       </SectionCard>
 
+      <EditAboutDialog
+        user={user}
+        open={openAbout}
+        onClose={() => setOpenAbout(false)}
+        onSave={handleSaveAbout}
+        loading={loading}
+      />
+
       {/* Company Information Section */}
-      <SectionCard title="Company Information" readOnly={readOnly}>
-        <Stack spacing={3}>
+      <SectionCard
+        title="Company Information"
+        readOnly={readOnly}
+        onEdit={() => setOpenCompany(true)}
+      >
+        <Stack spacing={1}>
           {user?.client?.companyName && (
             <Box>
               <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
@@ -135,9 +223,21 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
         </Stack>
       </SectionCard>
 
+      <EditCompanyDialog
+        user={user}
+        open={openCompany}
+        onClose={() => setOpenCompany(false)}
+        onSave={handleSaveCompany}
+        loading={loading}
+      />
+
       {/* Billing Information Section */}
-      <SectionCard title="Billing Information" readOnly={readOnly}>
-        <Stack spacing={3}>
+      <SectionCard
+        title="Billing Information"
+        readOnly={readOnly}
+        onEdit={() => setOpenBilling(true)}
+      >
+        <Stack spacing={1}>
           {user?.client?.billingStreet && (
             <Box>
               <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
@@ -167,9 +267,21 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
         </Stack>
       </SectionCard>
 
+      <EditBillingDialog
+        user={user}
+        open={openBilling}
+        onClose={() => setOpenBilling(false)}
+        onSave={handleSaveBilling}
+        loading={loading}
+      />
+
       {/* Budget & Project Information Section */}
-      <SectionCard title="Budget & Projects" readOnly={readOnly}>
-        <Stack spacing={3}>
+      <SectionCard
+        title="Budget & Projects"
+        readOnly={readOnly}
+        onEdit={() => setOpenBudgetProjects(true)}
+      >
+        <Stack spacing={1}>
           {user?.client?.budget && (
             <Box>
               <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
@@ -208,19 +320,30 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
           )}
         </Stack>
       </SectionCard>
+      <EditBudgetProjectsDialog
+        user={user}
+        open={openBudgetProjects}
+        onClose={() => setOpenBudgetProjects(false)}
+        onSave={handleSaveBudgetProjects}
+        loading={loading}
+      />
 
       {/* Default Project Settings Section */}
-      <SectionCard title="Default Project Settings" readOnly={readOnly}>
-        <Stack spacing={3}>
+      <SectionCard
+        title="Default Project Settings"
+        readOnly={readOnly}
+        onEdit={() => setOpenDefaultProjectSettings(true)}
+      >
+        <Stack spacing={1}>
           {user?.client?.defaultProjectSettings ? (
-            <Stack spacing={2}>
-              {user.client.defaultProjectSettings.budget && (
+            <Stack spacing={1}>
+              {user.client.defaultProjectSettings.notificationFrequency && (
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
-                    Default Budget
+                    Notification Frequency:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2 }}>
-                    ${user.client.defaultProjectSettings.budget}
+                    {user.client.defaultProjectSettings.notificationFrequency}
                   </Typography>
                 </Box>
               )}
@@ -228,7 +351,7 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
               {user.client.defaultProjectSettings.timeline && (
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
-                    Default Timeline
+                    Timeline:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2 }}>
                     {user.client.defaultProjectSettings.timeline}
@@ -236,13 +359,13 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
                 </Box>
               )}
 
-              {user.client.defaultProjectSettings.requirements && (
+              {user.client.defaultProjectSettings.communicationPreference && (
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
-                    Default Requirements
+                    Communication Preference:
                   </Typography>
                   <Typography variant="body1" sx={{ mb: 2 }}>
-                    {user.client.defaultProjectSettings.requirements}
+                    {user.client.defaultProjectSettings.communicationPreference}
                   </Typography>
                 </Box>
               )}
@@ -266,28 +389,39 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
           )}
         </Stack>
       </SectionCard>
+      <EditDefaultProjectSettingsDialog
+        user={user}
+        open={openDefaultProjectSettings}
+        onClose={() => setOpenDefaultProjectSettings(false)}
+        onSave={handleSaveDefaultProjectSettings}
+        loading={loading}
+      />
 
       {/* Contact Information Section */}
-      <SectionCard title="Contact Information" readOnly={readOnly}>
-        <Stack spacing={3}>
-          {user?.phoneNumber && (
+      <SectionCard
+        title="Contact Information"
+        readOnly={readOnly}
+        onEdit={() => setOpenContactInfo(true)}
+      >
+        <Stack spacing={1}>
+          {user?.profile?.contactPhone && (
             <Box>
               <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
                 Phone Number
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                {user.phoneNumber}
+                {user.profile.contactPhone}
               </Typography>
             </Box>
           )}
 
-          {user?.email && (
+          {user?.profile?.contactEmail && (
             <Box>
               <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
                 Email Address
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                {user.email}
+                {user.profile.contactEmail}
               </Typography>
             </Box>
           )}
@@ -305,28 +439,35 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
           )}
         </Stack>
       </SectionCard>
+      <EditContactInfoDialog
+        user={user}
+        open={openContactInfo}
+        onClose={() => setOpenContactInfo(false)}
+        onSave={handleSaveContactInfo}
+        loading={loading}
+      />
 
       {/* Additional Information Section */}
       <SectionCard title="Additional Information" readOnly={readOnly}>
-        <Stack spacing={3}>
-          {user?.preferredLanguage && (
+        <Stack spacing={1}>
+          {user?.profile?.preferredLanguage && (
             <Box>
               <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
                 Preferred Language
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                {user.preferredLanguage}
+                {user.profile.preferredLanguage}
               </Typography>
             </Box>
           )}
 
-          {user?.timezone && (
+          {user?.profile?.timezone && (
             <Box>
               <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
                 Timezone
               </Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>
-                {user.timezone}
+                {user.profile.timezone}
               </Typography>
             </Box>
           )}
