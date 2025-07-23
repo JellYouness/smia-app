@@ -8,6 +8,30 @@ export interface User extends CrudObject {
   firstName: string;
   lastName: string;
   username: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'PENDING' | 'SUSPENDED' | 'DELETED';
+  dateRegistered: string;
+  userType?: 'CLIENT' | 'CREATOR' | 'AMBASSADOR' | 'ADMIN' | 'SUPERADMIN';
+  twoFactorEnabled: boolean;
+  acceptedTerms: boolean;
+  emailVerified: boolean;
+  emailVerifiedAt: string;
+  twoFactorSecret: string;
+  googleId: string;
+  facebookId: string;
+  // Relations avec les différents types d'utilisateurs
+  creator?: Creator;
+  client?: Client;
+  ambassador?: Ambassador;
+  systemAdministrator?: SystemAdministrator;
+  profile: UserProfile;
+}
+
+export interface UserProfile extends CrudObject {
+  id: number;
+  userId: number;
+  bio: string;
+  shortBio: string;
+  title: string;
   phoneNumber: string;
   address: string;
   city: string;
@@ -15,24 +39,21 @@ export interface User extends CrudObject {
   country: string;
   postalCode: string;
   profilePicture: string;
-  bio: string;
-  title?: string;
-  dateOfBirth: string;
-  gender: string;
-  preferredLanguage: string;
-  timezone: string;
-  userType?: 'CLIENT' | 'CREATOR' | 'AMBASSADOR' | 'ADMIN' | 'SUPERADMIN';
+  profileVisibility: 'PUBLIC' | 'PRIVATE' | 'TEAM_ONLY';
+  profileCompleteness: number;
+  lastUpdated: string;
+  coverImage: string;
+  displayName: string;
   notificationPreferences: {
     email: boolean;
-    sms: boolean;
-    push: boolean;
+    inApp: boolean;
   };
-  privacySettings: {
-    profileVisibility: 'PUBLIC' | 'PRIVATE' | 'CONNECTIONS';
-    showEmail: boolean;
-    showPhone: boolean;
-    showAddress: boolean;
-  };
+  // privacySettings: {
+  //   profileVisibility: 'PUBLIC' | 'PRIVATE' | 'CONNECTIONS';
+  //   showEmail: boolean;
+  //   showPhone: boolean;
+  //   showAddress: boolean;
+  // };
   socialMediaLinks: {
     linkedin?: string;
     twitter?: string;
@@ -44,16 +65,10 @@ export interface User extends CrudObject {
     relationship: string;
     phone: string;
   };
-  preferences: {
-    theme: 'LIGHT' | 'DARK' | 'SYSTEM';
-    language: string;
-    notifications: boolean;
-  };
-  // Relations avec les différents types d'utilisateurs
-  creator?: Creator;
-  client?: Client;
-  ambassador?: Ambassador;
-  systemAdministrator?: SystemAdministrator;
+  // preferences: any;
+  audioIntroduction: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AdminPermissions {

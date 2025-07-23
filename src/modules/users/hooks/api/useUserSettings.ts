@@ -2,15 +2,12 @@ import { useCallback } from 'react';
 import useApi from '@common/hooks/useApi';
 
 export interface UserSettings {
-  email: string;
   language: string;
   notifications: {
     email: boolean;
-    sms: boolean;
-    push: boolean;
     inApp: boolean;
   };
-  privacy: string;
+  privacy: 'PUBLIC' | 'PRIVATE' | 'TEAM_ONLY';
 }
 
 export interface TwoFAStatus {
@@ -25,7 +22,9 @@ export interface TwoFASetup {
 export interface Session {
   id: string | number;
   device: string;
+  ipAddress?: string;
   lastActive: string;
+  formattedLastActive: string;
   current: boolean;
 }
 
@@ -75,6 +74,10 @@ const useUserSettings = () => {
     [fetchApi]
   );
 
+  const revokeAllSessionsExceptCurrent = useCallback(async () => {
+    return fetchApi<null>('/user/sessions', { method: 'DELETE' });
+  }, [fetchApi]);
+
   const fetchConnectedAccounts = useCallback(async () => {
     return fetchApi<ConnectedAccount[]>('/user/connected-accounts', { method: 'GET' });
   }, [fetchApi]);
@@ -101,6 +104,7 @@ const useUserSettings = () => {
     disable2FA,
     fetchSessions,
     revokeSession,
+    revokeAllSessionsExceptCurrent,
     fetchConnectedAccounts,
     disconnectAccount,
     connectAccount,

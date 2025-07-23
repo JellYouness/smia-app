@@ -146,13 +146,13 @@ const Topbar = () => {
 
   const directoryNavItems: TopbarItem[] = [
     {
-      label: 'Browse Creators',
+      label: t('topbar:browse_creators'),
       link: '/creators',
       onClick: () => router.push('/creators'),
     },
     // Add Browse Projects
     {
-      label: 'Browse Projects',
+      label: t('topbar:browse_projects'),
       link: '/projects',
       onClick: () => router.push('/projects'),
     },
@@ -220,36 +220,67 @@ const Topbar = () => {
                 sx={{ cursor: 'pointer' }}
               />
             </Stack>
-            <List sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+            <List
+              sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', color: 'black' }}
+            >
               <ListItem>
-                <ListItemText>{t('topbar:language')}</ListItemText>
-                <KeyboardArrowDown />
-                <List
-                  className="dropdown-menu"
-                  sx={{
-                    backgroundColor: 'common.white',
-                    boxShadow: (theme) => theme.customShadows.z12,
-                    position: 'absolute',
-                    top: 48,
-                    left: 0,
-                    padding: 0,
-                    width: 137,
-                    borderBottomLeftRadius: 24,
-                    borderBottomRightRadius: 24,
-                    visibility: 'hidden',
-                    zIndex: 1000000,
-                  }}
-                >
-                  <ListItemButton onClick={() => setUserLanguage('fr')}>
-                    <ListItemText>Français</ListItemText>
-                  </ListItemButton>
-                  <ListItemButton onClick={() => setUserLanguage('en')}>
-                    <ListItemText>English</ListItemText>
-                  </ListItemButton>
-                  <ListItemButton onClick={() => setUserLanguage('es')}>
-                    <ListItemText>Español</ListItemText>
-                  </ListItemButton>
-                </List>
+                <Box sx={{ position: 'relative' }}>
+                  <Button
+                    endIcon={<KeyboardArrowDown />}
+                    sx={{ color: 'black', textTransform: 'none' }}
+                    onClick={() => setShowDropdown((prev) => !prev)}
+                    id="language-menu-button"
+                  >
+                    {t('topbar:language')}
+                  </Button>
+                  <Menu
+                    anchorEl={document.getElementById('language-menu-button')}
+                    open={showDropdown}
+                    onClose={() => setShowDropdown(false)}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                    PaperProps={{
+                      sx: {
+                        mt: 1,
+                        minWidth: 137,
+                        borderBottomLeftRadius: 2,
+                        borderBottomRightRadius: 2,
+                        boxShadow: (theme) => theme.customShadows.z12,
+                      },
+                    }}
+                  >
+                    <MenuItem
+                      onClick={() => {
+                        setUserLanguage('fr');
+                        setShowDropdown(false);
+                      }}
+                    >
+                      Français
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        setUserLanguage('en');
+                        setShowDropdown(false);
+                      }}
+                    >
+                      English
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        setUserLanguage('es');
+                        setShowDropdown(false);
+                      }}
+                    >
+                      Español
+                    </MenuItem>
+                  </Menu>
+                </Box>
               </ListItem>
               <ListItem>
                 <Button

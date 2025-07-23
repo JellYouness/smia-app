@@ -14,7 +14,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemSecondaryAction,
   CircularProgress,
   IconButton,
   Dialog,
@@ -24,9 +23,8 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import FormProvider, { RHFTextField, RHFSelect } from '@common/components/lib/react-hook-form';
+import FormProvider, { RHFSelect } from '@common/components/lib/react-hook-form';
 import { useForm } from 'react-hook-form';
-import useAuth from '@modules/auth/hooks/api/useAuth';
 import { useEffect, useState } from 'react';
 import { Lock, Security, Link as LinkIcon, ExitToApp, QrCode2 } from '@mui/icons-material';
 import {
@@ -37,9 +35,11 @@ import {
   ConnectedAccount,
 } from '@modules/users/hooks/api';
 import Image from 'next/image';
+import { setUserLanguage } from '@common/components/lib/utils/language';
+import useAuth from '@modules/auth/hooks/api/useAuth';
+import { UserProfile } from '@modules/users/defs/types';
 
 const UserSettingsPage: NextPage = () => {
-  const { user } = useAuth();
   const { t } = useTranslation(['common', 'user']);
   const {
     fetchSettings,
@@ -49,11 +49,13 @@ const UserSettingsPage: NextPage = () => {
     disable2FA,
     fetchSessions,
     revokeSession,
+    revokeAllSessionsExceptCurrent,
     fetchConnectedAccounts,
     disconnectAccount,
     connectAccount,
   } = useUserSettings();
-
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -63,21 +65,27 @@ const UserSettingsPage: NextPage = () => {
   const [revokeDialog, setRevokeDialog] = useState<{ open: boolean; sessionId?: string | number }>({
     open: false,
   });
+  const [revokeAllDialog, setRevokeAllDialog] = useState<{ open: boolean }>({
+    open: false,
+  });
   const [disconnectDialog, setDisconnectDialog] = useState<{ open: boolean; provider?: string }>({
     open: false,
   });
 
+  useEffect(() => {
+    if (user) {
+      setProfile(user.profile);
+    }
+  }, [user]);
+
   const methods = useForm({
     defaultValues: {
-      email: '',
-      language: 'en',
+      language: profile?.preferredLanguage ?? 'en',
       notifications: {
-        email: true,
-        sms: false,
-        push: true,
-        inApp: true,
+        email: profile?.notificationPreferences?.email ?? false,
+        inApp: profile?.notificationPreferences?.inApp ?? false,
       },
-      privacy: 'PUBLIC',
+      privacy: profile?.profileVisibility ?? 'PUBLIC',
     },
   });
   const { handleSubmit, reset, watch, setValue } = methods;
@@ -95,10 +103,12 @@ const UserSettingsPage: NextPage = () => {
 
         if (settings.success) {
           reset({
-            email: settings.data?.email,
-            language: settings.data?.language,
-            notifications: settings.data?.notifications,
-            privacy: settings.data?.privacy,
+            language: settings.data?.language ?? 'en',
+            notifications: settings.data?.notifications ?? {
+              email: false,
+              inApp: false,
+            },
+            privacy: (settings.data?.privacy ?? 'PUBLIC') as 'PUBLIC' | 'PRIVATE' | 'TEAM_ONLY',
           });
         }
 
@@ -127,6 +137,19 @@ const UserSettingsPage: NextPage = () => {
     setIsSubmitting(true);
     try {
       await updateSettings(data);
+      switch (data.language) {
+        case 'fr':
+          setUserLanguage('fr');
+          break;
+        case 'es':
+          setUserLanguage('es');
+          break;
+        case 'en':
+          setUserLanguage('en');
+          break;
+        default:
+          setUserLanguage('en');
+      }
     } catch (e) {
       console.error('Error saving settings:', e);
     }
@@ -170,6 +193,18 @@ const UserSettingsPage: NextPage = () => {
     setRevokeDialog({ open: false });
   };
 
+  const handleRevokeAllSessions = async () => {
+    try {
+      const response = await revokeAllSessionsExceptCurrent();
+      if (response.success) {
+        setSessions((prev) => prev.filter((s) => s.current));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setRevokeAllDialog({ open: false });
+  };
+
   const handleDisconnectAccount = async () => {
     if (disconnectDialog.provider) {
       try {
@@ -199,8 +234,8 @@ const UserSettingsPage: NextPage = () => {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50', py: 4 }}>
-      <Paper elevation={3} sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
+    <Box sx={{ minHeight: '100vh' }}>
+      <Paper elevation={3} sx={{ p: 4, maxWidth: 1000, mx: 'auto' }}>
         <Typography variant="h4" sx={{ mb: 3, fontWeight: 700 }}>
           {t('user:settings', 'Settings')}
         </Typography>
@@ -261,76 +296,6 @@ const UserSettingsPage: NextPage = () => {
                       <Switch
                         checked={!!watch('notifications.email')}
                         onChange={(_, checked) => setValue('notifications.email', checked)}
-                        color="primary"
-                      />
-                    </Box>
-                  </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Paper
-                    elevation={1}
-                    sx={{
-                      p: 2,
-                      border: '1px solid',
-                      borderColor: 'primary.main',
-                      borderRadius: 2,
-                      transition: 'all 0.2s ease-in-out',
-                      '&:hover': {
-                        borderColor: 'primary.main',
-                        boxShadow: 2,
-                      },
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <Box>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
-                          {t('user:sms_notifications', 'SMS Notifications')}
-                        </Typography>
-                      </Box>
-                      <Switch
-                        checked={!!watch('notifications.sms')}
-                        onChange={(_, checked) => setValue('notifications.sms', checked)}
-                        color="primary"
-                      />
-                    </Box>
-                  </Paper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Paper
-                    elevation={1}
-                    sx={{
-                      p: 2,
-                      border: '1px solid',
-                      borderColor: 'primary.main',
-                      borderRadius: 2,
-                      transition: 'all 0.2s ease-in-out',
-                      '&:hover': {
-                        borderColor: 'primary.main',
-                        boxShadow: 2,
-                      },
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <Box>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
-                          {t('user:push_notifications', 'Push Notifications')}
-                        </Typography>
-                      </Box>
-                      <Switch
-                        checked={!!watch('notifications.push')}
-                        onChange={(_, checked) => setValue('notifications.push', checked)}
                         color="primary"
                       />
                     </Box>
@@ -453,6 +418,8 @@ const UserSettingsPage: NextPage = () => {
                         src={twoFASetup.qrCodeUrl}
                         alt="2FA QR Code"
                         style={{ width: 180, height: 180, objectFit: 'contain' }}
+                        width={180}
+                        height={180}
                       />
                     </Box>
                     <Typography variant="body2" sx={{ mb: 1 }}>
@@ -464,19 +431,37 @@ const UserSettingsPage: NextPage = () => {
                   </Box>
                 )}
                 <Divider sx={{ my: 2 }} />
-                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                  {t('user:active_sessions', 'Active Sessions')}
-                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                    {t('user:active_sessions', 'Active Sessions')}
+                  </Typography>
+                  {sessions.length > 1 && (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      size="small"
+                      onClick={() => setRevokeAllDialog({ open: true })}
+                    >
+                      {t('user:revoke_all_sessions', 'Revoke All Other Sessions')}
+                    </Button>
+                  )}
+                </Box>
                 <List>
                   {sessions.map((session) => (
                     <ListItem key={session.id}>
                       <ListItemText
                         primary={session.device}
                         secondary={
-                          t('user:last_active', 'Last active') +
-                          ': ' +
-                          session.lastActive +
-                          (session.current ? ' (' + t('user:this_device', 'This device') + ')' : '')
+                          <>
+                            {t('user:last_active', 'Last active')}: {session.formattedLastActive}
+                            {session.current && ` • (${t('user:this_device', 'This device')})`}
+                          </>
                         }
                       />
                       {!session.current && (
@@ -552,6 +537,24 @@ const UserSettingsPage: NextPage = () => {
           </Button>
           <Button color="error" onClick={handleRevokeSession}>
             {t('common:confirm_action', 'Yes, delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Revoke all sessions dialog */}
+      <Dialog open={revokeAllDialog.open} onClose={() => setRevokeAllDialog({ open: false })}>
+        <DialogTitle>{t('user:revoke_all_sessions', 'Revoke All Other Sessions')}</DialogTitle>
+        <DialogContent>
+          {t(
+            'user:revoke_all_sessions_confirm',
+            'Are you sure you want to revoke all other sessions? This will log you out from all other devices.'
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRevokeAllDialog({ open: false })}>
+            {t('common:cancel', 'Cancel')}
+          </Button>
+          <Button color="error" onClick={handleRevokeAllSessions}>
+            {t('common:confirm_action', 'Yes, revoke all')}
           </Button>
         </DialogActions>
       </Dialog>
