@@ -1,7 +1,7 @@
 import { Box, Typography, Chip, Stack, Skeleton, useTheme, Paper, Divider } from '@mui/material';
-import { ProjectUpdate, PROJECT_UPDATE_TYPE } from '../defs/types';
 import dayjs from 'dayjs';
 import { FiberManualRecord, Report, Update } from '@mui/icons-material';
+import { PROJECT_UPDATE_TYPE, ProjectUpdate } from '@modules/projects/defs/types';
 
 interface Props {
   updates: ProjectUpdate[];

@@ -61,6 +61,8 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
   const softHires = project?.projectCreators?.filter((pc) => pc.status === 'confirmed') || [];
   const assignedHires = project?.projectCreators?.filter((pc) => pc.status === 'assigned') || [];
 
+  console.log(project);
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, creator: ProjectCreator) => {
     setMenuAnchorEl(event.currentTarget);
     setSelectedCreator(creator);

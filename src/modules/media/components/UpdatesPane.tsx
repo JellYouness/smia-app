@@ -16,8 +16,8 @@ import UpdateIcon from '@mui/icons-material/Update';
 import ReportIcon from '@mui/icons-material/Report';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import useAuth from '@modules/auth/hooks/api/useAuth';
-import { PROJECT_UPDATE_TYPE } from '../defs/types';
-import useProjectUpdates from '../hooks/useProjectUpdates';
+import useProjectUpdates from '@modules/projects/hooks/useProjectUpdates';
+import { PROJECT_UPDATE_TYPE } from '@modules/projects/defs/types';
 
 interface UpdatesPaneProps {
   projectId: number;
