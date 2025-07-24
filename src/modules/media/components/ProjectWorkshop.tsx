@@ -14,15 +14,12 @@ interface ProjectWorkshopProps {
 const ProjectWorkshop = ({ projectId }: ProjectWorkshopProps) => {
   const { layout, toggle, drag, HIDDEN } = useWorkspaceLayout(projectId);
 
-  // Hide footer for workshop page
   useEffect(() => {
-    // Find and hide the footer
     const footer = document.querySelector('footer');
     if (footer) {
       footer.style.display = 'none';
     }
 
-    // Cleanup: restore footer when component unmounts
     return () => {
       const footer = document.querySelector('footer');
       if (footer) {
@@ -31,7 +28,6 @@ const ProjectWorkshop = ({ projectId }: ProjectWorkshopProps) => {
     };
   }, []);
 
-  // Calculate grid template columns properly
   const getGridColumns = () => {
     const leftCol = layout.hideLeft ? `${HIDDEN}px` : `${layout.left}px`;
     const leftSplitter = layout.hideLeft ? '' : ' 4px';
@@ -123,7 +119,7 @@ const ProjectWorkshop = ({ projectId }: ProjectWorkshopProps) => {
             zIndex: 1,
           }}
         >
-          <BoardPane />
+          <BoardPane projectId={projectId} />
         </Box>
       </Box>
 

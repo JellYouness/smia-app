@@ -11,7 +11,6 @@ import Routes from '@common/defs/routes';
 import { useTranslation } from 'react-i18next';
 import CreatorsPermissionsList from '@modules/projects/components/CreatorsPermissionsList';
 import ProjectDetailsSection from '@modules/projects/components/ProjectDetailsSection';
-import UpdatesTimeline from '@modules/projects/components/UpdatesTimeline';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import useSWR from 'swr';
 import { useMemo, useState, useEffect } from 'react';
@@ -20,6 +19,7 @@ import PageHeader from '@common/components/lib/partials/PageHeader';
 import Labels from '@common/defs/labels';
 import { ProjectUpdate, PROJECT_UPDATE_TYPE } from '@modules/projects/defs/types';
 import ChatIcon from '@mui/icons-material/Chat';
+import UpdatesTimeline from '@modules/media/components/UpdatesTimeline';
 
 const ProjectDetailsPage: NextPage = () => {
   const { t } = useTranslation(['project', 'common', 'user']);

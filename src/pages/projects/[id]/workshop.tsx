@@ -1,8 +1,8 @@
 import withAuth from '@modules/auth/hocs/withAuth';
 import { useRouter } from 'next/router';
-import ProjectWorkshop from '@modules/projects/components/ProjectWorkshop';
 import { NextPage } from 'next';
 import { useMemo } from 'react';
+import ProjectWorkshop from '@modules/media/components/ProjectWorkshop';
 
 const WorkshopPage: NextPage = () => {
   const router = useRouter();
