@@ -1,2 +1,2 @@
-const namespace = 'media';
+const namespace = 'media_posts';
 export default namespace;

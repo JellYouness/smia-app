@@ -8,17 +8,19 @@ interface BoardColumnProps {
   tasks: MediaPost[];
   draggedTaskId: string | null;
   isDragOver: boolean;
-  onDragOver: (e: React.DragEvent) => void;
-  onDragLeave: (e: React.DragEvent) => void;
-  onDrop: (
+  onDragOver?: (e: React.DragEvent) => void;
+  onDragLeave?: (e: React.DragEvent) => void;
+  onDrop?: (
     e: React.DragEvent,
     columnId: string,
     targetTaskId: string,
     position: 'above' | 'below'
   ) => void;
-  onDragStart: (taskId: string) => void;
-  onDragEnd: () => void;
+  onDragStart?: (taskId: string) => void;
+  onDragEnd?: () => void;
   onCardClick: (task: MediaPost) => void;
+  onFilesClick?: (task: MediaPost) => void;
+  disableDrag?: boolean;
 }
 
 const COLUMNS = [
@@ -49,6 +51,8 @@ const BoardColumn = ({
   onDragStart,
   onDragEnd,
   onCardClick,
+  onFilesClick,
+  disableDrag,
 }: BoardColumnProps) => {
   const [dragOverTaskId, setDragOverTaskId] = useState<string | null>(null);
   const [dragOverPosition, setDragOverPosition] = useState<'above' | 'below' | null>(null);
@@ -67,13 +71,15 @@ const BoardColumn = ({
     e.preventDefault();
     setDragOverTaskId(null);
     setDragOverPosition(null);
-    onDrop(e, column.id, taskId, position);
+    if (onDrop) {
+      onDrop(e, column.id, taskId, position);
+    }
   };
 
   return (
     <Box
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
+      onDragOver={disableDrag ? undefined : onDragOver}
+      onDragLeave={disableDrag ? undefined : onDragLeave}
       sx={{
         minWidth: 280,
         background: isDragOver ? 'rgba(32, 101, 209, 0.1)' : 'rgba(255, 255, 255, 0.4)',
@@ -134,16 +140,26 @@ const BoardColumn = ({
             key={String(task.id)}
             task={task}
             isDragging={String(draggedTaskId) === String(task.id)}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            onDragOver={(e, position) => handleTaskDragOver(e, String(task.id), position)}
-            onDrop={(e, position) => handleTaskDrop(e, String(task.id), position)}
+            onDragStart={disableDrag ? undefined : onDragStart}
+            onDragEnd={disableDrag ? undefined : onDragEnd}
+            onDragOver={
+              disableDrag
+                ? undefined
+                : (e, position) => handleTaskDragOver(e, String(task.id), position)
+            }
+            onDrop={
+              disableDrag
+                ? undefined
+                : (e, position) => handleTaskDrop(e, String(task.id), position)
+            }
             dragOverPosition={dragOverTaskId === String(task.id) ? dragOverPosition : null}
             onCardClick={onCardClick}
+            onFilesClick={onFilesClick}
+            disableDrag={disableDrag}
           />
         ))}
         {/* Drop zone at the end of the column */}
-        {isDragOver && (
+        {isDragOver && !disableDrag && (
           <Box
             onDragOver={(e) => {
               e.preventDefault();
@@ -154,7 +170,9 @@ const BoardColumn = ({
               e.preventDefault();
               setDragOverTaskId(null);
               setDragOverPosition(null);
-              onDrop(e, column.id, 'end', 'below');
+              if (onDrop) {
+                onDrop(e, column.id, 'end', 'below');
+              }
             }}
             sx={{
               height: 60,

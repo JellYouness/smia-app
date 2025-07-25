@@ -2,16 +2,11 @@ import {
   MediaPost,
   MEDIA_POST_STATUS,
   MEDIA_POST_PRIORITY,
-  MediaPostAssignment,
   MEDIA_POST_ASSIGNMENT_ROLE,
+  MEDIA_POST_REVIEW_DECISION,
 } from '../defs/types';
 import ApiRoutes from '../defs/api-routes';
-import useItems, {
-  UseItemsOptions,
-  UseItemsHook,
-  UseItems,
-  defaultOptions,
-} from '@common/hooks/useItems';
+import useItems, { UseItemsOptions, UseItemsHook } from '@common/hooks/useItems';
 import { Any, Id } from '@common/defs/types';
 import useApi, { ApiResponse, FetchApiOptions } from '@common/hooks/useApi';
 import { mutate } from 'swr';
@@ -52,7 +47,38 @@ export type UseMediaHook = UseItemsHook<MediaPost, CreateOneInput, UpdateOneInpu
   ) => Promise<ApiResponse<Any>>;
   addComment: (
     postId: Id,
-    input: { authorId: Id; body: string; assetId?: Id; timecode?: number },
+    input: {
+      authorId: Id;
+      body: string;
+      assetId?: Id;
+      timecode?: number;
+    },
+    options?: FetchApiOptions
+  ) => Promise<ApiResponse<Any>>;
+  addAssetToMediaPost: (
+    postId: Id,
+    input: {
+      uploadId: Id;
+      mimeType: string;
+      isReference: boolean;
+      uploadedBy: Id;
+    },
+    options?: FetchApiOptions
+  ) => Promise<ApiResponse<Any>>;
+  readAllAssetsByPost: (postId: Id, options?: FetchApiOptions) => Promise<ApiResponse<Any>>;
+  deleteAssetFromMediaPost: (
+    postId: Id,
+    assetId: Id,
+    options?: FetchApiOptions
+  ) => Promise<ApiResponse<Any>>;
+  requestReview: (postId: Id, options?: FetchApiOptions) => Promise<ApiResponse<Any>>;
+  reviewVersion: (
+    postId: Id,
+    input: {
+      versionId: Id;
+      decision: MEDIA_POST_REVIEW_DECISION;
+      comment?: string;
+    },
     options?: FetchApiOptions
   ) => Promise<ApiResponse<Any>>;
 };
@@ -103,10 +129,85 @@ const useMedia: UseMedia = (opts = {}) => {
 
   const addComment = async (
     postId: Id,
-    input: { authorId: Id; body: string; assetId?: Id; timecode?: number },
+    input: {
+      authorId: Id;
+      body: string;
+      assetId?: Id;
+      timecode?: number;
+    },
     options?: FetchApiOptions
   ) => {
     const endpoint = apiRoutes.AddComment.replace('{postId}', postId.toString());
+    const response = await fetchApi(endpoint, {
+      method: 'POST',
+      data: input,
+      ...options,
+    });
+
+    return response;
+  };
+
+  const addAssetToMediaPost = async (
+    postId: Id,
+    input: {
+      uploadId: Id;
+      mimeType: string;
+      isReference: boolean;
+      uploadedBy: Id;
+    },
+    options?: FetchApiOptions
+  ) => {
+    const endpoint = apiRoutes.AddAssetToMediaPost.replace('{postId}', postId.toString());
+    const response = await fetchApi(endpoint, {
+      method: 'POST',
+      data: input,
+      ...options,
+    });
+
+    return response;
+  };
+
+  const readAllAssetsByPost = async (postId: Id, options?: FetchApiOptions) => {
+    const endpoint = apiRoutes.ReadAllAssetsByPost.replace('{postId}', postId.toString());
+    const response = await fetchApi(endpoint, {
+      method: 'GET',
+      ...options,
+    });
+
+    return response;
+  };
+
+  const deleteAssetFromMediaPost = async (postId: Id, assetId: Id, options?: FetchApiOptions) => {
+    const endpoint = apiRoutes.DeleteAssetFromMediaPost.replace('{postId}', postId.toString());
+    const response = await fetchApi(endpoint, {
+      method: 'DELETE',
+      data: { assetId },
+      ...options,
+    });
+
+    return response;
+  };
+
+  const requestReview = async (postId: Id, options?: FetchApiOptions) => {
+    const endpoint = apiRoutes.RequestReview.replace('{postId}', postId.toString());
+    const response = await fetchApi(endpoint, {
+      method: 'POST',
+      ...options,
+    });
+
+    return response;
+  };
+
+  const reviewVersion = async (
+    postId: Id,
+    input: {
+      versionId: Id;
+      decision: MEDIA_POST_REVIEW_DECISION;
+      comment?: string;
+    },
+    options?: FetchApiOptions
+  ) => {
+    const endpoint = apiRoutes.ReviewVersion.replace('{postId}', postId.toString());
     const response = await fetchApi(endpoint, {
       method: 'POST',
       data: input,
@@ -121,6 +222,11 @@ const useMedia: UseMedia = (opts = {}) => {
     upsertAssignee,
     deleteAssignee,
     addComment,
+    addAssetToMediaPost,
+    readAllAssetsByPost,
+    deleteAssetFromMediaPost,
+    requestReview,
+    reviewVersion,
   };
 
   return hook;

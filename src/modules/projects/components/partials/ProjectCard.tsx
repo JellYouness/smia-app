@@ -177,55 +177,71 @@ const ProjectCard = ({
                   'aria-labelledby': 'project-actions-button',
                 }}
               >
-                <MenuItem
-                  onClick={() => {
-                    handleMenuClose();
-                    router.push({
-                      pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
-                      query: { step: 'invite' },
-                    });
-                  }}
-                >
-                  <PersonAdd fontSize="small" sx={{ mr: 1.5 }} />
-                  <Typography variant="body2">{t('project:invite_creators')}</Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleMenuClose();
-                    router.push({
-                      pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
-                      query: { step: 'review' },
-                    });
-                  }}
-                >
-                  <RateReview fontSize="small" sx={{ mr: 1.5 }} />
-                  <Typography variant="body2">{t('project:proposals')}</Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleMenuClose();
-                    router.push({
-                      pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
-                      query: { step: 'hire' },
-                    });
-                  }}
-                >
-                  <WorkOutline fontSize="small" sx={{ mr: 1.5 }} />
-                  <Typography variant="body2">{t('project:hire')}</Typography>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleMenuClose();
-                    router.push({
-                      pathname: Routes.Projects.HireCreator.replace('{id}', project.id.toString()),
-                      query: { step: 'kickoff' },
-                    });
-                  }}
-                >
-                  <RocketLaunch fontSize="small" sx={{ mr: 1.5 }} />
-                  <Typography variant="body2">{t('project:kickoff', 'Kick-off')}</Typography>
-                </MenuItem>
-                <Divider sx={{ my: 1 }} />
+                {project.status === PROJECT_STATUS.IN_PROGRESS && (
+                  <>
+                    <MenuItem
+                      onClick={() => {
+                        handleMenuClose();
+                        router.push({
+                          pathname: Routes.Projects.HireCreator.replace(
+                            '{id}',
+                            project.id.toString()
+                          ),
+                          query: { step: 'invite' },
+                        });
+                      }}
+                    >
+                      <PersonAdd fontSize="small" sx={{ mr: 1.5 }} />
+                      <Typography variant="body2">{t('project:invite_creators')}</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        handleMenuClose();
+                        router.push({
+                          pathname: Routes.Projects.HireCreator.replace(
+                            '{id}',
+                            project.id.toString()
+                          ),
+                          query: { step: 'review' },
+                        });
+                      }}
+                    >
+                      <RateReview fontSize="small" sx={{ mr: 1.5 }} />
+                      <Typography variant="body2">{t('project:proposals')}</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        handleMenuClose();
+                        router.push({
+                          pathname: Routes.Projects.HireCreator.replace(
+                            '{id}',
+                            project.id.toString()
+                          ),
+                          query: { step: 'hire' },
+                        });
+                      }}
+                    >
+                      <WorkOutline fontSize="small" sx={{ mr: 1.5 }} />
+                      <Typography variant="body2">{t('project:hire')}</Typography>
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        handleMenuClose();
+                        router.push({
+                          pathname: Routes.Projects.HireCreator.replace(
+                            '{id}',
+                            project.id.toString()
+                          ),
+                          query: { step: 'kickoff' },
+                        });
+                      }}
+                    >
+                      <RocketLaunch fontSize="small" sx={{ mr: 1.5 }} />
+                      <Typography variant="body2">{t('project:kickoff', 'Kick-off')}</Typography>
+                    </MenuItem>
+                    <Divider sx={{ my: 1 }} />
+                  </>
+                )}
                 <MenuItem onClick={handleEditClick}>
                   <Edit fontSize="small" sx={{ mr: 1.5 }} />
                   <Typography variant="body2">{t('project:edit_project')}</Typography>

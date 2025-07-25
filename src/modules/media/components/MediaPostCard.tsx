@@ -7,18 +7,22 @@ import {
   Chip,
   Avatar,
   AvatarGroup,
+  IconButton,
 } from '@mui/material';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { MediaPost } from '../defs/types';
 
 interface MediaPostCardProps {
   task: MediaPost;
   isDragging: boolean;
-  onDragStart: (taskId: string) => void;
-  onDragEnd: () => void;
-  onDragOver: (e: React.DragEvent, position: 'above' | 'below' | null) => void;
-  onDrop: (e: React.DragEvent, position: 'above' | 'below') => void;
+  onDragStart?: (taskId: string) => void;
+  onDragEnd?: () => void;
+  onDragOver?: (e: React.DragEvent, position: 'above' | 'below' | null) => void;
+  onDrop?: (e: React.DragEvent, position: 'above' | 'below') => void;
   dragOverPosition: 'above' | 'below' | null;
   onCardClick: (task: MediaPost) => void;
+  onFilesClick?: (task: MediaPost) => void;
+  disableDrag?: boolean;
 }
 
 const getPriorityColor = (priority: string) => {
@@ -43,36 +47,78 @@ const MediaPostCard = ({
   onDrop,
   dragOverPosition,
   onCardClick,
+  onFilesClick,
+  disableDrag,
 }: MediaPostCardProps) => (
   <Box
     sx={{ position: 'relative' }}
-    onDragOver={(e) => {
-      e.preventDefault();
-      const bounding = e.currentTarget.getBoundingClientRect();
-      const offset = e.clientY - bounding.top;
-      // Add a margin zone (8px) to avoid twitching at the edge
-      let position: 'above' | 'below' | null = null;
-      if (offset < bounding.height / 2 - 8) {
-        position = 'above';
-      } else if (offset > bounding.height / 2 + 8) {
-        position = 'below';
-      } else {
-        position = null;
-      }
-      onDragOver(e, position);
-    }}
-    onDrop={(e) => {
-      e.preventDefault();
-      const bounding = e.currentTarget.getBoundingClientRect();
-      const offset = e.clientY - bounding.top;
-      const position: 'above' | 'below' = offset < bounding.height / 2 ? 'above' : 'below';
-      onDrop(e, position);
-    }}
-    onDragLeave={(e) => {
-      onDragOver(e, null);
-    }}
+    onDragOver={
+      disableDrag
+        ? undefined
+        : (e) => {
+            e.preventDefault();
+            const bounding = e.currentTarget.getBoundingClientRect();
+            const offset = e.clientY - bounding.top;
+            // Add a margin zone (8px) to avoid twitching at the edge
+            let position: 'above' | 'below' | null = null;
+            if (offset < bounding.height / 2 - 8) {
+              position = 'above';
+            } else if (offset > bounding.height / 2 + 8) {
+              position = 'below';
+            } else {
+              position = null;
+            }
+            if (onDragOver) {
+              onDragOver(e, position);
+            }
+          }
+    }
+    onDrop={
+      disableDrag
+        ? undefined
+        : (e) => {
+            e.preventDefault();
+            const bounding = e.currentTarget.getBoundingClientRect();
+            const offset = e.clientY - bounding.top;
+            const position: 'above' | 'below' = offset < bounding.height / 2 ? 'above' : 'below';
+            if (onDrop) {
+              onDrop(e, position);
+            }
+          }
+    }
+    onDragLeave={
+      disableDrag
+        ? undefined
+        : (e) => {
+            if (onDragOver) {
+              onDragOver(e, null);
+            }
+          }
+    }
     onClick={() => onCardClick(task)}
   >
+    {/* File Icon in top right */}
+    {onFilesClick && (
+      <IconButton
+        size="small"
+        sx={{
+          position: 'absolute',
+          top: 8,
+          right: 8,
+          zIndex: 20,
+          background: 'rgba(255,255,255,0.85)',
+          boxShadow: 1,
+          '&:hover': { background: 'rgba(32,101,209,0.08)' },
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onFilesClick(task);
+        }}
+        aria-label="Show files"
+      >
+        <InsertDriveFileIcon fontSize="small" color="primary" />
+      </IconButton>
+    )}
     {/* Drop indicator: horizontal line, subtle and spaced */}
     {dragOverPosition === 'above' && (
       <Box
@@ -109,9 +155,9 @@ const MediaPostCard = ({
       />
     )}
     <Card
-      draggable
-      onDragStart={() => onDragStart(String(task.id))}
-      onDragEnd={onDragEnd}
+      draggable={!disableDrag}
+      onDragStart={disableDrag ? undefined : () => onDragStart && onDragStart(String(task.id))}
+      onDragEnd={disableDrag ? undefined : onDragEnd}
       onClick={() => onCardClick(task)}
       sx={{
         mb: 2,

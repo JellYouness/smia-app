@@ -15,7 +15,7 @@ export interface ProjectCreator {
   projectId: Id;
   creatorId: Id;
   role?: string;
-  status?: string;
+  status?: PROJECT_CREATOR_STATUS;
   permission: PROJECT_CREATOR_PERMISSION;
   creator?: Creator;
 }
@@ -116,4 +116,9 @@ export enum PROJECT_UPDATE_TYPE {
 export enum PROJECT_CREATOR_PERMISSION {
   VIEWER = 'VIEWER',
   EDITOR = 'EDITOR',
+}
+
+export enum PROJECT_CREATOR_STATUS {
+  CONFIRMED = 'CONFIRMED',
+  ASSIGNED = 'ASSIGNED',
 }

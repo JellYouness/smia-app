@@ -36,6 +36,7 @@ interface MediaAssigneesProps {
   }[];
   projectCreators: Creator[];
   postId: Id;
+  disableAssign?: boolean;
 }
 
 enum CREATOR_PROJECT_PERMISSION {
@@ -43,7 +44,12 @@ enum CREATOR_PROJECT_PERMISSION {
   EDITOR = 'EDITOR',
 }
 
-const MediaAssignees = ({ assignees, projectCreators, postId }: MediaAssigneesProps) => {
+const MediaAssignees = ({
+  assignees,
+  projectCreators,
+  postId,
+  disableAssign,
+}: MediaAssigneesProps) => {
   const { upsertAssignee, deleteAssignee } = useMedia();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [assigneeMenuAnchor, setAssigneeMenuAnchor] = useState<null | HTMLElement>(null);
@@ -72,6 +78,9 @@ const MediaAssignees = ({ assignees, projectCreators, postId }: MediaAssigneesPr
   );
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (disableAssign) {
+      return;
+    }
     setAnchorEl(event.currentTarget);
   };
 
@@ -82,6 +91,9 @@ const MediaAssignees = ({ assignees, projectCreators, postId }: MediaAssigneesPr
   };
 
   const handleAssigneeClick = (event: React.MouseEvent<HTMLElement>, assignee: any) => {
+    if (disableAssign) {
+      return;
+    }
     event.stopPropagation();
     setSelectedAssignee(assignee);
     setEditingRole(assignee.role);
@@ -201,7 +213,7 @@ const MediaAssignees = ({ assignees, projectCreators, postId }: MediaAssigneesPr
         <IconButton
           size="small"
           onClick={handleClick}
-          disabled={availableCreators.length === 0}
+          disabled={availableCreators.length === 0 || disableAssign}
           sx={{
             width: 36,
             height: 36,
@@ -228,7 +240,7 @@ const MediaAssignees = ({ assignees, projectCreators, postId }: MediaAssigneesPr
         {assignees.map((assignee, index) => (
           <Box
             key={assignee.id}
-            onClick={(e) => handleAssigneeClick(e, assignee)}
+            onClick={disableAssign ? undefined : (e) => handleAssigneeClick(e, assignee)}
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -558,7 +570,7 @@ const MediaAssignees = ({ assignees, projectCreators, postId }: MediaAssigneesPr
         transformOrigin={{ horizontal: 'center', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
       >
-        {selectedAssignee && (
+        {selectedAssignee && !disableAssign && (
           <>
             <Box sx={{ mb: 2 }}>
               <Typography

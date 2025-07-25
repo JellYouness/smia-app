@@ -26,6 +26,8 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import RHFTextField from '@common/components/lib/react-hook-form/RHFTextField';
+import Routes from '@common/defs/routes';
+import { useRouter } from 'next/router';
 
 interface KickoffProjectStepProps {
   projectId: number;
@@ -33,6 +35,7 @@ interface KickoffProjectStepProps {
 }
 
 const KickoffProjectStep = ({ projectId, project: propProject }: KickoffProjectStepProps) => {
+  const router = useRouter();
   const { t } = useTranslation(['project', 'common']);
   const { readOne } = useProjects();
   const { createOne, readAllByProject } = useProjectUpdates();
@@ -194,7 +197,7 @@ const KickoffProjectStep = ({ projectId, project: propProject }: KickoffProjectS
                 variant="outlined"
                 color="primary"
                 onClick={() => {
-                  /* TODO: Go to Workspace action */
+                  router.push(Routes.Projects.Workspace.replace('{id}', projectId.toString()));
                 }}
               >
                 {t('project:go_to_workspace', 'Go to Workspace')}
