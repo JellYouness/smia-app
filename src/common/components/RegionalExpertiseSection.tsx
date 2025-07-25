@@ -32,7 +32,7 @@ const RegionalExpertiseSection = ({
           <Box
             key={index}
             sx={{
-              p: 3,
+              p: 2,
               border: '1px solid',
               borderColor: 'divider',
               borderRadius: 3,
@@ -70,11 +70,10 @@ const RegionalExpertiseSection = ({
                   }}
                 />
                 <Typography
-                  variant="h6"
+                  variant="body1"
                   sx={{
                     fontWeight: 600,
                     color: 'text.primary',
-                    fontSize: '1.1rem',
                     lineHeight: 1.2,
                   }}
                 >

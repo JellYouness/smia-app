@@ -5,13 +5,19 @@ import Posts from '@modules/posts/defs/api-routes';
 import Projects from '@modules/projects/defs/api-routes';
 import Creators from '@modules/creators/defs/api-routes';
 
-const ApiRoutes = {
+const API_ROUTES = {
   Auth,
   Users,
   Uploads,
   Posts,
   Projects,
   Creators,
+  SAVED_PROFILES: {
+    LIST: '/saved-profiles',
+    SAVE: '/saved-profiles',
+    UNSAVE: (creatorId: number | string) => `/saved-profiles/${creatorId}`,
+    SHOW: (creatorId: number | string) => `/saved-profiles/${creatorId}`,
+  },
 };
 
-export default ApiRoutes;
+export default API_ROUTES;

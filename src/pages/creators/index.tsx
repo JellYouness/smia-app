@@ -7,6 +7,8 @@ import {
   InputAdornment,
   Divider,
   Pagination,
+  Button,
+  Skeleton,
 } from '@mui/material';
 import useCreators from '@modules/creators/hooks/useCreators';
 import { AvailabilityStatus } from '@modules/creators/defs/types';
@@ -21,6 +23,7 @@ import MinRatingFilter from '@modules/creators/components/MinRatingFilter';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import CreatorRow from '@modules/creators/components/CreatorRow';
+import Link from 'next/link';
 
 const AVAILABILITY_OPTIONS: AvailabilityStatus[] = ['AVAILABLE', 'LIMITED', 'UNAVAILABLE', 'BUSY'];
 
@@ -85,9 +88,18 @@ const CreatorsBrowsePage = () => {
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 4 } }}>
-      <Typography variant="h4" fontWeight={700} mb={3}>
-        {t('user:browse_creators', 'Browse Creators')}
-      </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h4" fontWeight={700} mb={3}>
+          {t('user:browse_creators', 'Browse Creators')}
+        </Typography>
+        <Box mb={2}>
+          <Link href="/creators/saved" passHref legacyBehavior>
+            <Button variant="contained" color="secondary">
+              {t('user:saved_creators', 'View Saved Creators')}
+            </Button>
+          </Link>
+        </Box>
+      </Box>
       <Box display="flex" flexWrap="wrap" gap={2} mb={4}>
         <TextField
           label={t('common:search')}
@@ -144,7 +156,12 @@ const CreatorsBrowsePage = () => {
       <Box>
         {(() => {
           if (loading) {
-            return <Typography variant="body1">{t('common:loading', 'Loading...')}</Typography>;
+            return (
+              <>
+                <Skeleton variant="rounded" height={200} sx={{ mb: 2 }} />
+                <Skeleton variant="rounded" height={200} sx={{ mb: 2 }} />
+              </>
+            );
           }
           if (creators && creators.length > 0) {
             return creators.map((creator) => <CreatorRow creator={creator} key={creator.id} />);

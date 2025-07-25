@@ -12,10 +12,12 @@ import {
   LocationOn,
   People,
 } from '@mui/icons-material';
+import { TFunction } from 'i18next';
+import { User } from '@modules/users/defs/types';
 
 interface AmbassadorMainContentProps {
-  user: any;
-  t: any;
+  user: User;
+  t: TFunction;
   readOnly?: boolean;
 }
 

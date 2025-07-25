@@ -21,6 +21,7 @@ import {
   Rating,
   Tooltip,
   Skeleton,
+  Button,
 } from '@mui/material';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
@@ -42,6 +43,12 @@ import AchievementsSection from '@common/components/AchievementsSection';
 import ProfessionalBackgroundSection from '@common/components/ProfessionalBackgroundSection';
 import EquipmentInfoSection from '@common/components/EquipmentInfoSection';
 import UserLanguages from '@common/components/UserLanguages';
+import SendMessageModal from '@modules/creators/components/SendMessageModal';
+import useAuth from '@modules/auth/hooks/api/useAuth';
+import { useCreateDirectConversation, useSendMessage } from '@modules/chat/hooks/useChat';
+import { Message, Bookmark, BookmarkBorder } from '@mui/icons-material';
+import { useSnackbar } from 'notistack';
+import { useSavedProfiles } from '@modules/creators/hooks/useSavedProfiles';
 
 const getAvailabilityChipProps = (status: string, t: TFunction) => {
   switch (status) {
@@ -79,6 +86,66 @@ const CreatorProfilePage = ({ item, t }: { item: User; t: TFunction }) => {
   const isFeatured = creator.verificationStatus === 'FEATURED';
   const isJournalist = creator.isJournalist;
 
+  // Send Message Modal state
+  const [sendMessageOpen, setSendMessageOpen] = useState(false);
+  const [sending, setSending] = useState(false);
+  const { user: currentUser } = useAuth();
+  const createDirectConversation = useCreateDirectConversation();
+  const sendMessageMutation = useSendMessage();
+  const { enqueueSnackbar } = useSnackbar();
+  const { isSaved, saveProfile, unsaveProfile } = useSavedProfiles();
+  const [saved, setSaved] = useState<boolean | null>(null);
+
+  const handleSendMessage = async (message: string) => {
+    if (!creator.userId || !currentUser) {
+      return;
+    }
+    setSending(true);
+    try {
+      // Create or get direct conversation
+      const conversation = await createDirectConversation.mutateAsync({ userId: creator.userId });
+      if (conversation && conversation.id) {
+        await sendMessageMutation.mutateAsync({
+          conversationId: String(conversation.id),
+          data: { content: message },
+        });
+      }
+      enqueueSnackbar(t('user:message_sent', 'Message sent'), {
+        variant: 'success',
+      });
+    } catch (e) {
+      enqueueSnackbar(t('user:message_failed', 'Message failed'), {
+        variant: 'error',
+      });
+    } finally {
+      setSending(false);
+    }
+  };
+
+  useEffect(() => {
+    isSaved(creator.id).then((saved) => {
+      setSaved(saved);
+    });
+  }, []);
+
+  const handleToggleSave = async () => {
+    try {
+      if (saved) {
+        await unsaveProfile(creator.id).then(() => {
+          enqueueSnackbar(t('user:profile_unsaved', 'Profile unsaved'), { variant: 'info' });
+          setSaved(false);
+        });
+      } else {
+        await saveProfile(creator.id).then(() => {
+          enqueueSnackbar(t('user:profile_saved', 'Profile saved'), { variant: 'success' });
+          setSaved(true);
+        });
+      }
+    } catch (e) {
+      enqueueSnackbar(t('user:save_failed', 'Action failed'), { variant: 'error' });
+    }
+  };
+
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 4 } }}>
       {/* Profile Header */}
@@ -99,25 +166,65 @@ const CreatorProfilePage = ({ item, t }: { item: User; t: TFunction }) => {
       >
         <Avatar src={user.profilePicture} sx={{ width: 120, height: 120, boxShadow: 2, mr: 3 }} />
         <Box flex={1} minWidth={0}>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="h4" fontWeight={700} noWrap>
-              {user.firstName} {user.lastName}
-            </Typography>
-            {isVerified && (
-              <Tooltip title={t('user:verified')}>
-                <VerifiedUserIcon color="primary" />
-              </Tooltip>
-            )}
-            {isFeatured && (
-              <Tooltip title={t('user:featured')}>
-                <WorkspacePremiumIcon color="warning" />
-              </Tooltip>
-            )}
-            {isJournalist && (
-              <Tooltip title={t('user:journalist_enabled')}>
-                <LanguageIcon color="info" />
-              </Tooltip>
-            )}
+          <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <Typography variant="h4" fontWeight={700} noWrap>
+                {user.firstName} {user.lastName}
+              </Typography>
+              {isVerified && (
+                <Tooltip title={t('user:verified')}>
+                  <VerifiedUserIcon color="primary" />
+                </Tooltip>
+              )}
+              {isFeatured && (
+                <Tooltip title={t('user:featured')}>
+                  <WorkspacePremiumIcon color="warning" />
+                </Tooltip>
+              )}
+              {isJournalist && (
+                <Tooltip title={t('user:journalist_enabled')}>
+                  <LanguageIcon color="info" />
+                </Tooltip>
+              )}
+            </Stack>
+            {/* Send Message Button */}
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ ml: 2 }}
+                onClick={() => setSendMessageOpen(true)}
+              >
+                <Message />
+              </Button>
+              {saved ? (
+                <Bookmark
+                  fontSize="large"
+                  color="primary"
+                  onClick={handleToggleSave}
+                  sx={{
+                    cursor: 'pointer',
+                    '&:hover': {
+                      transform: 'scale(1.1)',
+                      transition: 'transform 0.2s ease-in-out',
+                    },
+                  }}
+                />
+              ) : (
+                <BookmarkBorder
+                  fontSize="large"
+                  color="primary"
+                  onClick={handleToggleSave}
+                  sx={{
+                    cursor: 'pointer',
+                    '&:hover': {
+                      transform: 'scale(1.1)',
+                      transition: 'transform 0.2s ease-in-out',
+                    },
+                  }}
+                />
+              )}
+            </Stack>
           </Stack>
           <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 1 }}>
             {user.title || user.profile?.title}
@@ -209,6 +316,14 @@ const CreatorProfilePage = ({ item, t }: { item: User; t: TFunction }) => {
           </Box>
         </Grid>
       </Grid>
+      {/* Send Message Modal */}
+      <SendMessageModal
+        open={sendMessageOpen}
+        creator={creator}
+        onClose={() => setSendMessageOpen(false)}
+        onSubmit={handleSendMessage}
+        loading={sending}
+      />
     </Box>
   );
 };
@@ -228,7 +343,7 @@ const CreatorDetailsPage = () => {
         .then(({ data }) => {
           if (data && data.item) {
             const item = data.item as User;
-            setItem({ ...item.user, creator: { ...item, user: undefined } });
+            setItem({ ...item.user, creator: { ...item } });
           }
           setLoading(false);
         })
