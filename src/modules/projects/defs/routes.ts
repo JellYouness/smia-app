@@ -11,6 +11,8 @@ const Routes: CrudAppRoutes = {
   ReadAllByClient: prefix + '/client/{clientId}',
   ReadAllByAmbassador: prefix + '/ambassador/{ambassadorId}',
   HireCreator: prefix + '/{id}/hire-creator',
+
+  Workspace: prefix + '/{id}/workshop',
 };
 
 export default Routes;

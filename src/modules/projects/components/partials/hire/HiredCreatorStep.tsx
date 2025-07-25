@@ -7,17 +7,22 @@ import {
   Chip,
   Rating,
   useTheme,
-  Grid,
   IconButton,
   Menu,
   MenuItem,
   Divider,
   CircularProgress,
   Paper,
-  Tooltip,
+  Collapse,
   Skeleton,
+  alpha,
 } from '@mui/material';
-import { Project, PROJECT_CREATOR_PERMISSION, ProjectCreator } from '@modules/projects/defs/types';
+import {
+  Project,
+  PROJECT_CREATOR_PERMISSION,
+  PROJECT_CREATOR_STATUS,
+  ProjectCreator,
+} from '@modules/projects/defs/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -29,47 +34,58 @@ import {
   WorkOutline,
   VerifiedUser,
   EventAvailable,
+  ExpandMore,
+  ExpandLess,
+  CheckCircle,
+  Assignment,
+  Block,
 } from '@mui/icons-material';
 import useProjects, { projectCacheKey } from '@modules/projects/hooks/useProjects';
 import { Id } from '@common/defs/types';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 
 interface HiredCreatorStepProps {
   projectId: Id;
-  project?: Project; // Make optional since we'll use SWR
+  project?: Project;
 }
 
 const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepProps) => {
   const { t } = useTranslation(['project', 'common', 'user']);
   const theme = useTheme();
-  const { updateCreatorPermission, readOne } = useProjects();
+  const { updateCreatorPermission, readOne, revokeCreatorPermission, removeCreatorFromProject } =
+    useProjects();
 
-  // Use SWR directly to get live project data
   const { data: projectData, isLoading } = useSWR(projectCacheKey(projectId), () =>
     readOne(projectId)
   );
 
-  // Use SWR data if available, fallback to prop
   const project = projectData?.data?.item || propProject;
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedCreator, setSelectedCreator] = useState<ProjectCreator | null>(null);
   const [updatingCreatorId, setUpdatingCreatorId] = useState<Id | null>(null);
+  const [softHireExpanded, setSoftHireExpanded] = useState(true);
+  const [assignedHireExpanded, setAssignedHireExpanded] = useState(true);
+
+  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
 
   const primaryColor = theme.palette.primary;
 
-  // Derive the two arrays from project data
-  const softHires = project?.projectCreators?.filter((pc) => pc.status === 'confirmed') || [];
-  const assignedHires = project?.projectCreators?.filter((pc) => pc.status === 'assigned') || [];
+  const softHires =
+    project?.projectCreators?.filter((pc) => pc.status === PROJECT_CREATOR_STATUS.CONFIRMED) || [];
+  const assignedHires =
+    project?.projectCreators?.filter((pc) => pc.status === PROJECT_CREATOR_STATUS.ASSIGNED) || [];
 
-  console.log(project);
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, creator: ProjectCreator) => {
-    setMenuAnchorEl(event.currentTarget);
+  const handleMenuOpen = (e: React.MouseEvent<HTMLElement>, creator: ProjectCreator) => {
     setSelectedCreator(creator);
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMenuPosition({
+      top: rect.bottom + window.scrollY + 10,
+      left: rect.right + window.scrollX + 10,
+    });
   };
 
   const handleMenuClose = () => {
-    setMenuAnchorEl(null);
+    setMenuPosition(null);
     setSelectedCreator(null);
   };
 
@@ -79,7 +95,6 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
     }
 
     setUpdatingCreatorId(selectedCreator.creatorId);
-    handleMenuClose();
 
     try {
       await updateCreatorPermission(projectId, selectedCreator.creatorId, newPermission, {
@@ -100,46 +115,114 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
     }
 
     const isUpdating = updatingCreatorId === creator.id;
-    const isEditor = projectCreator.permission === PROJECT_CREATOR_PERMISSION.EDITOR;
+    const isAssigned = projectCreator.status === PROJECT_CREATOR_STATUS.ASSIGNED;
+
+    const { chipColor, chipVariant, chipIcon } = (() => {
+      switch (projectCreator.permission) {
+        case PROJECT_CREATOR_PERMISSION.EDITOR:
+          return {
+            chipColor: 'primary' as const,
+            chipVariant: 'filled' as const,
+            chipIcon: <Edit fontSize="small" />,
+          };
+        case PROJECT_CREATOR_PERMISSION.VIEWER:
+          return {
+            chipColor: 'secondary' as const,
+            chipVariant: 'outlined' as const,
+            chipIcon: <Visibility fontSize="small" />,
+          };
+        default:
+          return {
+            chipColor: 'warning' as const,
+            chipVariant: 'outlined' as const,
+            chipIcon: <Block fontSize="small" />,
+          };
+      }
+    })();
 
     return (
-      <Grid item xs={12} sm={6} md={4} key={projectCreator.id}>
-        <Box position="relative">
-          <Card
-            elevation={2}
-            sx={{
-              height: '100%',
-              borderLeft: `4px solid ${isEditor ? primaryColor.main : theme.palette.grey[400]}`,
-              borderRadius: '8px',
-              transition: 'all 0.3s ease',
-              opacity: isUpdating ? 0.7 : 1,
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: 3,
-              },
-            }}
-          >
-            <CardContent sx={{ pb: '16px !important' }}>
-              {/* Header with Avatar, Name, Rating, and Menu */}
-              <Box display="flex" alignItems="flex-start" mb={2}>
-                <Avatar
-                  src={creator.user?.profileImage || ''}
-                  sx={{
-                    bgcolor: theme.palette.primary.main,
-                    width: 56,
-                    height: 56,
-                    mr: 2,
-                    border: `2px solid ${theme.palette.background.paper}`,
-                    boxShadow: 1,
-                  }}
-                >
-                  {creator.user?.firstName?.[0]}
-                  {creator.user?.lastName?.[0]}
-                </Avatar>
-                <Box flexGrow={1}>
-                  <Typography variant="h6" fontWeight="bold" mb={0.5}>
-                    {creator.user?.firstName} {creator.user?.lastName}
-                  </Typography>
+      <Box key={projectCreator.id} position="relative">
+        <Card
+          elevation={0}
+          sx={{
+            mb: 2,
+            borderRadius: '12px',
+            border: `1px solid ${theme.palette.divider}`,
+            transition: 'all 0.2s ease',
+            opacity: isUpdating ? 0.7 : 1,
+            background: theme.palette.background.paper,
+            '&:hover': {
+              borderColor: primaryColor.main,
+              boxShadow: `0 4px 20px ${alpha(primaryColor.main, 0.1)}`,
+              transform: 'translateY(-1px)',
+            },
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            <Box display="flex" alignItems="center" justifyContent="space-between">
+              {/* Left Section - Avatar & Basic Info */}
+              <Box display="flex" alignItems="center" flex={1}>
+                <Box position="relative">
+                  <Avatar
+                    src={creator.user?.profileImage || ''}
+                    sx={{
+                      bgcolor: primaryColor.main,
+                      width: 60,
+                      height: 60,
+                      mr: 3,
+                      border: `3px solid ${theme.palette.background.paper}`,
+                      boxShadow: `0 4px 12px ${alpha(primaryColor.main, 0.2)}`,
+                      fontSize: '1.2rem',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {creator.user?.firstName?.[0]}
+                    {creator.user?.lastName?.[0]}
+                  </Avatar>
+                  {isAssigned && (
+                    <Box
+                      position="absolute"
+                      bottom={-2}
+                      right={8}
+                      sx={{
+                        backgroundColor: theme.palette.success.main,
+                        borderRadius: '50%',
+                        width: 20,
+                        height: 20,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: `2px solid ${theme.palette.background.paper}`,
+                      }}
+                    >
+                      <CheckCircle sx={{ fontSize: 12, color: 'white' }} />
+                    </Box>
+                  )}
+                </Box>
+
+                <Box flex={1}>
+                  <Box display="flex" alignItems="center" mb={0.5}>
+                    <Typography variant="h6" fontWeight="bold" mr={2}>
+                      {creator.user?.firstName} {creator.user?.lastName}
+                    </Typography>
+                    <Chip
+                      label={
+                        projectCreator.permission
+                          ? t(`common:${projectCreator.permission}`)
+                          : t('project:no_permissions')
+                      }
+                      size="small"
+                      color={chipColor}
+                      variant={chipVariant}
+                      icon={chipIcon}
+                      sx={{
+                        fontWeight: 600,
+                        borderRadius: '6px',
+                        height: 24,
+                      }}
+                    />
+                  </Box>
+
                   <Box display="flex" alignItems="center" mb={1}>
                     <Rating
                       value={creator.averageRating}
@@ -148,85 +231,144 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
                       size="small"
                       sx={{ color: theme.palette.warning.main }}
                     />
-                    <Typography variant="body2" ml={1} color="textSecondary">
-                      ({creator.ratingCount})
+                    <Typography variant="body2" ml={1} color="textSecondary" fontWeight={500}>
+                      ({creator.ratingCount} reviews)
                     </Typography>
                   </Box>
+
+                  {/* Status Badge */}
                   <Chip
-                    label={t(`common:${projectCreator.permission}`)}
+                    label={isAssigned ? t('project:active_hire') : t('project:soft_hire')}
                     size="small"
-                    color={isEditor ? 'primary' : 'secondary'}
-                    variant={isEditor ? 'filled' : 'outlined'}
-                    icon={isEditor ? <Edit fontSize="small" /> : <Visibility fontSize="small" />}
+                    color={isAssigned ? 'success' : 'info'}
+                    variant="outlined"
                     sx={{
                       fontWeight: 600,
-                      borderRadius: '4px',
+                      borderRadius: '6px',
+                      height: 24,
+                      backgroundColor: alpha(
+                        isAssigned ? theme.palette.success.main : theme.palette.info.main,
+                        0.1
+                      ),
                     }}
                   />
                 </Box>
-                <IconButton
-                  size="small"
-                  onClick={(e) => handleMenuOpen(e, projectCreator)}
-                  sx={{ mt: -0.5 }}
-                >
-                  <MoreVert />
-                </IconButton>
               </Box>
 
-              <Divider sx={{ mb: 2, borderColor: theme.palette.divider }} />
-
-              {/* Creator Details */}
-              <Box>
-                <DetailRow
-                  icon={<AttachMoney fontSize="small" />}
+              {/* Center Section - Details Grid */}
+              <Box
+                display="flex"
+                gap={4}
+                alignItems="center"
+                sx={{
+                  minWidth: 400,
+                  '@media (max-width: 900px)': {
+                    display: 'none',
+                  },
+                }}
+              >
+                <DetailItem
+                  icon={<AttachMoney sx={{ fontSize: 18, color: theme.palette.success.main }} />}
                   label={t('common:hourly_rate')}
                   value={`$${creator.hourlyRate?.toFixed(2)}/hr`}
                 />
 
-                <DetailRow
-                  icon={<WorkOutline fontSize="small" />}
+                <DetailItem
+                  icon={<WorkOutline sx={{ fontSize: 18, color: theme.palette.info.main }} />}
                   label={t('common:experience')}
-                  value={`${creator.experience} ${t('common:years_experience')}`}
+                  value={`${creator.experience}y`}
                 />
 
-                <DetailRow
-                  icon={<VerifiedUser fontSize="small" />}
-                  label={t('common:verification_status')}
-                  value={t(`user:${creator.verificationStatus.toLowerCase()}`)}
+                <DetailItem
+                  icon={<VerifiedUser sx={{ fontSize: 18, color: theme.palette.primary.main }} />}
+                  label={t('common:verification')}
+                  value={creator.verificationStatus}
                 />
 
-                <DetailRow
-                  icon={<EventAvailable fontSize="small" />}
+                <DetailItem
+                  icon={<EventAvailable sx={{ fontSize: 18, color: theme.palette.warning.main }} />}
                   label={t('common:availability')}
-                  value={t(`user:${creator.availability.toLowerCase()}`)}
+                  value={creator.availability}
                 />
               </Box>
-            </CardContent>
-          </Card>
 
-          {isUpdating && (
-            <Box
-              position="absolute"
-              top={0}
-              left={0}
-              width="100%"
-              height="100%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              bgcolor="rgba(255,255,255,0.7)"
-              zIndex={1}
-              borderRadius="8px"
-            >
-              <CircularProgress size={24} />
+              {/* Right Section - Menu */}
+              <Box ml={2}>
+                <IconButton
+                  size="small"
+                  onClick={(e) => handleMenuOpen(e, projectCreator)}
+                  sx={{
+                    bgcolor: alpha(theme.palette.primary.main, 0.1),
+                    '&:hover': {
+                      bgcolor: alpha(theme.palette.primary.main, 0.2),
+                    },
+                  }}
+                >
+                  <MoreVert />
+                </IconButton>
+              </Box>
             </Box>
-          )}
-        </Box>
-      </Grid>
+
+            {/* Mobile Details - Show on smaller screens */}
+            <Box
+              sx={{
+                display: 'none',
+                '@media (max-width: 900px)': {
+                  display: 'block',
+                  mt: 3,
+                  pt: 2,
+                  borderTop: `1px solid ${theme.palette.divider}`,
+                },
+              }}
+            >
+              <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+                <DetailItem
+                  icon={<AttachMoney sx={{ fontSize: 18, color: theme.palette.success.main }} />}
+                  label={t('common:hourly_rate')}
+                  value={`$${creator.hourlyRate?.toFixed(2)}/hr`}
+                />
+                <DetailItem
+                  icon={<WorkOutline sx={{ fontSize: 18, color: theme.palette.info.main }} />}
+                  label={t('common:experience')}
+                  value={`${creator.experience} years`}
+                />
+                <DetailItem
+                  icon={<VerifiedUser sx={{ fontSize: 18, color: theme.palette.primary.main }} />}
+                  label={t('common:verification')}
+                  value={creator.verificationStatus}
+                />
+                <DetailItem
+                  icon={<EventAvailable sx={{ fontSize: 18, color: theme.palette.warning.main }} />}
+                  label={t('common:availability')}
+                  value={creator.availability}
+                />
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+
+        {isUpdating && (
+          <Box
+            position="absolute"
+            top={0}
+            left={0}
+            width="100%"
+            height="100%"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            bgcolor="rgba(255,255,255,0.8)"
+            zIndex={1}
+            borderRadius="12px"
+          >
+            <CircularProgress size={32} />
+          </Box>
+        )}
+      </Box>
     );
   };
 
-  const DetailRow = ({
+  const DetailItem = ({
     icon,
     label,
     value,
@@ -235,63 +377,167 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
     label: string;
     value: string;
   }) => (
-    <Box display="flex" justifyContent="space-between" alignItems="center" mb={1.5}>
-      <Box display="flex" alignItems="center">
-        <Box
-          sx={{
-            color: 'text.secondary',
-            mr: 1.5,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          {icon}
-        </Box>
-        <Typography variant="body2" color="textSecondary">
-          {label}
-        </Typography>
+    <Box textAlign="center" minWidth={80}>
+      <Box display="flex" alignItems="center" justifyContent="center" mb={0.5}>
+        {icon}
       </Box>
-      <Typography variant="body2" fontWeight="medium">
+      <Typography variant="caption" color="textSecondary" display="block" mb={0.5}>
+        {label}
+      </Typography>
+      <Typography variant="body2" fontWeight="bold" fontSize="0.85rem">
         {value}
       </Typography>
     </Box>
   );
 
+  const CollapsibleSection = ({
+    title,
+    count,
+    expanded,
+    onToggle,
+    children,
+    icon,
+    color,
+  }: {
+    title: string;
+    count: number;
+    expanded: boolean;
+    onToggle: () => void;
+    children: React.ReactNode;
+    icon: React.ReactNode;
+    color: string;
+  }) => (
+    <Box mb={3}>
+      <Card
+        elevation={0}
+        sx={{
+          borderRadius: '12px',
+          border: `1px solid ${theme.palette.divider}`,
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          onClick={onToggle}
+          sx={{
+            p: 2.5,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            background: `linear-gradient(135deg, ${alpha(color, 0.05)} 0%, ${alpha(
+              color,
+              0.02
+            )} 100%)`,
+            borderBottom: expanded ? `1px solid ${theme.palette.divider}` : 'none',
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              background: `linear-gradient(135deg, ${alpha(color, 0.08)} 0%, ${alpha(
+                color,
+                0.04
+              )} 100%)`,
+            },
+          }}
+        >
+          <Box display="flex" alignItems="center">
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 40,
+                height: 40,
+                borderRadius: '10px',
+                background: alpha(color, 0.1),
+                mr: 2,
+              }}
+            >
+              {icon}
+            </Box>
+            <Box>
+              <Typography variant="h6" fontWeight="bold" color="textPrimary">
+                {title}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {count} creator{count !== 1 ? 's' : ''}
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box display="flex" alignItems="center">
+            <Chip
+              label={count}
+              size="small"
+              sx={{
+                bgcolor: color,
+                color: 'white',
+                fontWeight: 700,
+                mr: 2,
+                minWidth: 32,
+              }}
+            />
+            <IconButton size="small">{expanded ? <ExpandLess /> : <ExpandMore />}</IconButton>
+          </Box>
+        </Box>
+
+        <Collapse in={expanded}>
+          <Box p={2}>{children}</Box>
+        </Collapse>
+      </Card>
+    </Box>
+  );
+
   const renderSkeleton = () => (
-    <Grid container spacing={3}>
-      {[1, 2, 3].map((id) => (
-        <Grid item xs={12} sm={6} md={4} key={id}>
-          <Card>
-            <CardContent>
-              <Box display="flex" alignItems="flex-start" mb={3}>
-                <Skeleton variant="circular" width={56} height={56} sx={{ mr: 2 }} />
-                <Box flexGrow={1}>
-                  <Skeleton width="70%" height={28} sx={{ mb: 0.5 }} />
-                  <Skeleton width="50%" height={20} sx={{ mb: 1 }} />
-                  <Skeleton width="30%" height={24} />
-                </Box>
-                <Skeleton variant="circular" width={24} height={24} />
-              </Box>
-              <Divider sx={{ mb: 2 }} />
-              <Box>
-                {[1, 2, 3, 4].map((item) => (
-                  <Box
-                    key={item}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    mb={1}
-                  >
-                    <Skeleton width="40%" height={16} />
-                    <Skeleton width="30%" height={16} />
+    <Box>
+      {[1, 2].map((section) => (
+        <Box key={section} mb={3}>
+          <Card
+            elevation={0}
+            sx={{ borderRadius: '12px', border: `1px solid ${theme.palette.divider}` }}
+          >
+            <Box p={2.5}>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box display="flex" alignItems="center">
+                  <Skeleton
+                    variant="rectangular"
+                    width={40}
+                    height={40}
+                    sx={{ borderRadius: '10px', mr: 2 }}
+                  />
+                  <Box>
+                    <Skeleton width={150} height={24} sx={{ mb: 0.5 }} />
+                    <Skeleton width={100} height={16} />
                   </Box>
-                ))}
+                </Box>
+                <Skeleton variant="circular" width={32} height={32} />
               </Box>
-            </CardContent>
+            </Box>
+            <Divider />
+            <Box p={2}>
+              {[1, 2].map((item) => (
+                <Box key={item} mb={2}>
+                  <Card
+                    elevation={0}
+                    sx={{ border: `1px solid ${theme.palette.divider}`, borderRadius: '12px' }}
+                  >
+                    <CardContent sx={{ p: 3 }}>
+                      <Box display="flex" alignItems="center">
+                        <Skeleton variant="circular" width={60} height={60} sx={{ mr: 3 }} />
+                        <Box flex={1}>
+                          <Skeleton width="60%" height={24} sx={{ mb: 0.5 }} />
+                          <Skeleton width="40%" height={20} sx={{ mb: 1 }} />
+                          <Skeleton width="30%" height={24} />
+                        </Box>
+                        <Skeleton variant="circular" width={32} height={32} />
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Box>
+              ))}
+            </Box>
           </Card>
-        </Grid>
+        </Box>
       ))}
-    </Grid>
+    </Box>
   );
 
   const renderEmptyState = () => (
@@ -302,38 +548,38 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        p: 6,
+        p: 8,
         textAlign: 'center',
-        borderRadius: 2,
-        background: theme.palette.background.paper,
-        border: `1px dashed ${theme.palette.divider}`,
-        maxWidth: 500,
+        borderRadius: '16px',
+        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.02)} 0%, ${alpha(
+          theme.palette.primary.main,
+          0.05
+        )} 100%)`,
+        border: `2px dashed ${alpha(theme.palette.primary.main, 0.2)}`,
+        maxWidth: 600,
         mx: 'auto',
-        my: 4,
+        my: 6,
       }}
     >
       <Box
         display="flex"
         alignItems="center"
         justifyContent="center"
-        mb={3}
+        mb={4}
         sx={{
-          background:
-            theme.palette.mode === 'light'
-              ? `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${primaryColor.main} 100%)`
-              : `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${primaryColor.dark} 100%)`,
+          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
           borderRadius: '50%',
-          width: 80,
-          height: 80,
-          boxShadow: 3,
+          width: 100,
+          height: 100,
+          boxShadow: `0 8px 32px ${alpha(theme.palette.primary.main, 0.3)}`,
         }}
       >
-        <PersonOffOutlined sx={{ fontSize: 40, color: 'white' }} />
+        <PersonOffOutlined sx={{ fontSize: 48, color: 'white' }} />
       </Box>
-      <Typography variant="h6" mb={1} fontWeight="bold">
+      <Typography variant="h5" mb={2} fontWeight="bold">
         {t('project:no_hired_creators_title')}
       </Typography>
-      <Typography variant="body1" color="textSecondary" mb={3}>
+      <Typography variant="body1" color="textSecondary" mb={4} maxWidth={400}>
         {t('project:no_hired_creators_description')}
       </Typography>
     </Paper>
@@ -341,7 +587,7 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
 
   return (
     <Box>
-      <Box height={600} overflow="auto" pt={2}>
+      <Box height={600} overflow="auto" pt={1}>
         {isLoading && renderSkeleton()}
 
         {!isLoading && !project && renderEmptyState()}
@@ -350,40 +596,32 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
           renderEmptyState()
         ) : (
           <>
-            {/* Confirmed (soft-hire) section */}
-            {softHires.length > 0 && (
-              <Box mb={4}>
-                <Typography variant="h6" mb={2} fontWeight="bold" color="textPrimary">
-                  {t('project:confirmed_soft_hire')}
-                  <Chip
-                    label={softHires.length}
-                    size="small"
-                    color="default"
-                    sx={{ ml: 1.5, fontWeight: 600 }}
-                  />
-                </Typography>
-                <Grid container spacing={3}>
-                  {softHires.map(renderCreatorCard)}
-                </Grid>
-              </Box>
+            {/* Assigned Hires Section */}
+            {assignedHires.length > 0 && (
+              <CollapsibleSection
+                title={t('project:assigned_active_hire')}
+                count={assignedHires.length}
+                expanded={assignedHireExpanded}
+                onToggle={() => setAssignedHireExpanded(!assignedHireExpanded)}
+                icon={<Assignment sx={{ fontSize: 20, color: theme.palette.success.main }} />}
+                color={theme.palette.success.main}
+              >
+                {assignedHires.map(renderCreatorCard)}
+              </CollapsibleSection>
             )}
 
-            {/* Assigned (active hire) section */}
-            {assignedHires.length > 0 && (
-              <Box>
-                <Typography variant="h6" mb={2} fontWeight="bold" color="textPrimary">
-                  {t('project:assigned_active_hire')}
-                  <Chip
-                    label={assignedHires.length}
-                    size="small"
-                    color="default"
-                    sx={{ ml: 1.5, fontWeight: 600 }}
-                  />
-                </Typography>
-                <Grid container spacing={3}>
-                  {assignedHires.map(renderCreatorCard)}
-                </Grid>
-              </Box>
+            {/* Soft Hires Section */}
+            {softHires.length > 0 && (
+              <CollapsibleSection
+                title={t('project:confirmed_soft_hire')}
+                count={softHires.length}
+                expanded={softHireExpanded}
+                onToggle={() => setSoftHireExpanded(!softHireExpanded)}
+                icon={<CheckCircle sx={{ fontSize: 20, color: theme.palette.info.main }} />}
+                color={theme.palette.info.main}
+              >
+                {softHires.map(renderCreatorCard)}
+              </CollapsibleSection>
             )}
           </>
         )}
@@ -391,46 +629,48 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
 
       {/* Permission Change Menu */}
       <Menu
-        anchorEl={menuAnchorEl}
-        open={Boolean(menuAnchorEl)}
+        open={Boolean(menuPosition)}
         onClose={handleMenuClose}
+        anchorReference="anchorPosition"
+        anchorPosition={menuPosition || undefined}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{ py: '30px !important' }}
+        MenuListProps={{ disablePadding: true }}
         PaperProps={{
           sx: {
             minWidth: 200,
-            boxShadow: 3,
-            borderRadius: '8px',
+            boxShadow: `0 8px 32px ${alpha(theme.palette.common.black, 0.12)}`,
+            borderRadius: '12px',
             border: `1px solid ${theme.palette.divider}`,
           },
         }}
       >
         <MenuItem
-          onClick={() => handlePermissionChange(PROJECT_CREATOR_PERMISSION.VIEWER)}
-          disabled={selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.VIEWER}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            py: 1.5,
+          onClick={() => {
+            handleMenuClose();
+            handlePermissionChange(PROJECT_CREATOR_PERMISSION.EDITOR);
           }}
-        >
-          <Visibility
-            fontSize="small"
-            color={
-              selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.VIEWER
-                ? 'disabled'
-                : 'inherit'
-            }
-          />
-          <Typography variant="body2">{t('common:make_viewer')}</Typography>
-        </MenuItem>
-        <MenuItem
-          onClick={() => handlePermissionChange(PROJECT_CREATOR_PERMISSION.EDITOR)}
           disabled={selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.EDITOR}
           sx={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: 1.5,
-            py: 1.5,
+            p: 2,
+            borderRadius: '8px',
+            color:
+              selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.EDITOR
+                ? theme.palette.text.disabled
+                : theme.palette.primary.main,
+            bgcolor:
+              selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.EDITOR
+                ? alpha(theme.palette.primary.main, 0.08)
+                : 'transparent',
+            fontWeight:
+              selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.EDITOR ? 700 : 500,
+            '&:hover': {
+              bgcolor: alpha(theme.palette.primary.main, 0.08),
+            },
           }}
         >
           <Edit
@@ -438,10 +678,131 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
             color={
               selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.EDITOR
                 ? 'disabled'
-                : 'inherit'
+                : 'primary'
             }
           />
-          <Typography variant="body2">{t('common:make_editor')}</Typography>
+          <Typography variant="body2" fontWeight={500}>
+            {t('common:make_editor')}
+          </Typography>
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            handlePermissionChange(PROJECT_CREATOR_PERMISSION.VIEWER);
+          }}
+          disabled={selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.VIEWER}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 1.5,
+            p: 2,
+            borderRadius: '8px',
+            color:
+              selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.VIEWER
+                ? theme.palette.text.disabled
+                : theme.palette.info.main,
+            bgcolor:
+              selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.VIEWER
+                ? alpha(theme.palette.info.main, 0.08)
+                : 'transparent',
+            fontWeight:
+              selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.VIEWER ? 700 : 500,
+            '&:hover': {
+              bgcolor: alpha(theme.palette.info.main, 0.08),
+            },
+          }}
+        >
+          <Visibility
+            fontSize="small"
+            color={
+              selectedCreator?.permission === PROJECT_CREATOR_PERMISSION.VIEWER
+                ? 'disabled'
+                : 'info'
+            }
+          />
+          <Typography variant="body2" fontWeight={500}>
+            {t('common:make_viewer')}
+          </Typography>
+        </MenuItem>
+        {/* Revoke Permission - only if creator has a permission */}
+        {selectedCreator?.permission && (
+          <MenuItem
+            onClick={async () => {
+              handleMenuClose();
+              if (selectedCreator) {
+                setUpdatingCreatorId(selectedCreator.creatorId);
+                try {
+                  await revokeCreatorPermission(projectId, selectedCreator.creatorId, {
+                    displayProgress: true,
+                    displaySuccess: true,
+                  });
+                  mutate(projectCacheKey(projectId));
+                } catch (error) {
+                  console.error('Error revoking permission:', error);
+                } finally {
+                  setUpdatingCreatorId(null);
+                }
+              }
+            }}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1.5,
+              p: 2,
+              borderRadius: '8px',
+              color: theme.palette.warning.main,
+              fontWeight: 500,
+              '&:hover': {
+                bgcolor: alpha(theme.palette.warning.main, 0.08),
+              },
+            }}
+          >
+            <Block fontSize="small" color="warning" />
+            <Typography variant="body2" fontWeight={500}>
+              {t('project:revoke_permission', 'Revoke Permission')}
+            </Typography>
+          </MenuItem>
+        )}
+        {/* Remove from project - always show */}
+        <MenuItem
+          onClick={async () => {
+            handleMenuClose();
+            if (selectedCreator) {
+              setUpdatingCreatorId(selectedCreator.creatorId);
+              try {
+                await removeCreatorFromProject(projectId, selectedCreator.creatorId, {
+                  displayProgress: true,
+                  displaySuccess: true,
+                });
+                mutate(projectCacheKey(projectId));
+              } catch (error) {
+                console.error('Error removing creator from project:', error);
+              } finally {
+                setUpdatingCreatorId(null);
+              }
+            }
+          }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 1.5,
+            p: 2,
+            borderRadius: '8px',
+            color: theme.palette.error.main,
+            fontWeight: 500,
+            '&:hover': {
+              bgcolor: alpha(theme.palette.error.main, 0.08),
+            },
+          }}
+        >
+          <PersonOffOutlined fontSize="small" color="error" />
+          <Typography variant="body2" fontWeight={500}>
+            {t('project:remove_from_project', 'Remove from project')}
+          </Typography>
         </MenuItem>
       </Menu>
     </Box>

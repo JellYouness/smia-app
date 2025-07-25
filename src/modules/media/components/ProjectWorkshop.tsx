@@ -4,8 +4,9 @@ import BoardPane from './BoardPane';
 import AssetsPane from './AssetsPane';
 import PaneHeader from './PaneHeader';
 import Splitter from './WorkspaceSplitter';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useWorkspaceLayout from '../hooks/useWorkspaceLayout';
+import { MediaPost } from '../defs/types';
 
 interface ProjectWorkshopProps {
   projectId: number;
@@ -13,6 +14,7 @@ interface ProjectWorkshopProps {
 
 const ProjectWorkshop = ({ projectId }: ProjectWorkshopProps) => {
   const { layout, toggle, drag, HIDDEN } = useWorkspaceLayout(projectId);
+  const [selectedFilesPostId, setSelectedFilesPostId] = useState<number | null>(null);
 
   useEffect(() => {
     const footer = document.querySelector('footer');
@@ -119,7 +121,10 @@ const ProjectWorkshop = ({ projectId }: ProjectWorkshopProps) => {
             zIndex: 1,
           }}
         >
-          <BoardPane projectId={projectId} />
+          <BoardPane
+            projectId={projectId}
+            onFilesClick={(post: MediaPost) => setSelectedFilesPostId(post.id)}
+          />
         </Box>
       </Box>
 
@@ -152,7 +157,7 @@ const ProjectWorkshop = ({ projectId }: ProjectWorkshopProps) => {
               margin: '8px 8px 0 0',
             }}
           >
-            <AssetsPane />
+            <AssetsPane selectedPostId={selectedFilesPostId} />
           </Box>
         )}
       </Box>

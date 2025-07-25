@@ -47,6 +47,14 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
     setInvited(project.invitedCreatorIds ?? []);
   }, [project.invitedCreatorIds]);
 
+  // Get assigned creator IDs from projectCreators
+  const assignedCreatorIds = project.projectCreators?.map((pc) => pc.creatorId) ?? [];
+
+  // Filter out already assigned creators
+  const availableCreators = creators.filter((creator) => !assignedCreatorIds.includes(creator.id));
+
+  console.log(project);
+
   const fetchCreators = async () => {
     setLoading(true);
     const response = await readAll();
@@ -137,7 +145,7 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
           renderSkeleton()
         ) : (
           <>
-            {creators.map((creator, index) => {
+            {availableCreators.map((creator, index) => {
               return (
                 <Card
                   key={creator.id}

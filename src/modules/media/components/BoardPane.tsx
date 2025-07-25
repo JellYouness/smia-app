@@ -1,14 +1,19 @@
 import { Box, Typography, Button } from '@mui/material';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import CreateMediaPostModal from './CreateMediaPostModal';
 import useMedia from '../hooks/useMedia';
 import { mutate as globalMutate } from 'swr';
 import { MEDIA_POST_STATUS, MediaPost } from '../defs/types';
 import MediaPostDetailsModal from './partials/media-modal/MediaPostDetailsModal';
 import BoardColumn from './BoardColumn';
+import useAuth from '@modules/auth/hooks/api/useAuth';
+import usePermissions from '@modules/permissions/hooks/usePermissions';
+import Namespaces from '@common/defs/namespaces';
+import { CRUD_ACTION } from '@common/defs/types';
 
 interface BoardPaneProps {
   projectId: number;
+  onFilesClick: (post: MediaPost) => void;
 }
 
 const COLUMNS = [
@@ -28,24 +33,28 @@ const COLUMNS = [
   { id: 'approved', title: 'Approved', color: '#10B981', status: MEDIA_POST_STATUS.APPROVED },
 ];
 
-const BoardPane = ({ projectId }: BoardPaneProps) => {
+const BoardPane = ({ projectId, onFilesClick }: BoardPaneProps) => {
   const { items: mediaPosts, readAll, mutate, patchOne } = useMedia({ fetchItems: true });
+  const { user } = useAuth();
+  const { can } = usePermissions();
   const [loading, setLoading] = useState(false);
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  // Optimistic UI state for posts
   const [optimisticPosts, setOptimisticPosts] = useState<MediaPost[] | null>(null);
   const [selectedPost, setSelectedPost] = useState<MediaPost | null>(null);
 
+  const canCreateMediaPost = useMemo(() => {
+    return can(Namespaces.MediaPosts, CRUD_ACTION.CREATE);
+  }, [can]);
+
   const mediaPostsKey = '/media_posts';
-  // Optimistically remove a post from the board
+
   const optimisticDeletePost = (postId: number) => {
-    // Optimistically update SWR cache for board posts
     globalMutate(
       mediaPostsKey,
       (posts: MediaPost[] = []) => posts.filter((post) => post.id !== postId),
-      false // do not revalidate yet
+      false
     );
     setOptimisticPosts((prev) => {
       const current = prev ?? mediaPosts ?? [];
@@ -53,10 +62,8 @@ const BoardPane = ({ projectId }: BoardPaneProps) => {
     });
   };
 
-  // Use optimisticPosts if set, otherwise use mediaPosts from the API
   const postsToRender = optimisticPosts ?? mediaPosts;
 
-  // Fetch media posts for this project
   useEffect(() => {
     if (projectId) {
       setLoading(true);
@@ -66,18 +73,12 @@ const BoardPane = ({ projectId }: BoardPaneProps) => {
     }
   }, [projectId]);
 
-  // Clear optimistic state when API data changes
   useEffect(() => {
     setOptimisticPosts(null);
   }, [mediaPosts]);
 
-  // Ref for the horizontal scroll area
-  const columnsScrollRef = useRef<HTMLDivElement>(null);
-
-  // Adjust the height of the columns area to account for the fixed scrollbar
   const [columnsHeight, setColumnsHeight] = useState('calc(100% - 100px)');
   useEffect(() => {
-    // 24px is the height of the fixed scrollbar area
     setColumnsHeight('calc(100% - 100px)');
   }, []);
 
@@ -167,6 +168,9 @@ const BoardPane = ({ projectId }: BoardPaneProps) => {
     setSelectedPost(task);
   };
 
+  // Add a flag to disable drag for creators
+  const disableDrag = user?.userType === 'CREATOR';
+
   return (
     <Box
       sx={{
@@ -189,23 +193,25 @@ const BoardPane = ({ projectId }: BoardPaneProps) => {
             Drag and drop tasks between columns to update their status
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: 'primary.main',
-            color: 'white',
-            fontWeight: 600,
-            textTransform: 'none',
-            boxShadow: 2,
-            '&:hover': { backgroundColor: 'primary.dark' },
-            ml: 2,
-            minWidth: 180,
-            height: 40,
-          }}
-          onClick={() => setCreateModalOpen(true)}
-        >
-          Create a media post
-        </Button>
+        {canCreateMediaPost && (
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: 'primary.main',
+              color: 'white',
+              fontWeight: 600,
+              textTransform: 'none',
+              boxShadow: 2,
+              '&:hover': { backgroundColor: 'primary.dark' },
+              ml: 2,
+              minWidth: 180,
+              height: 40,
+            }}
+            onClick={() => setCreateModalOpen(true)}
+          >
+            Create a media post
+          </Button>
+        )}
       </Box>
       {/* Board Columns (fills available space, scrolls both directions) */}
       <Box
@@ -259,12 +265,14 @@ const BoardPane = ({ projectId }: BoardPaneProps) => {
                 }
                 draggedTaskId={draggedTaskId}
                 isDragOver={dragOverColumn === String(column.id)}
-                onDragOver={(e) => handleDragOver(e, String(column.id))}
-                onDragLeave={(e) => handleDragLeave(e)}
-                onDrop={handleDrop}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
+                onDragOver={disableDrag ? undefined : (e) => handleDragOver(e, String(column.id))}
+                onDragLeave={disableDrag ? undefined : (e) => handleDragLeave(e)}
+                onDrop={disableDrag ? undefined : handleDrop}
+                onDragStart={disableDrag ? undefined : handleDragStart}
+                onDragEnd={disableDrag ? undefined : handleDragEnd}
                 onCardClick={handleCardClick}
+                onFilesClick={onFilesClick}
+                disableDrag={disableDrag}
               />
             </Box>
           ))}

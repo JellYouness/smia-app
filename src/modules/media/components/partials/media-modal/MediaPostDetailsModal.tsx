@@ -72,6 +72,8 @@ const MediaPostDetailsModal = ({
     return null;
   }
 
+  const isCreator = user.userType === 'CREATOR';
+
   // Use SWR directly to get live media post data
   const { data: mediaPostData, isLoading } = useSWR(
     propMediaPost ? mediaPostCacheKey(propMediaPost.id) : null,
@@ -224,9 +226,11 @@ const MediaPostDetailsModal = ({
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton size="small" sx={{ color: 'grey.500' }} onClick={handleMenuOpen}>
-            <MoreHoriz fontSize="small" />
-          </IconButton>
+          {!isCreator && (
+            <IconButton size="small" sx={{ color: 'grey.500' }} onClick={handleMenuOpen}>
+              <MoreHoriz fontSize="small" />
+            </IconButton>
+          )}
           <Menu
             anchorEl={menuAnchorEl}
             open={Boolean(menuAnchorEl)}
@@ -256,7 +260,7 @@ const MediaPostDetailsModal = ({
         >
           {/* Title Section */}
           <Box sx={{ mb: 4 }}>
-            {isEditingTitle ? (
+            {isEditingTitle && !isCreator ? (
               <TextField
                 value={titleValue}
                 onChange={(e) => setTitleValue(e.target.value)}
@@ -284,30 +288,36 @@ const MediaPostDetailsModal = ({
                     fontSize: '1.75rem',
                     fontWeight: 700,
                     color: '#1f2937',
-                    cursor: 'pointer',
+                    cursor: isCreator ? 'default' : 'pointer',
                     wordBreak: 'break-word',
                     whiteSpace: 'pre-line',
-                    '&:hover': { color: 'primary.main' },
+                    '&:hover': isCreator ? undefined : { color: 'primary.main' },
                   }}
-                  onClick={() => setIsEditingTitle(true)}
+                  onClick={() => {
+                    if (!isCreator) {
+                      setIsEditingTitle(true);
+                    }
+                  }}
                 >
                   {titleValue}
                 </Typography>
-                <IconButton
-                  size="small"
-                  onClick={() => setIsEditingTitle(true)}
-                  sx={{
-                    opacity: 0.7,
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      opacity: 1,
-                      background: (theme) => theme.palette.primary.main,
-                      color: 'white',
-                    },
-                  }}
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
+                {!isCreator && (
+                  <IconButton
+                    size="small"
+                    onClick={() => setIsEditingTitle(true)}
+                    sx={{
+                      opacity: 0.7,
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        opacity: 1,
+                        background: (theme) => theme.palette.primary.main,
+                        color: 'white',
+                      },
+                    }}
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                )}
               </Box>
             )}
           </Box>
@@ -409,6 +419,7 @@ const MediaPostDetailsModal = ({
                 assignees={assignees}
                 projectCreators={currentMediaPost.project?.creators || []}
                 postId={currentMediaPost.id}
+                disableAssign={isCreator}
               />
             </Stack>
           </Box>
@@ -430,21 +441,23 @@ const MediaPostDetailsModal = ({
                   >
                     Description
                   </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => setIsEditingDescription(true)}
-                    sx={{
-                      opacity: 0.7,
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        opacity: 1,
-                        background: (theme) => theme.palette.primary.main,
-                        color: 'white',
-                      },
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
+                  {!isCreator && (
+                    <IconButton
+                      size="small"
+                      onClick={() => setIsEditingDescription(true)}
+                      sx={{
+                        opacity: 0.7,
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          opacity: 1,
+                          background: (theme) => theme.palette.primary.main,
+                          color: 'white',
+                        },
+                      }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  )}
                 </Box>
                 <Typography
                   variant="caption"
@@ -472,7 +485,7 @@ const MediaPostDetailsModal = ({
                 },
               }}
             >
-              {isEditingDescription ? (
+              {isEditingDescription && !isCreator ? (
                 <TextField
                   value={descriptionValue}
                   onChange={(e) => setDescriptionValue(e.target.value)}
@@ -500,17 +513,21 @@ const MediaPostDetailsModal = ({
               ) : (
                 <Typography
                   variant="body1"
-                  onClick={() => setIsEditingDescription(true)}
+                  onClick={() => {
+                    if (!isCreator) {
+                      setIsEditingDescription(true);
+                    }
+                  }}
                   sx={{
                     lineHeight: 1.7,
                     fontSize: '0.95rem',
                     color: descriptionValue ? '#374151' : '#9ca3af',
-                    cursor: 'pointer',
+                    cursor: isCreator ? 'default' : 'pointer',
                     fontStyle: descriptionValue ? 'normal' : 'italic',
                     transition: 'color 0.2s ease',
                     wordBreak: 'break-word',
                     whiteSpace: 'pre-line',
-                    '&:hover': { color: 'primary.main' },
+                    '&:hover': isCreator ? undefined : { color: 'primary.main' },
                   }}
                 >
                   {descriptionValue || 'Click to add a description...'}
@@ -520,10 +537,10 @@ const MediaPostDetailsModal = ({
           </Box>
 
           {/* Assets */}
-          {assets.length > 0 && <MediaAssets assets={assets} />}
+          {/* {assets.length > 0 && <MediaAssets assets={assets} />} */}
 
           {/* Reviews */}
-          {reviews.length > 0 && <MediaReviews reviews={reviews} />}
+          {/* {reviews.length > 0 && <MediaReviews reviews={reviews} />} */}
         </Box>
 
         {/* Comments Sidebar */}

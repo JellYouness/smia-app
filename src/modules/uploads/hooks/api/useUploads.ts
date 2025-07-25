@@ -61,6 +61,9 @@ const useUploads = (opts: UseUploadsOptions = defaultOptions): UseUploadsRespons
   ): Promise<ApiResponse<{ item: Upload }>> => {
     const formData = new FormData();
     formData.append('file', input.file);
+    if (input.name) {
+      formData.append('name', input.name);
+    }
     const response = await fetchApi<{ item: Upload }>(ApiRoutes.Uploads.CreateOne, {
       method: 'POST',
       data: formData,

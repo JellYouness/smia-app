@@ -4,6 +4,7 @@ import Clients from '@modules/clients/defs/namespace';
 import Ambassadors from '@modules/ambassadors/defs/namespace';
 import SystemAdministrators from '@modules/system-administrators/defs/namespace';
 import Projects from '@modules/projects/defs/namespace';
+import MediaPosts from '@modules/media/defs/namespace';
 
 const Namespaces = {
   Users,
@@ -12,6 +13,7 @@ const Namespaces = {
   Ambassadors,
   SystemAdministrators,
   Projects,
+  MediaPosts,
 };
 
 export default Namespaces;

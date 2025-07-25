@@ -26,6 +26,8 @@ const ApiRoutes: CrudApiRoutes = {
   ApproveProposal: prefix + '/proposals/{proposalId}/approve',
   DeclineProposal: prefix + '/proposals/{proposalId}/decline',
   UpdateCreatorPermission: prefix + '/{id}/creators/{creatorId}/permission',
+  RevokeCreatorPermission: prefix + '/{id}/creators/{creatorId}/revoke-permission',
+  RemoveCreatorFromProject: prefix + '/{id}/creators/{creatorId}/remove',
 };
 
 export const ProjectUpdatesApiRoutes = {

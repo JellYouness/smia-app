@@ -4,6 +4,20 @@ import { Project } from '@modules/projects/defs/types';
 import { Upload } from '@modules/uploads/defs/types';
 import { User } from '@modules/users/defs/types';
 
+export interface FileItem {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  lastModified: number;
+  isUploading?: boolean;
+  isDeleting?: boolean;
+  isReference: boolean;
+  versionId?: number;
+  uploadedBy?: number;
+  canDelete?: boolean;
+}
+
 export interface MediaPost extends CrudObject {
   title: string;
   description: string;
@@ -31,8 +45,9 @@ export interface MediaPostAssignment extends CrudObject {
 
 export interface MediaPostAsset extends CrudObject {
   postId: Id;
-  version: number;
   uploadId: Id;
+  versionId?: Id;
+  isReference: boolean;
   mimeType: string;
   uploadedBy: Id;
 
@@ -40,14 +55,25 @@ export interface MediaPostAsset extends CrudObject {
   upload?: Upload;
 }
 
+export interface MediaPostVersion extends CrudObject {
+  postId: Id;
+  number: number;
+  status: VERSION_STATUS;
+  createdBy: Id;
+
+  creator?: Creator;
+}
+
 export interface MediaPostReview extends CrudObject {
   postId: Id;
   reviewerId: Id;
   reviewerType: 'AMBASSADOR' | 'CLIENT';
+  versionId: Id;
   decision: MEDIA_POST_REVIEW_DECISION;
   comment: string;
 
   reviewer?: User;
+  version?: MediaPostVersion;
 }
 
 export interface MediaPostComment extends CrudObject {
@@ -81,4 +107,10 @@ export enum MEDIA_POST_ASSIGNMENT_ROLE {
 export enum MEDIA_POST_REVIEW_DECISION {
   APPROVED = 'APPROVED',
   REVISION_REQUESTED = 'REVISION_REQUESTED',
+}
+
+export enum VERSION_STATUS {
+  IN_REVIEW = 'IN_REVIEW',
+  CHANGES_REQUESTED = 'CHANGES_REQUESTED',
+  APPROVED = 'APPROVED',
 }

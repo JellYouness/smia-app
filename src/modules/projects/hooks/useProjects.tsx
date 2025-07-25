@@ -143,6 +143,16 @@ export interface UseProjectsHook extends UseItemsHook<Project, CreateOneInput, U
     permission: PROJECT_CREATOR_PERMISSION,
     options?: FetchApiOptions
   ) => Promise<ApiResponse<Any>>;
+  revokeCreatorPermission: (
+    projectId: Id,
+    creatorId: Id,
+    options?: FetchApiOptions
+  ) => Promise<ApiResponse<Any>>;
+  removeCreatorFromProject: (
+    projectId: Id,
+    creatorId: Id,
+    options?: FetchApiOptions
+  ) => Promise<ApiResponse<Any>>;
   readAllPublicProjects: (
     page?: number,
     pageSize?: number | 'all',
@@ -527,6 +537,43 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     return response;
   };
 
+  const revokeCreatorPermission = async (
+    projectId: Id,
+    creatorId: Id,
+    options?: FetchApiOptions
+  ) => {
+    const endpoint = ApiRoutes.Projects.RevokeCreatorPermission.replace(
+      '{id}',
+      projectId.toString()
+    ).replace('{creatorId}', creatorId.toString());
+
+    const response = await fetchApi(endpoint, {
+      method: 'PATCH',
+      data: { permission: null },
+      ...options,
+    });
+
+    return response;
+  };
+
+  const removeCreatorFromProject = async (
+    projectId: Id,
+    creatorId: Id,
+    options?: FetchApiOptions
+  ) => {
+    const endpoint = ApiRoutes.Projects.RemoveCreatorFromProject.replace(
+      '{id}',
+      projectId.toString()
+    ).replace('{creatorId}', creatorId.toString());
+
+    const response = await fetchApi(endpoint, {
+      method: 'DELETE',
+      ...options,
+    });
+
+    return response;
+  };
+
   const readAllPublicProjects = async (
     page?: number,
     pageSize?: number | 'all',
@@ -570,7 +617,9 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
     approveProposal,
     declineProposal,
     updateCreatorPermission,
-    readAllPublicProjects, // <-- add here
+    readAllPublicProjects,
+    revokeCreatorPermission,
+    removeCreatorFromProject,
   };
 
   return hook;
