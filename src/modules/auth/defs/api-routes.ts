@@ -8,6 +8,7 @@ const ApiRoutes = {
   ResendEmailVerification: prefix + '/resend-email-verification',
   VerifyEmail: prefix + '/verify-email',
   Me: prefix + '/me',
+  UpdateProfile: prefix + '/profile',
 };
 
 export default ApiRoutes;

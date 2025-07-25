@@ -1,13 +1,29 @@
-import React from 'react';
-import { Box, Stack, Typography, Chip, Button, Skeleton } from '@mui/material';
+import React, { useState } from 'react';
+import { Stack } from '@mui/material';
 import SectionCard from '@modules/users/components/SectionCard';
-import { Star } from '@mui/icons-material';
-import CardList from '@modules/users/components/CardList';
-import Link from 'next/link';
 import { Any } from '@common/defs/types';
 import { User } from '@modules/users/defs/types';
-import { ProfessionalBackground } from '@modules/creators/defs/types';
 import { TFunction } from 'i18next';
+import AboutSection from '@common/components/AboutSection';
+import EditAboutDialog from './EditAboutDialog';
+import EditSkillsDialog from './EditSkillsDialog';
+import EditPortfolioDialog from './EditPortfolioDialog';
+import EditCertificationsDialog from './EditCertificationsDialog';
+import EditEmploymentDialog from './EditEmploymentDialog';
+import EditAchievementsDialog from './EditAchievementsDialog';
+import EditEquipmentDialog from './EditEquipmentDialog';
+import EditRegionalExpertiseDialog from './EditRegionalExpertiseDialog';
+import EditMediaTypesDialog from './EditMediaTypesDialog';
+import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
+import CreatorSkillsSection from '@common/components/SkillsSection';
+import CreatorPortfolioSection from '@common/components/PortfolioSection';
+import CreatorCertificationsSection from '@common/components/CertificationsSection';
+import CreatorAchievementsSection from '@common/components/AchievementsSection';
+import CreatorProfessionalBackgroundSection from '@common/components/ProfessionalBackgroundSection';
+import CreatorMediaTypesSection from '@common/components/MediaTypesSection';
+import CreatorEquipmentInfoSection from '@common/components/EquipmentInfoSection';
+import CreatorRegionalExpertiseSection from '@common/components/RegionalExpertiseSection';
+import { Creator } from '@modules/creators/defs/types';
 
 interface CreatorMainContentProps {
   user: User;
@@ -16,455 +32,293 @@ interface CreatorMainContentProps {
 }
 
 const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
-  const creator = user.creator || user; // support both user.creator and direct creator
+  const creator = user.creator as Creator;
+  const [openAbout, setOpenAbout] = useState(false);
+  const [openSkills, setOpenSkills] = useState(false);
+  const [openPortfolio, setOpenPortfolio] = useState(false);
+  const [openCertifications, setOpenCertifications] = useState(false);
+  const [openEmployment, setOpenEmployment] = useState(false);
+  const [openAchievements, setOpenAchievements] = useState(false);
+  const [openEquipment, setOpenEquipment] = useState(false);
+  const [openRegionalExpertise, setOpenRegionalExpertise] = useState(false);
+  const [openMediaTypes, setOpenMediaTypes] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const {
+    updateAbout,
+    updateSkills,
+    updatePortfolio,
+    updateCertifications,
+    updateEmployment,
+    updateAchievements,
+    updateEquipment,
+    updateRegionalExpertise,
+    updateMediaTypes,
+  } = useProfileUpdates();
+
+  const handleSaveSkills = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateSkills(user.id, data);
+      if (response.success) {
+        setOpenSkills(false);
+      }
+    } catch (error) {
+      console.error('Error saving skills data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSavePortfolio = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updatePortfolio(user.id, data);
+      if (response.success) {
+        setOpenPortfolio(false);
+      }
+    } catch (error) {
+      console.error('Error saving portfolio data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveCertifications = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateCertifications(user.id, data);
+      if (response.success) {
+        setOpenCertifications(false);
+      }
+    } catch (error) {
+      console.error('Error saving certifications data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveEmployment = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateEmployment(user.id, data);
+      if (response.success) {
+        setOpenEmployment(false);
+      }
+    } catch (error) {
+      console.error('Error saving employment data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveAchievements = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateAchievements(user.id, data);
+      if (response.success) {
+        setOpenAchievements(false);
+      }
+    } catch (error) {
+      console.error('Error saving achievements data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveEquipment = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateEquipment(user.id, data);
+      if (response.success) {
+        setOpenEquipment(false);
+      }
+    } catch (error) {
+      console.error('Error saving equipment data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveRegionalExpertise = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateRegionalExpertise(user.id, data);
+      if (response.success) {
+        setOpenRegionalExpertise(false);
+      }
+    } catch (error) {
+      console.error('Error saving regional expertise data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveMediaTypes = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateMediaTypes(user.id, data);
+      if (response.success) {
+        setOpenMediaTypes(false);
+      }
+    } catch (error) {
+      console.error('Error saving media types data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveAbout = async (data: Any) => {
+    try {
+      setLoading(true);
+      const response = await updateAbout(user.id, data);
+      if (response.success) {
+        setOpenAbout(false);
+      }
+    } catch (error) {
+      console.error('Error saving about data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Stack spacing={0}>
       {/* About Section */}
-      <SectionCard title={t('user:about')} readOnly={readOnly}>
-        <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
-          {user?.profile?.title || <Skeleton width="80%" />}
-        </Typography>
-
-        <Typography variant="body1" sx={{ mt: 1, fontWeight: 600 }}>
-          {t('user:bio')}:
-        </Typography>
-        <Typography variant="body1" sx={{ mt: 1 }}>
-          {user?.profile?.bio || <Skeleton width="80%" />}
-        </Typography>
-
-        <Typography variant="body1" sx={{ mt: 1, fontWeight: 600 }}>
-          {t('user:short_bio')}:
-        </Typography>
-        <Typography variant="body1" sx={{ mt: 1 }}>
-          {user?.profile?.shortBio || <Skeleton width="80%" />}
-        </Typography>
-      </SectionCard>
-
-      {/* Skills Section */}
-      <SectionCard title={t('user:skills') || 'Skills'} readOnly={readOnly}>
-        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-          {creator.skills?.length > 0 ? (
-            creator.skills?.map((skill: string, index: number) => (
-              <Chip key={index} label={skill} size="small" variant="outlined" color="primary" />
-            ))
-          ) : (
-            <Box
-              sx={{
-                p: 4,
-                textAlign: 'center',
-                border: '2px dashed',
-                borderColor: 'divider',
-                borderRadius: 2,
-                bgcolor: 'grey.50',
-              }}
-            >
-              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
-              <Typography variant="body2" color="text.secondary">
-                {t('user:no_skills_added_yet')}
-              </Typography>
-            </Box>
-          )}
-        </Stack>
-      </SectionCard>
-
-      {/* Portfolio Section */}
-      <SectionCard title={t('user:portfolio') || 'Portfolio'} readOnly={readOnly}>
-        <CardList
-          items={creator.portfolio || []}
-          renderCard={(item) => (
-            <Box
-              sx={{
-                p: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                mb: 2,
-                '&:hover': {
-                  borderColor: 'primary.main',
-                  boxShadow: 1,
-                  transform: 'translateY(-2px)',
-                  transition: 'all 0.2s ease-in-out',
-                },
-              }}
-            >
-              <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
-                {item.title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
-                {item.description}
-              </Typography>
-              {item.url && (
-                <Link href={item.url} target="_blank" rel="noopener noreferrer">
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      textTransform: 'none',
-                      '&:hover': {
-                        backgroundColor: 'primary.main',
-                        color: 'white',
-                      },
-                    }}
-                  >
-                    {t('user:view_project')}
-                  </Button>
-                </Link>
-              )}
-            </Box>
-          )}
-          fallback={
-            <Box
-              sx={{
-                p: 4,
-                textAlign: 'center',
-                border: '2px dashed',
-                borderColor: 'divider',
-                borderRadius: 2,
-                bgcolor: 'grey.50',
-              }}
-            >
-              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
-              <Typography variant="body2" color="text.secondary">
-                {t('user:showcase_your_best_work')}
-              </Typography>
-            </Box>
-          }
+      <SectionCard title={t('user:about')} readOnly={readOnly} onEdit={() => setOpenAbout(true)}>
+        <AboutSection
+          title={user?.profile?.title}
+          bio={user?.profile?.bio}
+          hourlyRate={user?.creator?.hourlyRate}
         />
       </SectionCard>
 
-      {/* Languages */}
-      {/* <SectionCard title={t('user:languages') || 'Languages'} readOnly={readOnly}>
-        <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(creator.languages, null, 2)}</pre>
-      </SectionCard> */}
+      {/* Skills Section */}
+      <CreatorSkillsSection
+        creator={creator}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenSkills(true)}
+      />
 
-      {/* Education */}
-      {/* <SectionCard title={t('user:education') || 'Education'} readOnly={readOnly}>
-        <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(creator.education, null, 2)}</pre>
-      </SectionCard> */}
+      {/* Portfolio Section */}
+      <CreatorPortfolioSection
+        creator={creator}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenPortfolio(true)}
+      />
 
       {/* Certifications */}
-      <SectionCard title={t('user:certifications') || 'Certifications'} readOnly={readOnly}>
-        <Stack spacing={3}>
-          {creator.certifications && creator.certifications.length > 0 ? (
-            creator.certifications.map((cert: Any, index: number) => (
-              <Box
-                key={index}
-                sx={{
-                  p: 3,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  bgcolor: 'background.paper',
-                  position: 'relative',
-                  '&:hover': {
-                    borderColor: 'success.main',
-                    boxShadow: 1,
-                  },
-                }}
-              >
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 32,
-                    right: 24,
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    bgcolor: 'success.main',
-                  }}
-                />
-                <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'success.dark' }}>
-                  {cert.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
-                  {t('user:issued_by')}: {cert.issuer}
-                </Typography>
-                {cert.date && (
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
-                    {t('user:date')}: {cert.date}
-                  </Typography>
-                )}
-              </Box>
-            ))
-          ) : (
-            <Box
-              sx={{
-                p: 4,
-                textAlign: 'center',
-                border: '2px dashed',
-                borderColor: 'divider',
-                borderRadius: 2,
-                bgcolor: 'grey.50',
-              }}
-            >
-              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
-              <Typography variant="body2" color="text.secondary">
-                {t('user:ing_certifications_help')}
-              </Typography>
-            </Box>
-          )}
-        </Stack>
-      </SectionCard>
+      <CreatorCertificationsSection
+        creator={creator}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenCertifications(true)}
+      />
 
       {/* Achievements */}
-      <SectionCard title={t('user:achievements') || 'Achievements'} readOnly={readOnly}>
-        <Stack spacing={2}>
-          {creator.achievements && creator.achievements.length > 0 ? (
-            creator.achievements.map((achievement: string, index: number) => (
-              <Box
-                key={index}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  p: 2.5,
-                  pl: 3,
-                  bgcolor: 'grey.50',
-                  borderLeft: '6px solid',
-                  borderColor: 'warning.main',
-                  borderRadius: '0 16px 16px 0',
-                  boxShadow: 0,
-                  gap: 2,
-                  position: 'relative',
-                  minHeight: 56,
-                  '&:hover': {
-                    boxShadow: 2,
-                    bgcolor: 'background.paper',
-                    borderColor: 'primary.main',
-                    transition: 'all 0.2s',
-                  },
-                }}
-              >
-                <Star sx={{ color: 'warning.main', fontSize: 28, mr: 2, flexShrink: 0 }} />
-                <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary' }}>
-                  {achievement}
-                </Typography>
-              </Box>
-            ))
-          ) : (
-            <Box
-              sx={{
-                p: 4,
-                textAlign: 'center',
-                border: '2px dashed',
-                borderColor: 'divider',
-                borderRadius: 2,
-                bgcolor: 'grey.50',
-              }}
-            >
-              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
-              <Typography variant="body2" color="text.secondary">
-                {t('user:highlight_achievements')}
-              </Typography>
-            </Box>
-          )}
-        </Stack>
-      </SectionCard>
+      <CreatorAchievementsSection
+        creator={creator}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenAchievements(true)}
+      />
 
       {/* Professional Background */}
-      <SectionCard
-        title={t('user:professional_background') || 'Professional Background'}
+      <CreatorProfessionalBackgroundSection
+        creator={creator}
+        t={t}
         readOnly={readOnly}
-      >
-        <Stack spacing={3}>
-          {creator.professionalBackground && creator.professionalBackground.length > 0 ? (
-            creator.professionalBackground.map((job: ProfessionalBackground, index: number) => (
-              <Box
-                key={index}
-                sx={{
-                  p: 3,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  bgcolor: 'background.paper',
-                  position: 'relative',
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                    boxShadow: 1,
-                  },
-                }}
-              >
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: 4,
-                    bgcolor: 'primary.main',
-                  }}
-                />
-                <Box sx={{ pl: 2 }}>
-                  <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
-                    {job.title}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 1, fontWeight: 500 }}
-                  >
-                    {job.company} • {job.duration}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                    {job.description}
-                  </Typography>
-                </Box>
-              </Box>
-            ))
-          ) : (
-            <Box
-              sx={{
-                p: 4,
-                textAlign: 'center',
-                border: '2px dashed',
-                borderColor: 'divider',
-                borderRadius: 2,
-                bgcolor: 'grey.50',
-              }}
-            >
-              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
-              <Typography variant="body2" color="text.secondary">
-                {t('user:add_employment_history')}
-              </Typography>
-            </Box>
-          )}
-        </Stack>
-      </SectionCard>
+        onEdit={() => setOpenEmployment(true)}
+      />
 
       {/* Media Types */}
-      <SectionCard title={t('user:media_types') || 'Media Types'} readOnly={readOnly}>
-        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-          {creator.mediaTypes?.length > 0 ? (
-            creator.mediaTypes?.map((mediaType: string, index: number) => (
-              <Chip key={index} label={mediaType} size="small" variant="outlined" color="primary" />
-            ))
-          ) : (
-            <Box
-              sx={{
-                p: 4,
-                textAlign: 'center',
-                border: '2px dashed',
-                borderColor: 'divider',
-                borderRadius: 2,
-                bgcolor: 'grey.50',
-              }}
-            >
-              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
-              <Typography variant="body2" color="text.secondary">
-                {t('user:add_media_types')}
-              </Typography>
-            </Box>
-          )}
-        </Stack>
-      </SectionCard>
+      <CreatorMediaTypesSection
+        creator={creator}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenMediaTypes(true)}
+      />
 
       {/* Equipment Info */}
-      <SectionCard title={t('user:equipment_info') || 'Equipment Info'} readOnly={readOnly}>
-        <Stack spacing={3}>
-          {creator.equipmentInfo && Object.keys(creator.equipmentInfo || {}).length > 0 ? (
-            <Stack spacing={2}>
-              {Object.entries(creator.equipmentInfo || {}).map(
-                ([category, items]: [string, Any]) => (
-                  <Box key={category}>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        mb: 1,
-                        fontWeight: 600,
-                        color: 'primary.main',
-                        textTransform: 'capitalize',
-                      }}
-                    >
-                      {category}
-                    </Typography>
-                    <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                      {Array.isArray(items) &&
-                        items.map((item, index) => (
-                          <Chip
-                            key={index}
-                            label={item}
-                            size="small"
-                            variant="outlined"
-                            color="secondary"
-                          />
-                        ))}
-                    </Stack>
-                  </Box>
-                )
-              )}
-            </Stack>
-          ) : (
-            <Box
-              sx={{
-                p: 4,
-                textAlign: 'center',
-                border: '2px dashed',
-                borderColor: 'divider',
-                borderRadius: 2,
-                bgcolor: 'grey.50',
-              }}
-            >
-              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
-              <Typography variant="body2" color="text.secondary">
-                {t('user:list_equipment_help')}
-              </Typography>
-            </Box>
-          )}
-        </Stack>
-      </SectionCard>
+      <CreatorEquipmentInfoSection
+        creator={creator}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenEquipment(true)}
+      />
 
       {/* Regional Expertise */}
-      <SectionCard title={t('user:regional_expertise') || 'Regional Expertise'} readOnly={readOnly}>
-        <Stack spacing={2}>
-          {creator.regionalExpertise?.length > 0 ? (
-            creator.regionalExpertise?.map((expertise: Any, index: number) => (
-              <Box
-                key={index}
-                sx={{
-                  p: 2,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  bgcolor: 'background.paper',
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                    boxShadow: 1,
-                  },
-                }}
-              >
-                <Box
-                  sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                >
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                    {expertise.region}
-                  </Typography>
-                  <Chip
-                    label={expertise.expertiseLevel}
-                    size="small"
-                    color="secondary"
-                    variant="outlined"
-                  />
-                </Box>
-              </Box>
-            ))
-          ) : (
-            <Box
-              sx={{
-                p: 4,
-                textAlign: 'center',
-                border: '2px dashed',
-                borderColor: 'divider',
-                borderRadius: 2,
-                bgcolor: 'grey.50',
-              }}
-            >
-              <Skeleton variant="rectangular" height={60} sx={{ borderRadius: 2, mb: 2 }} />
-              <Typography variant="body2" color="text.secondary">
-                {t('user:no_regional_expertise')}
-              </Typography>
-            </Box>
-          )}
-        </Stack>
-      </SectionCard>
+      <CreatorRegionalExpertiseSection
+        creator={creator}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenRegionalExpertise(true)}
+      />
+      <EditAboutDialog
+        user={user}
+        open={openAbout}
+        onClose={() => setOpenAbout(false)}
+        onSave={handleSaveAbout}
+        loading={loading}
+      />
+      <EditSkillsDialog
+        user={user}
+        open={openSkills}
+        onClose={() => setOpenSkills(false)}
+        onSave={handleSaveSkills}
+        loading={loading}
+      />
+      <EditPortfolioDialog
+        user={user}
+        open={openPortfolio}
+        onClose={() => setOpenPortfolio(false)}
+        onSave={handleSavePortfolio}
+        loading={loading}
+      />
+      <EditCertificationsDialog
+        user={user}
+        open={openCertifications}
+        onClose={() => setOpenCertifications(false)}
+        onSave={handleSaveCertifications}
+        loading={loading}
+      />
+      <EditEmploymentDialog
+        user={user}
+        open={openEmployment}
+        onClose={() => setOpenEmployment(false)}
+        onSave={handleSaveEmployment}
+        loading={loading}
+      />
+      <EditAchievementsDialog
+        user={user}
+        open={openAchievements}
+        onClose={() => setOpenAchievements(false)}
+        onSave={handleSaveAchievements}
+        loading={loading}
+      />
+      <EditEquipmentDialog
+        user={user}
+        open={openEquipment}
+        onClose={() => setOpenEquipment(false)}
+        onSave={handleSaveEquipment}
+        loading={loading}
+      />
+      <EditRegionalExpertiseDialog
+        user={user}
+        open={openRegionalExpertise}
+        onClose={() => setOpenRegionalExpertise(false)}
+        onSave={handleSaveRegionalExpertise}
+        loading={loading}
+      />
+      <EditMediaTypesDialog
+        user={user}
+        open={openMediaTypes}
+        onClose={() => setOpenMediaTypes(false)}
+        onSave={handleSaveMediaTypes}
+        loading={loading}
+      />
     </Stack>
   );
 };

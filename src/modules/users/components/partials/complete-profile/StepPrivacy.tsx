@@ -6,15 +6,16 @@ import {
   Typography,
   Grid,
   Fade,
-  Chip,
   MenuItem,
   Box,
 } from '@mui/material';
 import { Security } from '@mui/icons-material';
 import { RHFSelect, RHFSwitch } from '@common/components/lib/react-hook-form';
 import { TFunction } from 'i18next';
+import { Any } from '@common/defs/types';
 
-const StepPrivacy = ({ methods, t }: { methods: any; t: TFunction }) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const StepPrivacy = ({ methods, t }: { methods: Any; t: TFunction }) => {
   return (
     <Fade in timeout={500}>
       <Card elevation={0} sx={{ border: (theme) => `1px solid ${theme.palette.divider}` }}>
@@ -39,19 +40,16 @@ const StepPrivacy = ({ methods, t }: { methods: any; t: TFunction }) => {
               >
                 <MenuItem value="PUBLIC">
                   <Stack direction="row" alignItems="center" spacing={1}>
-                    <Chip label={t('user:public')} size="small" color="success" />
                     <Typography>{t('user:public')}</Typography>
                   </Stack>
                 </MenuItem>
                 <MenuItem value="PRIVATE">
                   <Stack direction="row" alignItems="center" spacing={1}>
-                    <Chip label={t('user:private')} size="small" color="default" />
                     <Typography>{t('user:private')}</Typography>
                   </Stack>
                 </MenuItem>
                 <MenuItem value="FRIENDS">
                   <Stack direction="row" alignItems="center" spacing={1}>
-                    <Chip label={t('user:friends_only')} size="small" color="primary" />
                     <Typography>{t('user:friends_only')}</Typography>
                   </Stack>
                 </MenuItem>

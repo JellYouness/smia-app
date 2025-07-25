@@ -513,6 +513,23 @@ const useProfileUpdates = () => {
     }
   };
 
+  const updateProfile = async (
+    data: Any,
+    options?: FetchApiOptions
+  ): Promise<ApiResponse<ProfileUpdateResponse>> => {
+    setLoading(true);
+    try {
+      const response = await fetchApi<ProfileUpdateResponse>(ApiRoutes.Auth.UpdateProfile, {
+        method: 'PUT',
+        data,
+        ...options,
+      });
+      return response;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     loading,
     updateAbout,
@@ -535,6 +552,7 @@ const useProfileUpdates = () => {
     updateContactInfo,
     updateClientLanguages,
     updateSocialMedia,
+    updateProfile,
   };
 };
 

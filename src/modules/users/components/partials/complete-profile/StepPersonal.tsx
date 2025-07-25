@@ -1,14 +1,4 @@
-import {
-  Card,
-  CardContent,
-  Stack,
-  Avatar,
-  Typography,
-  Grid,
-  MenuItem,
-  Box,
-  Fade,
-} from '@mui/material';
+import { Card, CardContent, Stack, Avatar, Typography, Grid, MenuItem, Fade } from '@mui/material';
 import { Person } from '@mui/icons-material';
 import {
   RHFTextField,
@@ -18,50 +8,15 @@ import {
   RHFAutocomplete,
 } from '@common/components/lib/react-hook-form';
 import { TFunction } from 'i18next';
+import { Any } from '@common/defs/types';
+import {
+  SYSTEM_LANGUAGE_OPTIONS,
+  TIMEZONE_OPTIONS,
+  PHONE_FIELD_COUNTRIES,
+  PHONE_FIELD_PREFERRED_COUNTRIES,
+} from '@modules/creators/defs/enums';
 
-// Timezone options
-const timezoneOptions = [
-  { value: 'UTC', label: 'UTC (Coordinated Universal Time)' },
-  { value: 'Europe/Paris', label: 'Europe/Paris (Central European Time)' },
-  { value: 'Europe/London', label: 'Europe/London (Greenwich Mean Time)' },
-  { value: 'America/New_York', label: 'America/New_York (Eastern Time)' },
-  { value: 'America/Chicago', label: 'America/Chicago (Central Time)' },
-  { value: 'America/Denver', label: 'America/Denver (Mountain Time)' },
-  { value: 'America/Los_Angeles', label: 'America/Los_Angeles (Pacific Time)' },
-  { value: 'Asia/Tokyo', label: 'Asia/Tokyo (Japan Standard Time)' },
-  { value: 'Asia/Shanghai', label: 'Asia/Shanghai (China Standard Time)' },
-  { value: 'Asia/Kolkata', label: 'Asia/Kolkata (India Standard Time)' },
-  { value: 'Australia/Sydney', label: 'Australia/Sydney (Australian Eastern Time)' },
-  { value: 'Africa/Cairo', label: 'Africa/Cairo (Eastern European Time)' },
-  { value: 'Africa/Lagos', label: 'Africa/Lagos (West Africa Time)' },
-  { value: 'America/Sao_Paulo', label: 'America/Sao_Paulo (Brasilia Time)' },
-  { value: 'America/Mexico_City', label: 'America/Mexico_City (Central Time)' },
-];
-
-// Language options
-const languageOptions = [
-  { value: 'en', label: 'English' },
-  { value: 'fr', label: 'Français' },
-  { value: 'es', label: 'Español' },
-  { value: 'de', label: 'Deutsch' },
-  { value: 'it', label: 'Italiano' },
-  { value: 'pt', label: 'Português' },
-  { value: 'ru', label: 'Русский' },
-  { value: 'zh', label: '中文' },
-  { value: 'ja', label: '日本語' },
-  { value: 'ko', label: '한국어' },
-  { value: 'ar', label: 'العربية' },
-  { value: 'hi', label: 'हिन्दी' },
-  { value: 'tr', label: 'Türkçe' },
-  { value: 'nl', label: 'Nederlands' },
-  { value: 'pl', label: 'Polski' },
-  { value: 'sv', label: 'Svenska' },
-  { value: 'da', label: 'Dansk' },
-  { value: 'no', label: 'Norsk' },
-  { value: 'fi', label: 'Suomi' },
-];
-
-export default function StepPersonal({ methods, t }: { methods: any; t: TFunction }) {
+const StepPersonal = ({ methods, t }: { methods: Any; t: TFunction }) => {
   return (
     <Fade in timeout={500}>
       <Card elevation={0} sx={{ border: (theme) => `1px solid ${theme.palette.divider}` }}>
@@ -85,35 +40,8 @@ export default function StepPersonal({ methods, t }: { methods: any; t: TFunctio
                 defaultCountry="FR"
                 forceCallingCode
                 focusOnSelectCountry={false}
-                preferredCountries={['FR', 'US', 'GB', 'DE', 'ES', 'IT']}
-                onlyCountries={[
-                  'FR',
-                  'US',
-                  'GB',
-                  'DE',
-                  'ES',
-                  'IT',
-                  'CA',
-                  'AU',
-                  'JP',
-                  'CN',
-                  'IN',
-                  'BR',
-                  'MX',
-                  'AR',
-                  'CO',
-                  'PE',
-                  'CL',
-                  'VE',
-                  'EC',
-                  'BO',
-                  'PY',
-                  'UY',
-                  'GY',
-                  'SR',
-                  'GF',
-                  'FK',
-                ]}
+                preferredCountries={PHONE_FIELD_PREFERRED_COUNTRIES}
+                onlyCountries={PHONE_FIELD_COUNTRIES}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -142,19 +70,21 @@ export default function StepPersonal({ methods, t }: { methods: any; t: TFunctio
                 label={t('common:preferred_language')}
                 placeholder={t('user:enter_preferred_language')}
                 helperText={t('user:preferred_language_help')}
-                options={languageOptions}
-                getOptionLabel={(option) => {
+                options={SYSTEM_LANGUAGE_OPTIONS}
+                getOptionLabel={(option: { value: string; label: string } | string) => {
                   if (typeof option === 'string') {
-                    const found = languageOptions.find((lang) => lang.value === option);
+                    const found = SYSTEM_LANGUAGE_OPTIONS.find(
+                      (lang: { value: string; label: string }) => lang.value === option
+                    );
                     return found ? found.label : option;
                   }
                   return option.label;
                 }}
-                isOptionEqualToValue={(option, value) => {
+                isOptionEqualToValue={(option: { value: string; label: string }, value: Any) => {
                   if (typeof value === 'string') {
                     return option.value === value;
                   }
-                  return option.value === (value as any)?.value;
+                  return option.value === (value as Any)?.value;
                 }}
                 onChange={(event, newValue) => {
                   if (typeof newValue === 'string') {
@@ -173,10 +103,12 @@ export default function StepPersonal({ methods, t }: { methods: any; t: TFunctio
                 label={t('common:timezone')}
                 placeholder={t('user:enter_timezone')}
                 helperText={t('user:timezone_help')}
-                options={timezoneOptions}
-                getOptionLabel={(option) => {
+                options={TIMEZONE_OPTIONS}
+                getOptionLabel={(option: { value: string; label: string } | string) => {
                   if (typeof option === 'string') {
-                    const found = timezoneOptions.find((tz) => tz.value === option);
+                    const found = TIMEZONE_OPTIONS.find(
+                      (tz: { value: string; label: string }) => tz.value === option
+                    );
                     return found ? found.label : option;
                   }
                   return option.label;
@@ -185,13 +117,13 @@ export default function StepPersonal({ methods, t }: { methods: any; t: TFunctio
                   if (typeof value === 'string') {
                     return option.value === value;
                   }
-                  return option.value === (value as any)?.value;
+                  return option.value === (value as Any)?.value;
                 }}
                 onChange={(event, newValue) => {
                   if (typeof newValue === 'string') {
                     methods.setValue('timezone', newValue);
                   } else if (newValue && typeof newValue === 'object' && 'value' in newValue) {
-                    methods.setValue('timezone', (newValue as any).value);
+                    methods.setValue('timezone', (newValue as Any).value);
                   } else {
                     methods.setValue('timezone', '');
                   }
@@ -221,4 +153,6 @@ export default function StepPersonal({ methods, t }: { methods: any; t: TFunctio
       </Card>
     </Fade>
   );
-}
+};
+
+export default StepPersonal;

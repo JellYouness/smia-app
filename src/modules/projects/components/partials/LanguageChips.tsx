@@ -9,9 +9,17 @@ interface Language {
 
 interface LanguageChipsProps {
   languages: Language[];
+  bgColor?: string;
+  size?: 'xs' | 'sm' | 'md';
+  direction?: 'row' | 'column';
 }
 
-const LanguageChips: React.FC<LanguageChipsProps> = ({ languages }) => {
+const LanguageChips: React.FC<LanguageChipsProps> = ({
+  languages,
+  bgColor,
+  size = 'sm',
+  direction = 'column',
+}) => {
   const { t } = useTranslation(['common']);
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -66,14 +74,26 @@ const LanguageChips: React.FC<LanguageChipsProps> = ({ languages }) => {
   };
 
   return (
-    <Box display="flex" alignItems="center" flexWrap="wrap" gap={1}>
+    <Box
+      display="flex"
+      flexDirection={direction}
+      alignItems={direction === 'row' ? 'center' : 'flex-start'}
+      justifyContent={direction === 'row' ? 'flex-start' : 'center'}
+      flexWrap="wrap"
+      gap={1}
+      sx={{
+        '& .MuiChip-root': {
+          fontSize: (size === 'xs' && 13) || (size === 'sm' && 14) || 18,
+        },
+      }}
+    >
       {languages.slice(0, 2).map((lang) => {
         return (
           <Chip
             key={lang.language}
             label={
               <Box display="flex" alignItems="center" gap={1}>
-                <Typography variant="body2" fontWeight={500}>
+                <Typography variant="body2" fontWeight={500} sx={{ fontSize: 'inherit' }}>
                   {lang.language.charAt(0).toUpperCase() + lang.language.slice(1).toLowerCase()}
                 </Typography>
                 {renderProficiencyIndicator(lang.proficiency)}
@@ -82,9 +102,9 @@ const LanguageChips: React.FC<LanguageChipsProps> = ({ languages }) => {
             size="small"
             variant="outlined"
             sx={{
-              p: 2,
+              p: size === 'xs' ? 1 : 1.5,
               borderColor: theme.palette.divider,
-              backgroundColor: 'transparent',
+              backgroundColor: bgColor || 'transparent',
               '&:hover': {
                 backgroundColor: theme.palette.action.hover,
               },

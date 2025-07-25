@@ -2,28 +2,15 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
-  Chip,
-  Avatar,
-  Rating,
   TextField,
   MenuItem,
   InputAdornment,
-  Button,
-  Stack,
   Divider,
-  Tooltip,
   Pagination,
 } from '@mui/material';
 import useCreators from '@modules/creators/hooks/useCreators';
-import { useRouter } from 'next/router';
-import { Creator, AvailabilityStatus } from '@modules/creators/defs/types';
+import { AvailabilityStatus } from '@modules/creators/defs/types';
 import SearchIcon from '@mui/icons-material/Search';
-import StarIcon from '@mui/icons-material/Star';
-import LanguageIcon from '@mui/icons-material/Language';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import CancelIcon from '@mui/icons-material/Cancel';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import withPermissions from '@modules/permissions/hocs/withPermissions';
 import Routes from '@common/defs/routes';
 import { CRUD_ACTION } from '@common/defs/types';
@@ -99,7 +86,7 @@ const CreatorsBrowsePage = () => {
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 4 } }}>
       <Typography variant="h4" fontWeight={700} mb={3}>
-        {t('user:admin_creators_title', 'Browse Creators')}
+        {t('user:browse_creators', 'Browse Creators')}
       </Typography>
       <Box display="flex" flexWrap="wrap" gap={2} mb={4}>
         <TextField

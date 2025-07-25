@@ -11,7 +11,6 @@ import {
   Tooltip,
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
-import LanguageIcon from '@mui/icons-material/Language';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -19,8 +18,11 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { Creator, AvailabilityStatus } from '@modules/creators/defs/types';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
+import { TFunction } from 'next-i18next';
+import LanguageChips from '@modules/projects/components/partials/LanguageChips';
+import { LanguageOptions } from '@modules/creators/defs/enums';
 
-const getAvailabilityChipProps = (status: AvailabilityStatus, t: any) => {
+const getAvailabilityChipProps = (status: AvailabilityStatus, t: TFunction) => {
   switch (status) {
     case 'AVAILABLE':
       return {
@@ -51,11 +53,15 @@ const CreatorRow = ({ creator }: { creator: Creator }) => {
   const router = useRouter();
   const { t } = useTranslation(['user', 'common']);
   const skills = creator.skills || [];
-  const languages = creator.languages || [];
+  const languages = creator.languages.map((lang) => ({
+    language: LanguageOptions.find((l) => l.value === lang.language)?.label || lang.language,
+    proficiency: lang.proficiency,
+  }));
+
   const maxSkillChips = 5;
-  const maxLangChips = 3;
+  // const maxLangChips = 3;
   const skillOverflow = skills.length > maxSkillChips ? skills.slice(maxSkillChips) : [];
-  const langOverflow = languages.length > maxLangChips ? languages.slice(maxLangChips) : [];
+  // const langOverflow = languages.length > maxLangChips ? languages.slice(maxLangChips) : [];
   const availabilityProps = getAvailabilityChipProps(creator.availability, t);
 
   return (
@@ -92,7 +98,7 @@ const CreatorRow = ({ creator }: { creator: Creator }) => {
           {creator.user?.firstName} {creator.user?.lastName}
         </Typography>
         {creator.user?.title || creator.user?.profile?.title ? (
-          <Typography variant="subtitle2" color="text.secondary" noWrap>
+          <Typography variant="h5" color="text.secondary" noWrap>
             {creator.user?.title || creator.user?.profile?.title}
           </Typography>
         ) : null}
@@ -107,6 +113,7 @@ const CreatorRow = ({ creator }: { creator: Creator }) => {
               size="small"
               variant="outlined"
               color="primary"
+              sx={{ bgcolor: 'white', p: 1 }}
               icon={<StarIcon fontSize="small" />}
             />
           ))}
@@ -120,7 +127,8 @@ const CreatorRow = ({ creator }: { creator: Creator }) => {
           <Typography variant="subtitle2" color="text.secondary" noWrap>
             {t('user:languages')}:
           </Typography>
-          {languages.slice(0, maxLangChips).map((lang, idx) => (
+          <LanguageChips languages={languages} bgColor="white" size="xs" direction="row" />
+          {/* {languages.slice(0, maxLangChips).map((lang, idx) => (
             <Chip
               key={lang.language + idx}
               label={lang.language}
@@ -134,7 +142,7 @@ const CreatorRow = ({ creator }: { creator: Creator }) => {
             <Tooltip title={langOverflow.map((l) => l.language).join(', ')}>
               <Chip label={`+${langOverflow.length}`} size="small" variant="outlined" />
             </Tooltip>
-          )}
+          )} */}
         </Stack>
       </Box>
       <Divider
@@ -175,7 +183,7 @@ const CreatorRow = ({ creator }: { creator: Creator }) => {
           sx={{ fontWeight: 600, letterSpacing: 0.5, color: 'white' }}
         />
         <Typography variant="body2" color="text.secondary">
-          {creator.experience} {t('user:years')}
+          {creator.experience} {t('user:years_of_experience')}
         </Typography>
         <Button
           variant="contained"

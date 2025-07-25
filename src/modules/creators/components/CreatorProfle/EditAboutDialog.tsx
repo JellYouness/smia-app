@@ -34,6 +34,10 @@ const EditAboutDialog = ({
     title: Yup.string().max(255, 'Title is too long'),
     bio: Yup.string().max(1000, 'Bio is too long'),
     shortBio: Yup.string().max(255, 'Short bio is too long'),
+    hourlyRate: Yup.number()
+      .typeError('Hourly rate must be a number')
+      .min(0, 'Hourly rate must be at least 0')
+      .nullable(),
   });
 
   const methods = useForm({
@@ -42,6 +46,7 @@ const EditAboutDialog = ({
       title: user?.profile?.title || '',
       bio: user?.profile?.bio || '',
       shortBio: user?.profile?.shortBio || '',
+      hourlyRate: user?.creator?.hourlyRate ?? '',
     },
   });
 
@@ -62,12 +67,22 @@ const EditAboutDialog = ({
             </Typography>
 
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <RHFTextField
                   name="title"
                   label="Profile Title"
                   placeholder="e.g., Senior Web Developer, Creative Designer"
                   helperText="A brief title that describes your role or expertise"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <RHFTextField
+                  name="hourlyRate"
+                  label="Hourly Rate (USD)"
+                  type="number"
+                  placeholder="e.g., 50"
+                  helperText="Your hourly rate in USD (optional)"
+                  InputProps={{ inputProps: { min: 0 } }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -80,14 +95,14 @@ const EditAboutDialog = ({
                   helperText="Share your story, experience, and what makes you unique"
                 />
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <RHFTextField
                   name="shortBio"
                   label="Short Bio"
                   placeholder="Tell us about yourself, your experience, and what you do..."
                   helperText="Share your story, experience, and what makes you unique"
                 />
-              </Grid>
+              </Grid> */}
             </Grid>
           </Box>
         </FormProvider>

@@ -4,7 +4,7 @@ import Routes from '@common/defs/routes';
 import { Box, Card, Grid, Typography, Button, Stack, Container, Paper } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import FormProvider, { RHFTextField } from '@common/components/lib/react-hook-form';
+import FormProvider, { RHFPhoneField, RHFTextField } from '@common/components/lib/react-hook-form';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import useAuth from '@modules/auth/hooks/api/useAuth';
@@ -17,6 +17,11 @@ import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import ApiRoutes from '@common/defs/api-routes';
 import { Any } from '@common/defs/types';
+import {
+  PHONE_FIELD_COUNTRIES,
+  PHONE_FIELD_PREFERRED_COUNTRIES,
+} from '@modules/creators/defs/enums';
+import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
 
 const EditProfile: NextPage = () => {
   const { user } = useAuth();
@@ -47,19 +52,15 @@ const EditProfile: NextPage = () => {
   const methods = useForm({
     resolver: yupResolver(ProfileSchema),
     defaultValues: {
-      firstName: user?.first_name || '',
-      lastName: user?.last_name || '',
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
       email: user?.email || '',
-      phoneNumber: user?.phone_number || '',
-      address: user?.address || '',
-      city: user?.city || '',
-      state: user?.state || '',
-      country: user?.country || '',
-      postalCode: user?.postal_code || '',
-      bio: user?.profile?.bio || '',
-      title: user?.profile?.title || '',
-      preferredLanguage: user?.preferred_language || '',
-      timezone: user?.timezone || '',
+      phoneNumber: user?.profile?.phoneNumber || '',
+      address: user?.profile?.address || '',
+      city: user?.profile?.city || '',
+      state: user?.profile?.state || '',
+      country: user?.profile?.country || '',
+      postalCode: user?.profile?.postalCode || '',
     },
   });
 
@@ -68,41 +69,29 @@ const EditProfile: NextPage = () => {
     formState: { isDirty },
   } = methods;
 
+  const { updateProfile } = useProfileUpdates();
+
   const onSubmit = async (data: Any) => {
     try {
       setIsSubmitting(true);
 
       // Prepare data for API
       const updateData: Any = {
-        first_name: data.firstName,
-        last_name: data.lastName,
-        phone_number: data.phoneNumber,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phoneNumber: data.phoneNumber,
         address: data.address,
         city: data.city,
         state: data.state,
         country: data.country,
-        postal_code: data.postalCode,
-        bio: data.bio,
-        title: data.title,
-        preferred_language: data.preferredLanguage,
-        timezone: data.timezone,
+        postalCode: data.postalCode,
       };
 
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('/api/auth/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updateData),
-      });
-
-      const result = await response.json();
+      const result = await updateProfile(updateData);
 
       if (result.success) {
         // Update local user data using SWR mutate
-        mutate(result.data.user);
+        mutate(result.data?.data);
         enqueueSnackbar(t('user:profile_updated_successfully'), { variant: 'success' });
         router.push(Routes.Users.Me);
       } else {
@@ -173,13 +162,18 @@ const EditProfile: NextPage = () => {
                   <RHFTextField name="email" label={t('common:email')} disabled />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <RHFTextField name="phoneNumber" label={t('common:phone_number')} />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <RHFTextField name="preferredLanguage" label={t('common:preferred_language')} />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <RHFTextField name="timezone" label={t('common:timezone')} />
+                  {/* <RHFTextField name="phoneNumber" label={t('common:phone_number')} /> */}
+                  <RHFPhoneField
+                    name="phoneNumber"
+                    label={t('common:phone_number')}
+                    placeholder={t('user:enter_phone_number')}
+                    helperText={t('user:phone_number_help')}
+                    defaultCountry="FR"
+                    forceCallingCode
+                    focusOnSelectCountry={false}
+                    preferredCountries={PHONE_FIELD_PREFERRED_COUNTRIES}
+                    onlyCountries={PHONE_FIELD_COUNTRIES}
+                  />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Button
@@ -190,12 +184,6 @@ const EditProfile: NextPage = () => {
                   >
                     {t('user:change_password')}
                   </Button>
-                </Grid>
-                <Grid item xs={12}>
-                  <RHFTextField name="title" label={t('user:profile_title')} />
-                </Grid>
-                <Grid item xs={12}>
-                  <RHFTextField name="bio" label={t('common:biography')} multiline rows={4} />
                 </Grid>
               </Grid>
             </Card>

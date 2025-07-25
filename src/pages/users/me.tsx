@@ -7,10 +7,11 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Skeleton from '@mui/material/Skeleton';
-import { ClientSidebar, ClientMainContent } from '@modules/users/components';
+import { ClientSidebar, ClientMainContent, MainContent } from '@modules/users/components';
 import AmbassadorMainContent from '@modules/ambassadors/components/AmbassadorMainContent';
 import CreatorMainContent from '@modules/creators/components/CreatorProfle/CreatorMainContent';
 import CreatorSidebar from '@modules/creators/components/CreatorProfle/CreatorSidebar';
+import Sidebar from '@modules/users/components/Sidebar';
 
 const MyProfile: NextPage = () => {
   const { user, initialized } = useAuth();
@@ -41,7 +42,8 @@ const MyProfile: NextPage = () => {
   const isClient = user?.userType === 'CLIENT' || user?.client;
   const isCreator = user?.userType === 'CREATOR' || user?.creator;
   const isAmbassador = user?.userType === 'AMBASSADOR' || user?.ambassador;
-  // const isAdmin = user?.userType === 'ADMIN' || user?.admin;
+  const isAdmin =
+    user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN' || user?.systemAdministrator;
 
   // Show loading state while auth is initializing
   if (!initialized) {
@@ -96,6 +98,8 @@ const MyProfile: NextPage = () => {
     <Box
       sx={{
         minHeight: '100vh',
+        maxWidth: { xs: '100%', md: '90%', lg: '80%' },
+        margin: '0 auto',
         bgcolor: 'white',
         pt: 4,
         border: `2px solid ${theme.palette.divider}`,
@@ -109,7 +113,7 @@ const MyProfile: NextPage = () => {
           md={4}
           sx={{
             borderRight: { xs: 'none', md: `1px solid ${theme.palette.divider}` },
-            pr: { xs: 0, md: 4 },
+            // pr: { xs: 0, md: 4 },
           }}
         >
           {/* <SidebarComponent
@@ -135,7 +139,14 @@ const MyProfile: NextPage = () => {
             />
           )}
           {/* {isAmbassador && <AmbassadorSidebar user={user} t={t} />} */}
-          {/* {isAdmin && <AdminSidebar user={user} t={t} />} */}
+          {isAdmin && (
+            <Sidebar
+              user={user}
+              profilePicture={profilePicture}
+              handleUploadPicture={handleUploadPicture}
+              handleDeletePicture={handleDeletePicture}
+            />
+          )}
         </Grid>
         <Grid
           item
@@ -143,11 +154,31 @@ const MyProfile: NextPage = () => {
           md={8}
           sx={{ pl: { xs: 0, md: '0 !important' }, pt: { xs: 0, md: '0 !important' } }}
         >
+          {/* Show profile completeness warning if not 100% */}
+          {!isAdmin && user?.profile?.profileCompleteness !== 100 && (
+            <Box sx={{ mt: 2, px: 2, mx: 'auto', maxWidth: 800 }}>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={2}
+                sx={{
+                  p: 2,
+                  bgcolor: 'warning.light',
+                  borderRadius: 2,
+                  border: `1px solid ${theme.palette.warning.main}`,
+                }}
+              >
+                <Box sx={{ fontWeight: 600, color: 'warning.dark', flex: 1 }}>
+                  {t('user:profile_completion_info')}
+                </Box>
+              </Stack>
+            </Box>
+          )}
           {/* <MainContentComponent user={user} t={t} /> */}
           {isClient && <ClientMainContent user={user} t={t} />}
           {isCreator && <CreatorMainContent user={user} t={t} />}
           {isAmbassador && <AmbassadorMainContent user={user} t={t} />}
-          {/* {isAdmin && <AdminMainContent user={user} t={t} />} */}
+          {isAdmin && <MainContent user={user} t={t} />}
         </Grid>
       </Grid>
       {/* </Container> */}

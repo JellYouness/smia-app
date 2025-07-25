@@ -7,9 +7,10 @@ interface ProfilePictureProps {
   src: string | null;
   onUpload: (file: File) => Promise<void>;
   onDelete: () => Promise<void>;
+  editable?: boolean;
 }
 
-const ProfilePicture: React.FC<ProfilePictureProps> = ({ src, onUpload, onDelete }) => {
+const ProfilePicture: React.FC<ProfilePictureProps> = ({ src, onUpload, onDelete, editable }) => {
   const { t } = useTranslation(['common', 'user']);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,11 +22,13 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({ src, onUpload, onDelete
     }
 
     if (!file.type.startsWith('image/')) {
+      // eslint-disable-next-line no-alert
       alert(t('user:invalid_image_format'));
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
+      // eslint-disable-next-line no-alert
       alert(t('user:image_size_limit'));
       return;
     }
@@ -35,6 +38,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({ src, onUpload, onDelete
       await onUpload(file);
     } catch (error) {
       console.error(t('user:image_upload_error'), error);
+      // eslint-disable-next-line no-alert
       alert(t('user:image_upload_error'));
     } finally {
       setIsUploading(false);
@@ -55,21 +59,23 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({ src, onUpload, onDelete
               ref={fileInputRef}
               onChange={handleFileChange}
             />
-            <IconButton
-              size="small"
-              sx={{
-                bgcolor: 'primary.main',
-                color: 'white',
-                '&:hover': { bgcolor: 'primary.dark' },
-                width: 32,
-                height: 32,
-              }}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-            >
-              <Edit sx={{ fontSize: 16 }} />
-            </IconButton>
-            {src && (
+            {editable && (
+              <IconButton
+                size="small"
+                sx={{
+                  bgcolor: 'primary.main',
+                  color: 'white',
+                  '&:hover': { bgcolor: 'primary.dark' },
+                  width: 32,
+                  height: 32,
+                }}
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+              >
+                <Edit sx={{ fontSize: 16 }} />
+              </IconButton>
+            )}
+            {src && editable && (
               <IconButton
                 size="small"
                 sx={{

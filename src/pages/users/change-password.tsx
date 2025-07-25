@@ -1,87 +1,49 @@
 import { NextPage } from 'next';
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import Routes from '@common/defs/routes';
-import { Box, Card, Grid, Typography, Button, Stack, Container, Paper } from '@mui/material';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import FormProvider, { RHFTextField } from '@common/components/lib/react-hook-form';
-import { useForm } from 'react-hook-form';
+import { Box, Card, Typography, Button, Stack, Container, Paper } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { ArrowBack, Save, Lock } from '@mui/icons-material';
+import { ArrowBack, Lock } from '@mui/icons-material';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
-import { Any } from '@common/defs/types';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
 const ChangePassword: NextPage = () => {
   const { t } = useTranslation(['common', 'user']);
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
-  const PasswordSchema = Yup.object().shape({
-    currentPassword: Yup.string()
-      .required(t('user:current_password_required'))
-      .min(8, t('common:password_min_length')),
-    newPassword: Yup.string()
-      .required(t('user:new_password_required'))
-      .min(8, t('common:password_min_length')),
-    confirmPassword: Yup.string()
-      .required(t('user:confirm_password_required'))
-      .oneOf([Yup.ref('newPassword')], t('user:passwords_must_match')),
-  });
+  const { user, requestPasswordReset, logout } = useAuth();
 
-  const methods = useForm({
-    resolver: yupResolver(PasswordSchema),
-    defaultValues: {
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    },
-  });
+  const handleCancel = () => {
+    router.push(Routes.Users.EditProfile);
+  };
 
-  const {
-    handleSubmit,
-    formState: { isDirty },
-  } = methods;
-
-  const onSubmit = async (data: Any) => {
+  const handleSendEmail = async () => {
+    if (!user?.email) {
+      enqueueSnackbar(t('user:email_not_found'), { variant: 'error' });
+      return;
+    }
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
-
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('/api/auth/change-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          current_password: data.currentPassword,
-          new_password: data.newPassword,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        enqueueSnackbar(t('user:password_changed_successfully'), { variant: 'success' });
-        router.push(Routes.Users.EditProfile);
+      const response = await requestPasswordReset({ email: user.email });
+      if (response.success) {
+        setEmailSent(true);
+        enqueueSnackbar(t('user:password_reset_email_sent'), { variant: 'success' });
+        logout();
       } else {
-        enqueueSnackbar(result.errors?.[0] || t('common:update_failed'), { variant: 'error' });
+        enqueueSnackbar(response.errors?.[0] || t('common:update_failed'), { variant: 'error' });
       }
     } catch (error) {
-      console.error('Error changing password:', error);
       enqueueSnackbar(t('common:unexpected_error'), { variant: 'error' });
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleCancel = () => {
-    router.push(Routes.Users.EditProfile);
   };
 
   return (
@@ -115,69 +77,29 @@ const ChangePassword: NextPage = () => {
       </Paper>
 
       <Container maxWidth="md" sx={{ py: 4 }}>
-        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={3}>
-            {/* Password Change Form */}
-            <Card sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                <Lock sx={{ fontSize: 28, color: 'primary.main' }} />
-                <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                  {t('user:change_password')}
-                </Typography>
-              </Box>
-
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                {t('user:change_password_description')}
+        <Stack spacing={3}>
+          <Card sx={{ p: 3, textAlign: 'center' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <Lock sx={{ fontSize: 40, color: 'primary.main' }} />
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                {t('user:change_password')}
               </Typography>
-
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <RHFTextField
-                    name="currentPassword"
-                    label={t('user:current_password')}
-                    type="password"
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <RHFTextField
-                    name="newPassword"
-                    label={t('user:new_password')}
-                    type="password"
-                    required
-                    helperText={t('common:password_min_length_help')}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <RHFTextField
-                    name="confirmPassword"
-                    label={t('user:confirm_new_password')}
-                    type="password"
-                    required
-                  />
-                </Grid>
-              </Grid>
-            </Card>
-
-            {/* Action Buttons */}
-            <Card sx={{ p: 3 }}>
-              <Stack direction="row" spacing={2} justifyContent="flex-end">
-                <Button variant="outlined" onClick={handleCancel} disabled={isSubmitting}>
-                  {t('common:cancel')}
-                </Button>
-                <LoadingButton
-                  type="submit"
-                  variant="contained"
-                  loading={isSubmitting}
-                  disabled={!isDirty}
-                  startIcon={<Save />}
-                >
-                  {t('user:change_password')}
-                </LoadingButton>
-              </Stack>
-            </Card>
-          </Stack>
-        </FormProvider>
+              <Typography variant="body1" sx={{ mb: 2 }}>
+                {t('user:password_reset_email_info', { email: user?.email || '' })}
+              </Typography>
+              <LoadingButton
+                variant="contained"
+                loading={isSubmitting}
+                onClick={handleSendEmail}
+                disabled={emailSent || !user?.email}
+              >
+                {emailSent
+                  ? t('user:password_reset_email_sent_button')
+                  : t('user:send_password_reset_email')}
+              </LoadingButton>
+            </Box>
+          </Card>
+        </Stack>
       </Container>
     </Box>
   );

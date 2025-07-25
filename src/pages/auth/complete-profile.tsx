@@ -22,7 +22,7 @@ import {
   Security,
   Share,
   ContactEmergency,
-  Settings,
+  // Settings,
   ArrowForward,
   ArrowBack,
   CheckCircle,
@@ -41,7 +41,7 @@ import StepNotifications from '@modules/users/components/partials/complete-profi
 import StepPrivacy from '@modules/users/components/partials/complete-profile/StepPrivacy';
 import StepSocial from '@modules/users/components/partials/complete-profile/StepSocial';
 import StepEmergency from '@modules/users/components/partials/complete-profile/StepEmergency';
-import StepPreferences from '@modules/users/components/partials/complete-profile/StepPreferences';
+// import StepPreferences from '@modules/users/components/partials/complete-profile/StepPreferences';
 
 const steps = [
   { key: 'personal', label: 'Personal Information', icon: Person },
@@ -50,7 +50,7 @@ const steps = [
   { key: 'privacy', label: 'Privacy', icon: Security },
   { key: 'social', label: 'Social Media', icon: Share },
   { key: 'emergency', label: 'Emergency Contact', icon: ContactEmergency },
-  { key: 'preferences', label: 'Preferences', icon: Settings },
+  // { key: 'preferences', label: 'Preferences', icon: Settings },
 ];
 
 const CompleteProfile: NextPage = () => {
@@ -136,8 +136,8 @@ const CompleteProfile: NextPage = () => {
         return <StepSocial methods={methods} t={t} />;
       case 5:
         return <StepEmergency methods={methods} t={t} />;
-      case 6:
-        return <StepPreferences methods={methods} t={t} />;
+      // case 6:
+      //   return <StepPreferences methods={methods} t={t} />;
       default:
         return null;
     }
@@ -247,7 +247,7 @@ const CompleteProfile: NextPage = () => {
                     <StepLabel
                       onClick={() => handleStepClick(index)}
                       sx={{ cursor: 'pointer' }}
-                      StepIconComponent={({ active, completed }) => {
+                      StepIconComponent={({ active }) => {
                         const isCompleted = isStepCompleted(index);
                         const isValid = isStepValid(index);
 

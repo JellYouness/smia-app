@@ -9,6 +9,7 @@ interface SectionCardProps {
   children: React.ReactNode;
   editLink?: string;
   readOnly?: boolean;
+  titleSize?: 'h6' | 'h5' | 'h4' | 'h3' | 'h2' | 'h1';
 }
 
 const SectionCard: React.FC<SectionCardProps> = ({
@@ -17,6 +18,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
   children,
   editLink,
   readOnly,
+  titleSize = 'h4',
 }) => {
   const theme = useTheme();
   return (
@@ -30,7 +32,7 @@ const SectionCard: React.FC<SectionCardProps> = ({
       }}
     >
       <Box display="flex" alignItems="center" mb={2}>
-        <Typography variant="h4" sx={{ fontWeight: 600, flexGrow: 1 }}>
+        <Typography variant={titleSize} sx={{ fontWeight: 600, flexGrow: 1 }}>
           {title}
         </Typography>
         {!readOnly && (

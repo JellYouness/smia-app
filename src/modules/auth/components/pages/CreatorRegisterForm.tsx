@@ -2,7 +2,6 @@ import FormProvider, {
   RHFTextField,
   RHFCheckbox,
   RHFAutocomplete,
-  RHFSelect,
 } from '@common/components/lib/react-hook-form';
 import { LockOpen } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
@@ -16,9 +15,18 @@ import Routes from '@common/defs/routes';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useTranslation } from 'react-i18next';
-import { Box, Chip, TextField } from '@mui/material';
+import { Box, Chip } from '@mui/material';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import {
+  Skills,
+  MediaTypes,
+  ExperienceLevel,
+  Regions,
+  LanguageProficiency,
+  LanguageOptions,
+} from '@modules/creators/defs/enums';
+import { Any } from '@common/defs/types';
 
 const CreatorRegisterForm = () => {
   const { register } = useAuth();
@@ -156,22 +164,9 @@ const CreatorRegisterForm = () => {
               <RHFAutocomplete
                 name="skills"
                 label={t('auth:skills')}
-                options={[
-                  'Photography',
-                  'Videography',
-                  'Graphic Design',
-                  'Web Design',
-                  'Content Writing',
-                  'Social Media Management',
-                  'SEO',
-                  'Marketing',
-                  'Translation',
-                  'Voice Over',
-                  'Animation',
-                  'Illustration',
-                ]}
+                options={Object.values(Skills)}
                 multiple
-                freeSolo
+                // freeSolo
                 renderTags={(value, getTagProps) =>
                   value.map((option, index) => (
                     <Chip variant="outlined" label={option} {...getTagProps({ index })} />
@@ -183,16 +178,7 @@ const CreatorRegisterForm = () => {
               <RHFAutocomplete
                 name="mediaTypes"
                 label={t('auth:media_types')}
-                options={[
-                  'Images',
-                  'Videos',
-                  'Audio',
-                  'Documents',
-                  'Graphics',
-                  'Animations',
-                  'Web Content',
-                  'Social Media Content',
-                ]}
+                options={Object.values(MediaTypes)}
                 multiple
               />
             </Grid>
@@ -200,7 +186,7 @@ const CreatorRegisterForm = () => {
               <RHFAutocomplete
                 name="experienceLevel"
                 label={t('auth:experience_level')}
-                options={['Beginner', 'Intermediate', 'Advanced', 'Expert']}
+                options={Object.values(ExperienceLevel)}
               />
             </Grid>
 
@@ -214,18 +200,8 @@ const CreatorRegisterForm = () => {
               <RHFAutocomplete
                 name="regions"
                 label={t('auth:regions')}
-                options={[
-                  'North America',
-                  'Europe',
-                  'Asia',
-                  'Africa',
-                  'South America',
-                  'Australia',
-                  'Middle East',
-                  'Caribbean',
-                ]}
+                options={Object.values(Regions)}
                 multiple
-                freeSolo
               />
             </Grid>
 
@@ -238,10 +214,40 @@ const CreatorRegisterForm = () => {
             <Grid item xs={12}>
               {languages.map((lang, index) => (
                 <Box key={index} sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                  <TextField
+                  <RHFAutocomplete
+                    name={`languages[${index}].language`}
                     label={t('auth:language')}
-                    value={lang.language}
-                    onChange={(e) => updateLanguage(index, 'language', e.target.value)}
+                    options={LanguageOptions}
+                    getOptionLabel={(option) => {
+                      if (typeof option === 'string') {
+                        const found = LanguageOptions.find((lang) => lang.value === option);
+                        return found ? found.label : option;
+                      }
+                      return option.label;
+                    }}
+                    isOptionEqualToValue={(option, value) => {
+                      if (typeof value === 'string') {
+                        return option.value === value;
+                      }
+                      return option.value === (value as Any)?.value;
+                    }}
+                    value={LanguageOptions.find((l) => l.value === lang.language) || null}
+                    onChange={(_, value) => {
+                      let newValue = '';
+                      if (value) {
+                        if (typeof value === 'string') {
+                          newValue = value;
+                        } else if (
+                          typeof value === 'object' &&
+                          value !== null &&
+                          !Array.isArray(value) &&
+                          'value' in value
+                        ) {
+                          newValue = (value as { value: string }).value;
+                        }
+                      }
+                      updateLanguage(index, 'language', newValue);
+                    }}
                     sx={{ flex: 1 }}
                   />
                   {/* <RHFSelect
@@ -260,7 +266,7 @@ const CreatorRegisterForm = () => {
                   <RHFAutocomplete
                     name={`languages[${index}].proficiency`}
                     label={t('auth:proficiency')}
-                    options={['Basic', 'Intermediate', 'Advanced', 'Native']}
+                    options={Object.values(LanguageProficiency)}
                     onChange={(_, value) => updateLanguage(index, 'proficiency', value as string)}
                     sx={{ flex: 1 }}
                   />
