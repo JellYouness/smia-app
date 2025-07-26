@@ -24,6 +24,7 @@ import CreatorMediaTypesSection from '@common/components/MediaTypesSection';
 import CreatorEquipmentInfoSection from '@common/components/EquipmentInfoSection';
 import CreatorRegionalExpertiseSection from '@common/components/RegionalExpertiseSection';
 import { Creator } from '@modules/creators/defs/types';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
 interface CreatorMainContentProps {
   user: User;
@@ -44,6 +45,8 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
   const [openMediaTypes, setOpenMediaTypes] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const { mutate } = useAuth();
+
   const {
     updateAbout,
     updateSkills,
@@ -62,6 +65,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       const response = await updateSkills(user.id, data);
       if (response.success) {
         setOpenSkills(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving skills data:', error);
@@ -76,6 +80,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       const response = await updatePortfolio(user.id, data);
       if (response.success) {
         setOpenPortfolio(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving portfolio data:', error);
@@ -90,6 +95,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       const response = await updateCertifications(user.id, data);
       if (response.success) {
         setOpenCertifications(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving certifications data:', error);
@@ -104,6 +110,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       const response = await updateEmployment(user.id, data);
       if (response.success) {
         setOpenEmployment(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving employment data:', error);
@@ -118,6 +125,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       const response = await updateAchievements(user.id, data);
       if (response.success) {
         setOpenAchievements(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving achievements data:', error);
@@ -132,6 +140,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       const response = await updateEquipment(user.id, data);
       if (response.success) {
         setOpenEquipment(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving equipment data:', error);
@@ -146,6 +155,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       const response = await updateRegionalExpertise(user.id, data);
       if (response.success) {
         setOpenRegionalExpertise(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving regional expertise data:', error);
@@ -160,6 +170,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       const response = await updateMediaTypes(user.id, data);
       if (response.success) {
         setOpenMediaTypes(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving media types data:', error);
@@ -174,6 +185,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
       const response = await updateAbout(user.id, data);
       if (response.success) {
         setOpenAbout(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving about data:', error);

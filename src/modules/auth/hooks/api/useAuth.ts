@@ -93,6 +93,7 @@ interface AuthData {
     _options?: FetchApiOptions
   ) => Promise<ApiResponse<null>>;
   initialized: boolean; // This is used to prevent the app from rendering before the useAuth initial fetch is complete
+  mutate: () => void;
 }
 
 const useAuth = (): AuthData => {
@@ -101,6 +102,7 @@ const useAuth = (): AuthData => {
     return {
       initialized: true,
       user: null,
+      mutate: () => {},
       login: async () => ({ success: false, errors: ['Auth is disabled'] }),
       register: async () => ({ success: false, errors: ['Auth is disabled'] }),
       logout: async () => ({ success: false, errors: ['Auth is disabled'] }),
@@ -226,6 +228,7 @@ const useAuth = (): AuthData => {
   };
 
   return {
+    mutate,
     user: user ?? null,
     login,
     register,

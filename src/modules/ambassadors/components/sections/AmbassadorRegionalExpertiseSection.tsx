@@ -1,34 +1,31 @@
 import React from 'react';
-import { Box, Stack, Typography, Chip } from '@mui/material';
+import { Box, Chip, Stack, Typography } from '@mui/material';
 import SectionCard from '@modules/users/components/SectionCard';
+import { TFunction } from 'i18next';
+import { Ambassador, RegionalExpertise } from '../../defs/types';
 import { MapOutlined } from '@mui/icons-material';
-import { TFunction } from 'next-i18next';
-import { Creator, RegionalExpertise } from '@modules/creators/defs/types';
 
-interface RegionalExpertiseSectionProps {
-  creator: Creator;
+interface AmbassadorRegionalExpertiseSectionProps {
+  ambassador: Ambassador;
   t: TFunction;
   readOnly?: boolean;
   onEdit?: () => void;
-  titleSize?: 'h6' | 'h5' | 'h4' | 'h3' | 'h2' | 'h1';
 }
 
-const RegionalExpertiseSection = ({
-  creator,
+const AmbassadorRegionalExpertiseSection = ({
+  ambassador,
   t,
   readOnly,
   onEdit,
-  titleSize,
-}: RegionalExpertiseSectionProps) => (
+}: AmbassadorRegionalExpertiseSectionProps) => (
   <SectionCard
     title={t('user:regional_expertise') || 'Regional Expertise'}
     readOnly={readOnly}
     onEdit={onEdit}
-    titleSize={titleSize}
   >
     <Stack spacing={2.5}>
-      {creator.regionalExpertise?.length > 0 ? (
-        creator.regionalExpertise?.map((expertise: RegionalExpertise, index: number) => (
+      {ambassador.regionalExpertise?.length > 0 ? (
+        ambassador.regionalExpertise?.map((expertise: RegionalExpertise, index: number) => (
           <Box
             key={index}
             sx={{
@@ -82,7 +79,7 @@ const RegionalExpertiseSection = ({
               </Box>
 
               <Chip
-                label={expertise.expertiseLevel}
+                label={expertise.proficiencyLevel}
                 size="small"
                 color="primary"
                 variant="filled"
@@ -169,4 +166,4 @@ const RegionalExpertiseSection = ({
   </SectionCard>
 );
 
-export default RegionalExpertiseSection;
+export default AmbassadorRegionalExpertiseSection;

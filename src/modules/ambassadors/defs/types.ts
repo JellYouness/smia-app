@@ -30,7 +30,7 @@ export type ApplicationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export interface RegionalExpertise {
   region: string;
-  expertiseLevel: 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
+  proficiencyLevel: 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
 }
 export interface FeaturedWork {
   projectId: number;

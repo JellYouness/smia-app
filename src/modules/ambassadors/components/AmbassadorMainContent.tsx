@@ -1,19 +1,28 @@
-import React from 'react';
-import { Stack, Typography, Chip, Grid } from '@mui/material';
-import SectionCard from '@modules/users/components/SectionCard';
-import InfoItem from '@modules/users/components/InfoItem';
-import {
-  AttachMoney,
-  Build,
-  Business,
-  CalendarMonth,
-  CheckCircle,
-  Description,
-  LocationOn,
-  People,
-} from '@mui/icons-material';
+import React, { useState } from 'react';
+import { Stack } from '@mui/material';
 import { TFunction } from 'i18next';
 import { User } from '@modules/users/defs/types';
+import AmbassadorTeamSection from './sections/AmbassadorTeamSection';
+import AmbassadorSpecializationsSection from './sections/AmbassadorSpecializationsSection';
+import AmbassadorRegionalExpertiseSection from './sections/AmbassadorRegionalExpertiseSection';
+import AmbassadorServiceOfferingsSection from './sections/AmbassadorServiceOfferingsSection';
+import AmbassadorApplicationStatusSection from './sections/AmbassadorApplicationStatusSection';
+import AmbassadorClientsProjectsSection from './sections/AmbassadorClientsProjectsSection';
+import AmbassadorVerificationCommissionSection from './sections/AmbassadorVerificationCommissionSection';
+import AmbassadorTeamDescriptionSection from './sections/AmbassadorTeamDescriptionSection';
+import AmbassadorBusinessInfoSection from './sections/AmbassadorBusinessInfoSection';
+import { Ambassador } from '../defs/types';
+import {
+  EditRegionalExpertiseDialog,
+  EditServiceOfferingsDialog,
+  EditTeamDescriptionDialog,
+  EditTeamDialog,
+  EditVerificationCommissionDialog,
+  EditBusinessInfoDialog,
+  EditSpecializationsDialog,
+} from './dialogs';
+import useAmbassador from '../hooks/useAmbassador';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
 interface AmbassadorMainContentProps {
   user: User;
@@ -22,123 +31,256 @@ interface AmbassadorMainContentProps {
 }
 
 const AmbassadorMainContent = ({ user, t, readOnly }: AmbassadorMainContentProps) => {
-  const ambassador = user.ambassador || user; // support both user.ambassador and direct ambassador
+  const ambassador = user.ambassador as Ambassador;
+  const [openRegionalExpertiseDialog, setOpenRegionalExpertiseDialog] = useState(false);
+  const [openServiceOfferingsDialog, setOpenServiceOfferingsDialog] = useState(false);
+  const [openVerificationCommissionDialog, setOpenVerificationCommissionDialog] = useState(false);
+  const [openTeamDescriptionDialog, setOpenTeamDescriptionDialog] = useState(false);
+  const [openTeamDialog, setOpenTeamDialog] = useState(false);
+  const [openBusinessInfoDialog, setOpenBusinessInfoDialog] = useState(false);
+  const [openSpecializationsDialog, setOpenSpecializationsDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const { mutate } = useAuth();
+
+  const { patchAmbassador } = useAmbassador();
+  const handleRegionalExpertiseDialogSave = async (data: Partial<Ambassador>) => {
+    setLoading(true);
+    try {
+      const response = await patchAmbassador(ambassador.id, {
+        regionalExpertise: data.regionalExpertise,
+      });
+
+      if (response.success) {
+        setOpenRegionalExpertiseDialog(false);
+        mutate();
+      }
+    } catch (error) {
+      console.error('Error saving regional expertise:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleServiceOfferingsDialogSave = async (data: Partial<Ambassador>) => {
+    setLoading(true);
+    try {
+      const response = await patchAmbassador(ambassador.id, {
+        serviceOfferings: data.serviceOfferings,
+      });
+
+      if (response.success) {
+        setOpenServiceOfferingsDialog(false);
+        mutate();
+      }
+    } catch (error) {
+      console.error('Error saving service offerings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerificationCommissionDialogSave = async (data: Partial<Ambassador>) => {
+    setLoading(true);
+    try {
+      const response = await patchAmbassador(ambassador.id, {
+        verificationDocuments: data.verificationDocuments,
+        commissionRate: data.commissionRate,
+      });
+
+      if (response.success) {
+        setOpenVerificationCommissionDialog(false);
+        mutate();
+      }
+    } catch (error) {
+      console.error('Error saving verification commission:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTeamDescriptionDialogSave = async (data: Partial<Ambassador>) => {
+    setLoading(true);
+    try {
+      const response = await patchAmbassador(ambassador.id, {
+        teamDescription: data.teamDescription,
+      });
+
+      if (response.success) {
+        setOpenTeamDescriptionDialog(false);
+        mutate();
+      }
+    } catch (error) {
+      console.error('Error saving team description:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTeamDialogSave = async (data: Partial<Ambassador>) => {
+    setLoading(true);
+    try {
+      const response = await patchAmbassador(ambassador.id, {
+        teamMembers: data.teamMembers,
+        teamName: data.teamName,
+      });
+
+      if (response.success) {
+        setOpenTeamDialog(false);
+        mutate();
+      }
+    } catch (error) {
+      console.error('Error saving team:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBusinessInfoDialogSave = async (data: Partial<Ambassador>) => {
+    setLoading(true);
+    try {
+      const response = await patchAmbassador(ambassador.id, {
+        yearsInBusiness: data.yearsInBusiness,
+        businessStreet: data.businessStreet,
+        businessCity: data.businessCity,
+        businessState: data.businessState,
+        businessPostalCode: data.businessPostalCode,
+        businessCountry: data.businessCountry,
+      });
+
+      if (response.success) {
+        setOpenBusinessInfoDialog(false);
+        mutate();
+      }
+    } catch (error) {
+      console.error('Error saving business info:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSpecializationsDialogSave = async (data: Partial<Ambassador>) => {
+    setLoading(true);
+    try {
+      const response = await patchAmbassador(ambassador.id, {
+        specializations: data.specializations,
+      });
+
+      if (response.success) {
+        setOpenSpecializationsDialog(false);
+        mutate();
+      }
+    } catch (error) {
+      console.error('Error saving specializations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Stack spacing={0}>
-      {/* About Section */}
-      <SectionCard title={user?.profile?.title || t('user:about')} readOnly={readOnly}>
-        <Typography variant="body1" sx={{ mt: 1 }}>
-          {user?.profile?.bio || 'No bio provided.'}
-        </Typography>
-      </SectionCard>
-
-      {/* Team Section */}
-      <SectionCard title={t('user:team') || 'Team'} readOnly={readOnly}>
-        <InfoItem
-          label={t('user:team_name') || 'Team Name'}
-          value={ambassador.teamName}
-          icon={<Business />}
-        />
-        <InfoItem
-          label={t('user:team_members') || 'Team Members'}
-          value={JSON.stringify(ambassador.teamMembers)}
-          icon={<People />}
-        />
-      </SectionCard>
-
-      {/* Specializations */}
-      <SectionCard title={t('user:specializations') || 'Specializations'} readOnly={readOnly}>
-        <Grid container spacing={1}>
-          {(ambassador.specializations || []).map((spec: string, idx: number) => (
-            <Grid item key={idx}>
-              <Chip label={spec} color="primary" />
-            </Grid>
-          ))}
-        </Grid>
-      </SectionCard>
-
-      {/* Regional Expertise */}
-      <SectionCard title={t('user:regional_expertise') || 'Regional Expertise'} readOnly={readOnly}>
-        <pre style={{ whiteSpace: 'pre-wrap' }}>
-          {JSON.stringify(ambassador.regionalExpertise, null, 2)}
-        </pre>
-      </SectionCard>
-
-      {/* Service Offerings */}
-      <SectionCard title={t('user:service_offerings') || 'Service Offerings'} readOnly={readOnly}>
-        <pre style={{ whiteSpace: 'pre-wrap' }}>
-          {JSON.stringify(ambassador.serviceOfferings, null, 2)}
-        </pre>
-      </SectionCard>
-
-      {/* Application Status */}
-      <SectionCard title={t('user:application_status') || 'Application Status'} readOnly={readOnly}>
-        <InfoItem
-          label={t('user:application_status') || 'Application Status'}
-          value={ambassador.applicationStatus}
-          icon={<CheckCircle />}
-        />
-        <InfoItem
-          label={t('user:application_date') || 'Application Date'}
-          value={ambassador.applicationDate}
-          icon={<CalendarMonth />}
-        />
-      </SectionCard>
-
-      {/* Client & Project Info */}
-      <SectionCard title={t('user:clients_projects') || 'Clients & Projects'} readOnly={readOnly}>
-        <InfoItem
-          label={t('user:client_count') || 'Client Count'}
-          value={ambassador.clientCount}
-          icon={<People />}
-        />
-        <InfoItem
-          label={t('user:project_capacity') || 'Project Capacity'}
-          value={ambassador.projectCapacity}
-          icon={<Build />}
-        />
-      </SectionCard>
-
-      {/* Verification & Commission */}
-      <SectionCard
-        title={t('user:verification_commission') || 'Verification & Commission'}
+      <AmbassadorTeamSection
+        ambassador={ambassador}
+        t={t}
         readOnly={readOnly}
-      >
-        <InfoItem
-          label={t('user:verification_documents') || 'Verification Documents'}
-          value={JSON.stringify(ambassador.verificationDocuments)}
-          icon={<Description />}
-        />
-        <InfoItem
-          label={t('user:commission_rate') || 'Commission Rate'}
-          value={ambassador.commissionRate}
-          icon={<AttachMoney />}
-        />
-      </SectionCard>
+        onEdit={() => setOpenTeamDialog(true)}
+      />
+      <AmbassadorSpecializationsSection
+        ambassador={ambassador}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenSpecializationsDialog(true)}
+      />
+      <AmbassadorRegionalExpertiseSection
+        ambassador={ambassador}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenRegionalExpertiseDialog(true)}
+      />
+      <AmbassadorServiceOfferingsSection
+        ambassador={ambassador}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenServiceOfferingsDialog(true)}
+      />
+      <AmbassadorApplicationStatusSection ambassador={ambassador} t={t} />
+      <AmbassadorClientsProjectsSection ambassador={ambassador} t={t} />
+      <AmbassadorVerificationCommissionSection
+        ambassador={ambassador}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenVerificationCommissionDialog(true)}
+      />
+      <AmbassadorTeamDescriptionSection
+        ambassador={ambassador}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenTeamDescriptionDialog(true)}
+      />
+      <AmbassadorBusinessInfoSection
+        ambassador={ambassador}
+        t={t}
+        readOnly={readOnly}
+        onEdit={() => setOpenBusinessInfoDialog(true)}
+      />
 
-      {/* Team Description & Featured Work */}
-      <SectionCard title={t('user:team_description') || 'Team Description'} readOnly={readOnly}>
-        <Typography variant="body1">{ambassador.teamDescription}</Typography>
-        <InfoItem
-          label={t('user:featured_work') || 'Featured Work'}
-          value={JSON.stringify(ambassador.featuredWork)}
-          icon={<Description />}
-        />
-      </SectionCard>
-
-      {/* Business Info */}
-      <SectionCard title={t('user:business_info') || 'Business Info'} readOnly={readOnly}>
-        <InfoItem
-          label={t('user:years_in_business') || 'Years in Business'}
-          value={ambassador.yearsInBusiness}
-          icon={<Business />}
-        />
-        <InfoItem
-          label={t('user:business_address') || 'Business Address'}
-          value={`${ambassador.businessStreet}, ${ambassador.businessCity}, ${ambassador.businessState}, ${ambassador.businessPostalCode}, ${ambassador.businessCountry}`}
-          icon={<LocationOn />}
-        />
-      </SectionCard>
+      {/* dialogs */}
+      <EditRegionalExpertiseDialog
+        ambassador={ambassador}
+        onSave={handleRegionalExpertiseDialogSave}
+        loading={loading}
+        open={openRegionalExpertiseDialog}
+        onClose={() => setOpenRegionalExpertiseDialog(false)}
+        t={t}
+      />
+      <EditServiceOfferingsDialog
+        ambassador={ambassador}
+        onSave={handleServiceOfferingsDialogSave}
+        loading={loading}
+        open={openServiceOfferingsDialog}
+        onClose={() => setOpenServiceOfferingsDialog(false)}
+        t={t}
+      />
+      <EditVerificationCommissionDialog
+        ambassador={ambassador}
+        onSave={handleVerificationCommissionDialogSave}
+        loading={loading}
+        open={openVerificationCommissionDialog}
+        onClose={() => setOpenVerificationCommissionDialog(false)}
+        t={t}
+      />
+      <EditTeamDescriptionDialog
+        ambassador={ambassador}
+        onSave={handleTeamDescriptionDialogSave}
+        loading={loading}
+        open={openTeamDescriptionDialog}
+        onClose={() => setOpenTeamDescriptionDialog(false)}
+        t={t}
+      />
+      <EditTeamDialog
+        ambassador={ambassador}
+        onSave={handleTeamDialogSave}
+        loading={loading}
+        open={openTeamDialog}
+        onClose={() => setOpenTeamDialog(false)}
+        t={t}
+      />
+      <EditBusinessInfoDialog
+        ambassador={ambassador}
+        onSave={handleBusinessInfoDialogSave}
+        loading={loading}
+        open={openBusinessInfoDialog}
+        onClose={() => setOpenBusinessInfoDialog(false)}
+        t={t}
+      />
+      <EditSpecializationsDialog
+        ambassador={ambassador}
+        onSave={handleSpecializationsDialogSave}
+        loading={loading}
+        open={openSpecializationsDialog}
+        onClose={() => setOpenSpecializationsDialog(false)}
+        t={t}
+      />
     </Stack>
   );
 };

@@ -10,6 +10,9 @@
   "remove": "Supprimer",
   "reset": "Réinitialiser",
   "save": "Enregistrer",
+  "saving": "Enregistrement...",
+  "submitting": "Soumission...",
+  "save_changes": "Enregistrer les modifications",
   "finish": "Terminer",
   "next": "Suivant",
   "previous": "Précédent",
@@ -130,5 +133,7 @@
   "save_draft": "Enregistrer comme brouillon",
   "invited": "Invité",
   "years_experience": "années d'expérience",
-  "skills": "Compétences"
+  "skills": "Compétences",
+  "update_failed": "Échec de la mise à jour",
+  "updated_successfully": "Mis à jour avec succès"
 }

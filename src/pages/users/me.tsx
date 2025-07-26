@@ -12,6 +12,7 @@ import AmbassadorMainContent from '@modules/ambassadors/components/AmbassadorMai
 import CreatorMainContent from '@modules/creators/components/CreatorProfle/CreatorMainContent';
 import CreatorSidebar from '@modules/creators/components/CreatorProfle/CreatorSidebar';
 import Sidebar from '@modules/users/components/Sidebar';
+import CreatorAndAmbassadorMainContent from '@modules/creators/components/CreatorProfle/CreatorAndAmbassadorMainContent';
 
 const MyProfile: NextPage = () => {
   const { user, initialized } = useAuth();
@@ -41,6 +42,7 @@ const MyProfile: NextPage = () => {
   // Determine user type based on userType field (more reliable than roles)
   const isClient = user?.userType === 'CLIENT' || user?.client;
   const isCreator = user?.userType === 'CREATOR' || user?.creator;
+  const isCreatorAndAmbassador = isCreator && user?.ambassador;
   const isAmbassador = user?.userType === 'AMBASSADOR' || user?.ambassador;
   const isAdmin =
     user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN' || user?.systemAdministrator;
@@ -176,9 +178,10 @@ const MyProfile: NextPage = () => {
           )}
           {/* <MainContentComponent user={user} t={t} /> */}
           {isClient && <ClientMainContent user={user} t={t} />}
-          {isCreator && <CreatorMainContent user={user} t={t} />}
-          {isAmbassador && <AmbassadorMainContent user={user} t={t} />}
           {isAdmin && <MainContent user={user} t={t} />}
+          {isCreatorAndAmbassador && <CreatorAndAmbassadorMainContent user={user} t={t} />}
+          {isCreator && !isCreatorAndAmbassador && <CreatorMainContent user={user} t={t} />}
+          {isAmbassador && !isCreatorAndAmbassador && <AmbassadorMainContent user={user} t={t} />}
         </Grid>
       </Grid>
       {/* </Container> */}

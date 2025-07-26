@@ -9,6 +9,7 @@ const ApiRoutes: CrudApiRoutes = {
   DeleteOne: prefix + '/{id}',
   UpdateApplicationStatus: prefix + '/{id}/application-status',
   GetPendingApplications: prefix + '/pending-applications',
+  ApplyForAmbassador: prefix + '/apply',
 };
 
 export default ApiRoutes;

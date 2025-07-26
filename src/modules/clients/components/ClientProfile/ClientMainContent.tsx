@@ -19,6 +19,7 @@ import BudgetProjectsSection from './proflle-components/BudgetProjectsSection';
 import DefaultProjectSettingsSection from './proflle-components/DefaultProjectSettingsSection';
 import ContactInfoSection from './proflle-components/ContactInfoSection';
 import AdditionalInfoSection from './proflle-components/AdditionalInfoSection';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
 interface ClientMainContentProps {
   user: User;
@@ -35,6 +36,8 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
   const [openDefaultProjectSettings, setOpenDefaultProjectSettings] = useState(false);
   const [openContactInfo, setOpenContactInfo] = useState(false);
 
+  const { mutate } = useAuth();
+
   const {
     updateAbout,
     updateCompany,
@@ -50,6 +53,7 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
       const response = await updateAbout(user.id, data);
       if (response.success) {
         setOpenAbout(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving about data:', error);
@@ -69,6 +73,7 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
       });
       if (response.success) {
         setOpenCompany(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving company data:', error);
@@ -90,6 +95,7 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
       });
       if (response.success) {
         setOpenBilling(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving billing data:', error);
@@ -108,6 +114,7 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
       });
       if (response.success) {
         setOpenBudgetProjects(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving budget & projects data:', error);
@@ -122,6 +129,7 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
       const response = await updateDefaultProjectSettings(user.id, data);
       if (response.success) {
         setOpenDefaultProjectSettings(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving default project settings:', error);
@@ -136,6 +144,7 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
       const response = await updateContactInfo(user.id, data);
       if (response.success) {
         setOpenContactInfo(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving contact info:', error);

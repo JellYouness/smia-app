@@ -7,6 +7,7 @@ import EditSocialMediaDialog from './EditSocialMediaDialog';
 import SidebarProfileHeaderSection from './proflle-components/SidebarProfileHeaderSection';
 import SidebarLanguagesSection from './proflle-components/SidebarLanguagesSection';
 import SidebarSocialMediaSection from './proflle-components/SidebarSocialMediaSection';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
 interface Language {
   language: string;
@@ -34,6 +35,8 @@ const ClientSidebar = ({
 
   const { updateClientLanguages, updateSocialMedia } = useProfileUpdates();
 
+  const { mutate } = useAuth();
+
   // Parse client languages JSON
   let languagesData: Language[] = [];
   if (user?.client?.languages) {
@@ -54,6 +57,7 @@ const ClientSidebar = ({
       const response = await updateClientLanguages(user.id, data);
       if (response.success) {
         setOpenLanguages(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving languages data:', error);
@@ -68,6 +72,7 @@ const ClientSidebar = ({
       const response = await updateSocialMedia(user.id, data);
       if (response.success) {
         setOpenSocialMedia(false);
+        mutate();
       }
     } catch (error) {
       console.error('Error saving social media data:', error);
