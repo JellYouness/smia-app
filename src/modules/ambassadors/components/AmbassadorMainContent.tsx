@@ -23,6 +23,7 @@ import {
 } from './dialogs';
 import useAmbassador from '../hooks/useAmbassador';
 import useAuth from '@modules/auth/hooks/api/useAuth';
+import { TeamMembersSection } from './TeamMembersSection';
 
 interface AmbassadorMainContentProps {
   user: User;
@@ -185,6 +186,7 @@ const AmbassadorMainContent = ({ user, t, readOnly }: AmbassadorMainContentProps
         readOnly={readOnly}
         onEdit={() => setOpenTeamDialog(true)}
       />
+      <TeamMembersSection ambassadorId={ambassador.id} readOnly={readOnly} />
       <AmbassadorSpecializationsSection
         ambassador={ambassador}
         t={t}

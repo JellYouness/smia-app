@@ -156,6 +156,11 @@ const Topbar = () => {
       link: '/projects',
       onClick: () => router.push('/projects'),
     },
+    {
+      label: t('topbar:browse_ambassadors'),
+      link: '/ambassadors',
+      onClick: () => router.push('/ambassadors'),
+    },
   ];
 
   const toggleDropdown = () => {
