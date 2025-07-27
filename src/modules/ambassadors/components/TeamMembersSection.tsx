@@ -21,6 +21,9 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Divider,
+  Autocomplete,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -28,9 +31,13 @@ import {
   Delete as DeleteIcon,
   Person as PersonIcon,
   Star as StarIcon,
+  Search as SearchIcon,
 } from '@mui/icons-material';
 import { useTeamMembers } from '../hooks/useTeamMembers';
+import { useSearchCreators } from '../hooks/useSearchCreators';
 import { TeamMember } from '../defs/types';
+import { Creator } from '@modules/creators/defs/types';
+import { User } from '@modules/users/defs/types';
 
 interface TeamMembersSectionProps {
   ambassadorId: number;
@@ -50,41 +57,138 @@ const AddTeamMemberDialog: React.FC<AddTeamMemberDialogProps> = ({
   onAdd,
   loading,
 }) => {
-  const [userId, setUserId] = useState('');
+  const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [role, setRole] = useState('');
   const [isPrimary, setIsPrimary] = useState(false);
 
+  const {
+    creators,
+    loading: searchLoading,
+    error: searchError,
+    searchCreators,
+  } = useSearchCreators({
+    searchTerm,
+    debounceMs: 300,
+  });
+
+  const handleSearchChange = (event: React.SyntheticEvent, value: string) => {
+    setSearchTerm(value);
+    searchCreators(value);
+  };
+
+  const handleCreatorSelect = (event: React.SyntheticEvent, creator: Creator | null) => {
+    setSelectedCreator(creator);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (userId.trim()) {
+    if (selectedCreator) {
       onAdd({
-        userId: parseInt(userId),
+        userId: selectedCreator.userId,
         role: role.trim() || undefined,
         isPrimary,
       });
-      setUserId('');
+      setSelectedCreator(null);
+      setSearchTerm('');
       setRole('');
       setIsPrimary(false);
     }
   };
 
+  const handleClose = () => {
+    setSelectedCreator(null);
+    setSearchTerm('');
+    setRole('');
+    setIsPrimary(false);
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>Add Team Member</DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
-          <TextField
+          <Autocomplete
             autoFocus
-            margin="dense"
-            label="User ID"
-            type="number"
-            fullWidth
-            variant="outlined"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            required
-            disabled={loading}
+            options={creators}
+            getOptionLabel={(option) => {
+              const user = option.user as User;
+              return user?.name || user?.email || `Creator ${option.id}`;
+            }}
+            loading={searchLoading}
+            value={selectedCreator}
+            inputValue={searchTerm}
+            onInputChange={handleSearchChange}
+            onChange={handleCreatorSelect}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                margin="dense"
+                label="Search creators by name or email"
+                variant="outlined"
+                required
+                disabled={loading}
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: (
+                    <>
+                      <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
+                      {params.InputProps.startAdornment}
+                    </>
+                  ),
+                  endAdornment: (
+                    <>
+                      {searchLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
+                }}
+              />
+            )}
+            renderOption={(props, option) => {
+              const user = option.user as User;
+              return (
+                <Box component="li" {...props}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    <Avatar sx={{ width: 32, height: 32, mr: 2 }}>
+                      {user?.profile?.avatar ? (
+                        <Avatar src={user.profile.avatar} />
+                      ) : (
+                        <PersonIcon />
+                      )}
+                    </Avatar>
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="body2" noWrap>
+                        {user?.name || 'Unknown Creator'}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" noWrap>
+                        {user?.email || 'No email'}
+                      </Typography>
+                    </Box>
+                    {option.verificationStatus === 'VERIFIED' && (
+                      <Chip
+                        label="Verified"
+                        size="small"
+                        color="success"
+                        variant="outlined"
+                        sx={{ ml: 1 }}
+                      />
+                    )}
+                  </Box>
+                </Box>
+              );
+            }}
+            noOptionsText={searchTerm ? 'No creators found' : 'Start typing to search creators'}
+            filterOptions={(x) => x} // Disable built-in filtering since we're using API search
           />
+
+          {searchError && (
+            <Alert severity="error" sx={{ mt: 1 }}>
+              {searchError}
+            </Alert>
+          )}
+
           <TextField
             margin="dense"
             label="Role (optional)"
@@ -106,10 +210,10 @@ const AddTeamMemberDialog: React.FC<AddTeamMemberDialogProps> = ({
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} disabled={loading}>
+          <Button onClick={handleClose} disabled={loading}>
             Cancel
           </Button>
-          <Button type="submit" variant="contained" disabled={loading || !userId.trim()}>
+          <Button type="submit" variant="contained" disabled={loading || !selectedCreator}>
             Add Member
           </Button>
         </DialogActions>
@@ -147,6 +251,11 @@ export const TeamMembersSection: React.FC<TeamMembersSectionProps> = ({
     const result = await addTeamMember(data);
     if (result.success) {
       setAddDialogOpen(false);
+      // Show success message for invitation sent
+      if (result.data?.invitation_id) {
+        // You can add a toast notification here if you have a notification system
+        console.log('Invitation sent successfully!');
+      }
     }
   };
 
@@ -159,6 +268,7 @@ export const TeamMembersSection: React.FC<TeamMembersSectionProps> = ({
   };
 
   const handleRemoveTeamMember = async (teamMemberId: number) => {
+    // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to remove this team member?')) {
       await removeTeamMember(teamMemberId);
     }
@@ -220,7 +330,7 @@ export const TeamMembersSection: React.FC<TeamMembersSectionProps> = ({
                     <ListItemAvatar>
                       <Avatar>
                         {member.user?.profile?.avatar ? (
-                          <img src={member.user.profile.avatar} alt={member.user.name} />
+                          <Avatar src={member.user.profile.avatar} />
                         ) : (
                           <PersonIcon />
                         )}

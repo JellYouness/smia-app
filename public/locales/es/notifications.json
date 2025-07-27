@@ -34,7 +34,9 @@
     "account_verified": "Cuenta verificada",
     "welcome": "Bienvenido",
     "reminder": "Recordatorio",
-    "security_alert": "Alerta de seguridad"
+    "security_alert": "Alerta de seguridad",
+    "team_invitation_accepted": "Invitación de equipo aceptada",
+    "team_invitation_declined": "Invitación de equipo rechazada"
   },
   "messages": {
     "new_message_from": "Nuevo mensaje de {{sender}}",

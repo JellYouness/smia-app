@@ -34,7 +34,9 @@
     "account_verified": "Account Verified",
     "welcome": "Welcome",
     "reminder": "Reminder",
-    "security_alert": "Security Alert"
+    "security_alert": "Security Alert",
+    "team_invitation_accepted": "Team Invitation Accepted",
+    "team_invitation_declined": "Team Invitation Declined"
   },
   "messages": {
     "new_message_from": "New message from {{sender}}",

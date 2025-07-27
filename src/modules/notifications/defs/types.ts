@@ -20,6 +20,8 @@ export enum NotificationType {
   WELCOME = 'welcome',
   REMINDER = 'reminder',
   SECURITY_ALERT = 'security_alert',
+  TEAM_INVITATION_ACCEPTED = 'team_invitation_accepted',
+  TEAM_INVITATION_DECLINED = 'team_invitation_declined',
 }
 
 export interface Notification extends CrudObject {
