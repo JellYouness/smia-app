@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   Typography,
   Avatar,
   Chip,
@@ -24,20 +22,23 @@ import {
   Autocomplete,
   CircularProgress,
   Alert,
+  Stack,
 } from '@mui/material';
 import {
-  Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Person as PersonIcon,
   Star as StarIcon,
   Search as SearchIcon,
+  Visibility,
 } from '@mui/icons-material';
 import { useTeamMembers } from '../hooks/useTeamMembers';
 import { useSearchCreators } from '../hooks/useSearchCreators';
 import { TeamMember } from '../defs/types';
 import { Creator } from '@modules/creators/defs/types';
 import { User } from '@modules/users/defs/types';
+import { useRouter } from 'next/router';
+import SectionCard from '@modules/users/components/SectionCard';
 
 interface TeamMembersSectionProps {
   ambassadorId: number;
@@ -238,6 +239,7 @@ export const TeamMembersSection: React.FC<TeamMembersSectionProps> = ({
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     fetchTeamMembers();
@@ -274,121 +276,112 @@ export const TeamMembersSection: React.FC<TeamMembersSectionProps> = ({
     }
   };
 
-  if (loading && teamMembers.length === 0) {
+  if (loading) {
     return (
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Team Members
-          </Typography>
-          <Box display="flex" justifyContent="center" alignItems="center" minHeight={100}>
-            <PersonIcon sx={{ fontSize: 40, color: 'text.secondary' }} />
-          </Box>
-        </CardContent>
-      </Card>
+      <SectionCard title="Team Members" readOnly={readOnly}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight={100}>
+          <CircularProgress />
+        </Box>
+      </SectionCard>
     );
   }
 
   return (
     <>
-      <Card>
-        <CardContent>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h6">Team Members</Typography>
-            {!readOnly && (
-              <Button
-                startIcon={<AddIcon />}
-                variant="outlined"
-                size="small"
-                onClick={() => setAddDialogOpen(true)}
-              >
-                Add Member
-              </Button>
-            )}
-          </Box>
+      <SectionCard title="Team Members" readOnly={readOnly} onEdit={() => setAddDialogOpen(true)}>
+        {error && (
+          <Typography color="error" variant="body2" mb={2}>
+            {error}
+          </Typography>
+        )}
 
-          {error && (
-            <Typography color="error" variant="body2" mb={2}>
-              {error}
-            </Typography>
-          )}
-
-          {teamMembers.length === 0 ? (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight={100}>
-              <Box textAlign="center">
-                <PersonIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                <Typography variant="body2" color="text.secondary">
-                  No team members yet
-                </Typography>
-              </Box>
+        {teamMembers.length === 0 ? (
+          <Box display="flex" justifyContent="center" alignItems="center" minHeight={100}>
+            <Box textAlign="center">
+              <PersonIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
+              <Typography variant="body2" color="text.secondary">
+                No team members yet
+              </Typography>
             </Box>
-          ) : (
-            <List>
-              {teamMembers.map((member, index) => (
-                <React.Fragment key={member.id}>
-                  <ListItem>
-                    <ListItemAvatar>
-                      <Avatar>
-                        {member.user?.profile?.avatar ? (
-                          <Avatar src={member.user.profile.avatar} />
-                        ) : (
-                          <PersonIcon />
-                        )}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <Typography variant="body1">
-                            {member.user?.name || `User ${member.userId}`}
-                          </Typography>
-                          {member.isPrimary && (
-                            <Chip
-                              icon={<StarIcon />}
-                              label="Primary"
-                              size="small"
-                              color="primary"
-                              variant="outlined"
-                            />
-                          )}
-                          {member.role && (
-                            <Chip label={member.role} size="small" variant="outlined" />
-                          )}
-                        </Box>
-                      }
-                      secondary={
-                        <Typography variant="body2" color="text.secondary">
-                          {member.user?.email}
+          </Box>
+        ) : (
+          <List>
+            {teamMembers.map((member, index) => (
+              <React.Fragment key={member.id}>
+                <ListItem sx={{ px: 1, py: 0 }}>
+                  <ListItemAvatar>
+                    <Avatar>
+                      {member.user?.profile?.avatar ? (
+                        <Avatar src={member.user.profile.avatar} />
+                      ) : (
+                        <PersonIcon />
+                      )}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Typography variant="body1">
+                          {member.user?.name || `User ${member.userId}`}
                         </Typography>
-                      }
-                    />
-                    {!readOnly && (
-                      <ListItemSecondaryAction>
-                        <IconButton
-                          size="small"
-                          onClick={() => setEditingMember(member)}
-                          disabled={loading}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          onClick={() => handleRemoveTeamMember(member.id)}
-                          disabled={loading}
-                          color="error"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    )}
-                  </ListItem>
-                  {index < teamMembers.length - 1 && <Divider />}
-                </React.Fragment>
-              ))}
-            </List>
-          )}
-        </CardContent>
-      </Card>
+                        {member.isPrimary && (
+                          <Chip
+                            icon={<StarIcon />}
+                            label="Primary"
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                          />
+                        )}
+                        {member.role && (
+                          <Chip label={member.role} size="small" variant="outlined" />
+                        )}
+                      </Box>
+                    }
+                    secondary={
+                      <Typography variant="body2" color="text.secondary">
+                        {member.user?.email}
+                      </Typography>
+                    }
+                  />
+                  <ListItemSecondaryAction>
+                    <Stack direction="row" alignItems="center">
+                      <IconButton
+                        size="small"
+                        onClick={() => router.push(`/creators/${member.id}`)}
+                        disabled={loading}
+                      >
+                        <Visibility color="success" />
+                      </IconButton>
+                      {!readOnly && (
+                        <>
+                          <IconButton
+                            size="small"
+                            onClick={() => setEditingMember(member)}
+                            disabled={loading}
+                            color="primary"
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleRemoveTeamMember(member.id)}
+                            disabled={loading}
+                            color="error"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </>
+                      )}
+                    </Stack>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                {index < teamMembers.length - 1 && <Divider />}
+              </React.Fragment>
+            ))}
+          </List>
+        )}
+      </SectionCard>
 
       <AddTeamMemberDialog
         open={addDialogOpen}

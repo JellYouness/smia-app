@@ -111,7 +111,7 @@ const EditSpecializationsDialog = ({
                 {t('user:current_specializations') || 'Current Specializations'}
               </Typography>
 
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+              <Stack direction="row" spacing={1} flexWrap="wrap">
                 {specializations.map((spec, index) => (
                   <Chip
                     key={index}
@@ -132,10 +132,10 @@ const EditSpecializationsDialog = ({
         </Box>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} disabled={loading}>
+        <Button variant="gradient" color="error" onClick={onClose} disabled={loading}>
           {t('common:cancel') || 'Cancel'}
         </Button>
-        <Button variant="contained" onClick={handleSave} disabled={loading}>
+        <Button variant="gradient" color="primary" onClick={handleSave} disabled={loading}>
           {loading ? t('common:saving') || 'Saving...' : t('common:save_changes') || 'Save Changes'}
         </Button>
       </DialogActions>

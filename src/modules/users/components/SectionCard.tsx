@@ -32,18 +32,51 @@ const SectionCard: React.FC<SectionCardProps> = ({
       }}
     >
       <Box display="flex" alignItems="center" mb={2}>
-        <Typography variant={titleSize} sx={{ fontWeight: 600, flexGrow: 1 }}>
-          {title}
+        <Typography
+          variant={titleSize}
+          sx={{
+            fontWeight: 600,
+            flexGrow: 1,
+          }}
+        >
+          <span
+            style={
+              {
+                // borderBottom: `1px solid ${theme.palette.primary.main}`,
+                // paddingBottom: '2px',
+              }
+            }
+          >
+            {title}
+          </span>
         </Typography>
         {!readOnly && (
           <>
             {editLink ? (
               <IconButton component={Link} href={editLink} aria-label={`Edit ${title}`}>
-                <Edit />
+                <Edit
+                  color="primary"
+                  fontSize="large"
+                  sx={{
+                    border: '1px solid',
+                    borderColor: 'primary.main',
+                    borderRadius: '50%',
+                    p: 1,
+                  }}
+                />
               </IconButton>
             ) : (
               <IconButton onClick={onEdit} aria-label={`Edit ${title}`}>
-                <Edit />
+                <Edit
+                  color="primary"
+                  fontSize="large"
+                  sx={{
+                    border: '1px solid',
+                    borderColor: 'primary.main',
+                    borderRadius: '50%',
+                    p: 1,
+                  }}
+                />
               </IconButton>
             )}
           </>

@@ -10,81 +10,30 @@ import Namespaces from '@common/defs/namespaces';
 import { CRUD_ACTION } from '@common/defs/types';
 import Routes from '@common/defs/routes';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import {
-  Box,
-  Typography,
-  Avatar,
-  Chip,
-  Stack,
-  Grid,
-  Divider,
-  Rating,
-  Tooltip,
-  Skeleton,
-  Button,
-} from '@mui/material';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import LanguageIcon from '@mui/icons-material/Language';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import CancelIcon from '@mui/icons-material/Cancel';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { Box, Typography, Grid, Divider, Skeleton } from '@mui/material';
 import { TFunction } from 'next-i18next';
 import { User } from '@modules/users/defs/types';
 import { Creator } from '@modules/creators/defs/types';
-import SkillsSection from '@common/components/SkillsSection';
-import RegionalExpertiseSection from '@common/components/RegionalExpertiseSection';
-import MediaTypesSection from '@common/components/MediaTypesSection';
+import SkillsSection from '@modules/creators/components/creator-profle/partials/SkillsSection';
+import RegionalExpertiseSection from '@modules/creators/components/creator-profle/partials/RegionalExpertiseSection';
+import MediaTypesSection from '@modules/creators/components/creator-profle/partials/MediaTypesSection';
 import AboutSection from '@common/components/AboutSection';
-import PortfolioSection from '@common/components/PortfolioSection';
-import CertificationsSection from '@common/components/CertificationsSection';
-import AchievementsSection from '@common/components/AchievementsSection';
-import ProfessionalBackgroundSection from '@common/components/ProfessionalBackgroundSection';
-import EquipmentInfoSection from '@common/components/EquipmentInfoSection';
+import PortfolioSection from '@modules/creators/components/creator-profle/partials/PortfolioSection';
+import CertificationsSection from '@modules/creators/components/creator-profle/partials/CertificationsSection';
+import AchievementsSection from '@modules/creators/components/creator-profle/partials/AchievementsSection';
+import ProfessionalBackgroundSection from '@modules/creators/components/creator-profle/partials/ProfessionalBackgroundSection';
+import EquipmentInfoSection from '@modules/creators/components/creator-profle/partials/EquipmentInfoSection';
 import UserLanguages from '@common/components/UserLanguages';
 import SendMessageModal from '@modules/creators/components/SendMessageModal';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import { useCreateDirectConversation, useSendMessage } from '@modules/chat/hooks/useChat';
-import { Message, Bookmark, BookmarkBorder } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
-import { useSavedProfiles } from '@modules/creators/hooks/useSavedProfiles';
-
-const getAvailabilityChipProps = (status: string, t: TFunction) => {
-  switch (status) {
-    case 'AVAILABLE':
-      return {
-        color: 'success',
-        icon: <CheckCircleIcon fontSize="small" />,
-        label: t('user:available'),
-      };
-    case 'LIMITED':
-      return {
-        color: 'warning',
-        icon: <WarningAmberIcon fontSize="small" />,
-        label: t('user:limited'),
-      };
-    case 'UNAVAILABLE':
-      return {
-        color: 'error',
-        icon: <CancelIcon fontSize="small" />,
-        label: t('user:unavailable'),
-      };
-    case 'BUSY':
-      return { color: 'info', icon: <AccessTimeIcon fontSize="small" />, label: t('user:busy') };
-    default:
-      return { color: 'default', icon: undefined, label: status };
-  }
-};
+import ProfileHeader from '@modules/creators/components/creator-profle/partials/ProfileHeader';
+import UserSocialMedia from '@common/components/UserSocialMedia';
 
 const CreatorProfilePage = ({ item, t }: { item: User; t: TFunction }) => {
   const creator = item.creator as Creator;
   const user = item;
-  const availabilityProps = getAvailabilityChipProps(creator.availability, t);
-  const isVerified =
-    creator.verificationStatus === 'VERIFIED' || creator.verificationStatus === 'FEATURED';
-  const isFeatured = creator.verificationStatus === 'FEATURED';
-  const isJournalist = creator.isJournalist;
 
   // Send Message Modal state
   const [sendMessageOpen, setSendMessageOpen] = useState(false);
@@ -93,8 +42,6 @@ const CreatorProfilePage = ({ item, t }: { item: User; t: TFunction }) => {
   const createDirectConversation = useCreateDirectConversation();
   const sendMessageMutation = useSendMessage();
   const { enqueueSnackbar } = useSnackbar();
-  const { isSaved, saveProfile, unsaveProfile } = useSavedProfiles();
-  const [saved, setSaved] = useState<boolean | null>(null);
 
   const handleSendMessage = async (message: string) => {
     if (!creator.userId || !currentUser) {
@@ -122,167 +69,24 @@ const CreatorProfilePage = ({ item, t }: { item: User; t: TFunction }) => {
     }
   };
 
-  useEffect(() => {
-    isSaved(creator.id).then((saved) => {
-      setSaved(saved);
-    });
-  }, []);
-
-  const handleToggleSave = async () => {
-    try {
-      if (saved) {
-        await unsaveProfile(creator.id).then(() => {
-          enqueueSnackbar(t('user:profile_unsaved', 'Profile unsaved'), { variant: 'info' });
-          setSaved(false);
-        });
-      } else {
-        await saveProfile(creator.id).then(() => {
-          enqueueSnackbar(t('user:profile_saved', 'Profile saved'), { variant: 'success' });
-          setSaved(true);
-        });
-      }
-    } catch (e) {
-      enqueueSnackbar(t('user:save_failed', 'Action failed'), { variant: 'error' });
-    }
-  };
-
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 4 } }}>
       {/* Profile Header */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          alignItems: { md: 'center' },
-          gap: 4,
-          mb: 4,
-          p: { xs: 2, md: 4 },
-          borderRadius: 4,
-          boxShadow: 2,
-          bgcolor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Avatar src={user.profilePicture} sx={{ width: 120, height: 120, boxShadow: 2, mr: 3 }} />
-        <Box flex={1} minWidth={0}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <Typography variant="h4" fontWeight={700} noWrap>
-                {user.firstName} {user.lastName}
-              </Typography>
-              {isVerified && (
-                <Tooltip title={t('user:verified')}>
-                  <VerifiedUserIcon color="primary" />
-                </Tooltip>
-              )}
-              {isFeatured && (
-                <Tooltip title={t('user:featured')}>
-                  <WorkspacePremiumIcon color="warning" />
-                </Tooltip>
-              )}
-              {isJournalist && (
-                <Tooltip title={t('user:journalist_enabled')}>
-                  <LanguageIcon color="info" />
-                </Tooltip>
-              )}
-            </Stack>
-            {/* Send Message Button */}
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ ml: 2 }}
-                onClick={() => setSendMessageOpen(true)}
-              >
-                <Message />
-              </Button>
-              {saved ? (
-                <Bookmark
-                  fontSize="large"
-                  color="primary"
-                  onClick={handleToggleSave}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': {
-                      transform: 'scale(1.1)',
-                      transition: 'transform 0.2s ease-in-out',
-                    },
-                  }}
-                />
-              ) : (
-                <BookmarkBorder
-                  fontSize="large"
-                  color="primary"
-                  onClick={handleToggleSave}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': {
-                      transform: 'scale(1.1)',
-                      transition: 'transform 0.2s ease-in-out',
-                    },
-                  }}
-                />
-              )}
-            </Stack>
-          </Stack>
-          <Typography variant="subtitle1" color="text.secondary" sx={{ mt: 1 }}>
-            {user.title || user.profile?.title}
-          </Typography>
-          <Stack direction="row" spacing={2} alignItems="center" mt={2}>
-            <Rating
-              value={Number(creator.averageRating) || 0}
-              precision={0.1}
-              readOnly
-              size="medium"
-            />
-            <Typography variant="body2">
-              ({creator.ratingCount || 0} {t('user:ratings')})
-            </Typography>
-            <Chip
-              label={availabilityProps.label}
-              color={
-                availabilityProps.color as
-                  | 'success'
-                  | 'warning'
-                  | 'error'
-                  | 'info'
-                  | 'default'
-                  | 'primary'
-                  | 'secondary'
-              }
-              icon={availabilityProps.icon ? availabilityProps.icon : undefined}
-              size="small"
-              sx={{ fontWeight: 600, letterSpacing: 0.5, color: 'white' }}
-            />
-            <Typography variant="body2" color="text.secondary">
-              {creator.experience} {t('user:years')}
-            </Typography>
-            {creator.hourlyRate && (
-              <Typography variant="body2" color="text.secondary">
-                {t('user:hourly_rate')}: ${creator.hourlyRate}/hr
-              </Typography>
-            )}
-          </Stack>
-        </Box>
-      </Box>
+      <ProfileHeader user={user} creator={creator} setSendMessageOpen={setSendMessageOpen} t={t} />
       <Grid container spacing={4}>
         {/* Left column: Main info */}
         <Grid item xs={12} md={4}>
           <Box sx={{ mb: 3 }}>
-            <UserLanguages
-              languages={creator.languages}
-              t={t}
-              editable
-              titleSize="h5"
-              borderBottom
-            />
+            <UserLanguages languages={creator.languages} t={t} readOnly titleSize="h5" />
           </Box>
           <Box sx={{ mb: 3 }}>
             <MediaTypesSection creator={creator} t={t} readOnly titleSize="h5" />
           </Box>
           <Box sx={{ mb: 3 }}>
             <RegionalExpertiseSection creator={creator} t={t} readOnly titleSize="h5" />
+          </Box>
+          <Box sx={{ mb: 3 }}>
+            <UserSocialMedia socialMediaLinks={user.profile?.socialMediaLinks || {}} />
           </Box>
         </Grid>
         {/* Right column: Detailed sections */}

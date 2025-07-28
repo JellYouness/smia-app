@@ -167,10 +167,15 @@ const EditVerificationCommissionDialog = ({
         </FormProvider>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} disabled={loading}>
+        <Button variant="gradient" color="error" onClick={onClose} disabled={loading}>
           {t('common:cancel') || 'Cancel'}
         </Button>
-        <Button variant="contained" onClick={handleSubmit(onSubmit)} disabled={loading}>
+        <Button
+          variant="gradient"
+          color="primary"
+          onClick={handleSubmit(onSubmit)}
+          disabled={loading}
+        >
           {loading ? t('common:saving') || 'Saving...' : t('common:save_changes') || 'Save Changes'}
         </Button>
       </DialogActions>

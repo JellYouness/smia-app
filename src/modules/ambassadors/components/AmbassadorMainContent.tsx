@@ -45,6 +45,7 @@ const AmbassadorMainContent = ({ user, t, readOnly }: AmbassadorMainContentProps
   const { mutate } = useAuth();
 
   const { patchAmbassador } = useAmbassador();
+
   const handleRegionalExpertiseDialogSave = async (data: Partial<Ambassador>) => {
     setLoading(true);
     try {

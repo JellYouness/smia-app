@@ -4,7 +4,7 @@ import InfoItem from '@modules/users/components/InfoItem';
 import { Business } from '@mui/icons-material';
 import { TFunction } from 'i18next';
 import { Ambassador } from '../../defs/types';
-import { TeamMembersSection } from '../TeamMembersSection';
+// import { TeamMembersSection } from '../TeamMembersSection';
 
 interface AmbassadorTeamSectionProps {
   ambassador: Ambassador;
@@ -19,7 +19,7 @@ const AmbassadorTeamSection = ({ ambassador, t, readOnly, onEdit }: AmbassadorTe
       value={ambassador.teamName}
       icon={<Business />}
     />
-    <TeamMembersSection ambassadorId={ambassador.id} readOnly={readOnly} />
+    {/* <TeamMembersSection ambassadorId={ambassador.id} readOnly={readOnly} /> */}
   </SectionCard>
 );
 

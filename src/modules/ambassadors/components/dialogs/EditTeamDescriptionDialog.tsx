@@ -169,10 +169,10 @@ const EditTeamDescriptionDialog = ({
         </Box>
       </DialogContent>
       <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} disabled={loading}>
+        <Button variant="gradient" color="error" onClick={onClose} disabled={loading}>
           {t('common:cancel') || 'Cancel'}
         </Button>
-        <Button variant="contained" onClick={handleSave} disabled={loading}>
+        <Button variant="gradient" color="primary" onClick={handleSave} disabled={loading}>
           {loading ? t('common:saving') || 'Saving...' : t('common:save_changes') || 'Save Changes'}
         </Button>
       </DialogActions>

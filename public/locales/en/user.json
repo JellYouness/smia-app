@@ -364,6 +364,7 @@
   "upload_profile_picture": "Upload Profile Picture",
   "profile_picture_help": "Upload a profile picture (max 5MB)",
   "invalid_image_format": "Please select a valid image file",
+  "image_upload_error": "Failed to upload image. Please try again.",
   "emergency_contact": "Emergency Contact",
   "emergency_contact_name": "Emergency Contact Name",
   "enter_emergency_contact_name": "Enter emergency contact name",
