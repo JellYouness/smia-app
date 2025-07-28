@@ -47,6 +47,9 @@
   "no_file_in_dropzone": "No file in the dropzone",
   "error_occurred": "An error occurred",
   "unexpected_error": "An unexpected error occurred",
+  "refresh": "Refresh",
+  "loading": "Loading...",
+  "error_loading_dashboard": "Error loading dashboard"
   "name": "Name",
   "active": "Active",
   "inactive": "Inactive",

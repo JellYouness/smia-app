@@ -1,0 +1,22 @@
+{
+  "dashboard_title": "Tableau de Bord Admin",
+  "total_users": "Total Utilisateurs",
+  "total_creators": "Total Créateurs",
+  "total_clients": "Total Clients",
+  "total_ambassadors": "Total Ambassadeurs",
+  "project_statistics": "Statistiques des Projets",
+  "total_projects": "Total Projets",
+  "active_projects": "Projets Actifs",
+  "completed_projects": "Projets Terminés",
+  "applications": "Candidatures",
+  "pending_applications": "Candidatures en Attente",
+  "applications_description": "Candidatures en attente d'examen et d'approbation",
+  "view_all_applications": "Voir toutes les candidatures",
+  "system_health": "État du Système",
+  "uptime": "Temps de Fonctionnement",
+  "active_connections": "Connexions Actives",
+  "avg_response_time": "Temps de Réponse Moyen",
+  "recent_activity": "Activité Récente",
+  "no_data_available": "Aucune donnée disponible",
+  "error_loading_dashboard": "Erreur lors du chargement du tableau de bord"
+}

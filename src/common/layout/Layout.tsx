@@ -4,7 +4,7 @@ import Footer from './Footer';
 import Leftbar, { LEFTBAR_WIDTH } from './Leftbar';
 import Topbar from './Topbar';
 import Box from '@mui/material/Box';
-import { Container, useTheme, Button, Typography } from '@mui/material';
+import { Container, useTheme, Button, Typography, useMediaQuery } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useTranslation } from 'react-i18next';
@@ -22,8 +22,9 @@ const Layout = (props: ILayoutProps) => {
   const [display, setDisplay] = useState(true);
   const underMaintenance = process.env.NEXT_PUBLIC_UNDER_MAINTENANCE === 'true';
   const { t } = useTranslation('common');
-  const leftbarWidth =
-    user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN' ? LEFTBAR_WIDTH : 0;
+  const isAdmin = user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN';
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const leftbarWidth = isAdmin && !isMobile ? LEFTBAR_WIDTH : 0;
 
   useEffect(() => {
     setDisplay(!underMaintenance);
@@ -95,7 +96,7 @@ const Layout = (props: ILayoutProps) => {
             {(user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN') && (
               <Leftbar open={openLeftbar} onToggle={(open) => setOpenLeftbar(open)} />
             )}
-            <Topbar />
+            <Topbar openLeftbar={openLeftbar} />
             <Box
               sx={{
                 display: 'flex',

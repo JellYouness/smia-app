@@ -47,6 +47,9 @@
   "no_file_in_dropzone": "No hay archivos en la zona de carga",
   "error_occurred": "Ocurrió un error",
   "unexpected_error": "Ocurrió un error inesperado",
+  "refresh": "Actualizar",
+  "loading": "Cargando...",
+  "error_loading_dashboard": "Error al cargar el panel"
   "name": "Nombre",
   "active": "Activo",
   "inactive": "Inactivo",

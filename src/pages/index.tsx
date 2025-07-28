@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { Add } from '@mui/icons-material';
 import ClientDashboard from '@modules/clients/components/ClientDashboard';
 import CreatorDashboard from '@modules/creators/components/partials/dashboard/CreatorDashboard';
+import { AdminDashboard } from '@modules/admins/components';
 
 const Index: NextPage = () => {
   const { t } = useTranslation(['home']);
@@ -28,6 +29,7 @@ const Index: NextPage = () => {
 
   const isCreator = user?.userType === 'CREATOR';
   const isClient = user?.userType === 'CLIENT';
+  const isAdmin = user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN';
 
   return (
     <>
@@ -46,6 +48,7 @@ const Index: NextPage = () => {
         </Box>
       )}
       {!loading && isCreator && <CreatorDashboard />}
+      {!loading && isAdmin && <AdminDashboard />}
       {!loading && isClient && (
         <>
           <PageHeader
@@ -79,6 +82,7 @@ export const getStaticProps = async ({ locale }: { locale: string }) => ({
       'project',
       'user',
       'common',
+      'admin',
     ])),
   },
 });

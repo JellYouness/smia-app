@@ -74,9 +74,9 @@ const ClientsTable = () => {
       columns={translatedColumns}
       itemToRow={itemToRow}
       actions={actions}
-      showEdit={() => true}
+      showEdit={() => false}
       showDelete={() => true}
-      showLock
+      showLock={false}
       exportable
     />
   );

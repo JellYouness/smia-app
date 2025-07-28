@@ -47,6 +47,9 @@
   "no_file_in_dropzone": "Aucun fichier dans la zone de dépôt",
   "error_occurred": "Une erreur s'est produite",
   "unexpected_error": "Une erreur inattendue s'est produite",
+  "refresh": "Actualiser",
+  "loading": "Chargement...",
+  "error_loading_dashboard": "Erreur lors du chargement du tableau de bord"
   "name": "Nom",
   "active": "Actif",
   "inactive": "Inactif",

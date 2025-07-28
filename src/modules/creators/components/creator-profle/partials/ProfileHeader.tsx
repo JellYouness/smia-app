@@ -113,7 +113,7 @@ const ProfileHeader = ({
       }}
     >
       <Avatar src={user.profilePicture} sx={{ width: 120, height: 120, boxShadow: 2, mr: 3 }} />
-      <Box flex={1} minWidth={0} width="100%" sx={{ px: { xs: 4, md: 0 } }}>
+      <Box flex={1} minWidth={0} width="100%" sx={{ px: { xs: 2, md: 0 } }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="h4" fontWeight={700} noWrap>
@@ -136,15 +136,16 @@ const ProfileHeader = ({
             )}
           </Stack>
           {!isUserProfile ? (
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ ml: 2 }}
+            <Stack direction={{ xs: 'row', sm: 'row' }} alignItems="center" spacing={1}>
+              <Message
                 onClick={() => setSendMessageOpen(true)}
-              >
-                <Message />
-              </Button>
+                color="primary"
+                sx={{
+                  fontSize: 30,
+                  cursor: 'pointer',
+                  '&:hover': { transform: 'scale(1.1)', transition: 'transform 0.2s ease-in-out' },
+                }}
+              />
               {saved ? (
                 <Bookmark
                   fontSize="large"
@@ -198,7 +199,7 @@ const ProfileHeader = ({
           mt={2}
           flexWrap="wrap"
           gap={1}
-          justifyContent={{ xs: 'center', md: 'flex-start' }}
+          justifyContent={{ xs: 'space-around', md: 'flex-start' }}
         >
           <Rating
             value={Number(creator.averageRating) || 0}

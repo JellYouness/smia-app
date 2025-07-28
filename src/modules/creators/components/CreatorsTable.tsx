@@ -57,7 +57,7 @@ const CreatorsTable = () => {
       field: 'createdAt',
       headerName: t('user:list.created_at'),
       type: 'dateTime',
-      flex: 1,
+      width: 150,
       renderCell: (params) => dayjs(params.row.createdAt).format('DD/MM/YYYY hh:mm'),
     },
   ];
@@ -90,9 +90,9 @@ const CreatorsTable = () => {
       columns={translatedColumns}
       itemToRow={itemToRow}
       actions={actions}
-      showEdit={() => true}
+      showEdit={() => false}
       showDelete={() => true}
-      showLock
+      showLock={false}
       exportable
     />
   );

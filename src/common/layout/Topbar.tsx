@@ -50,14 +50,14 @@ interface TopbarItem {
   }>;
 }
 
-const Topbar = () => {
+const Topbar = ({ openLeftbar }: { openLeftbar: boolean }) => {
   const { t } = useTranslation(['topbar']);
   const router = useRouter();
   const { asPath } = router;
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const { user, logout } = useAuth();
-  // const userIsAdmin = user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN';
+  const isAdmin = user?.userType === 'ADMIN' || user?.userType === 'SUPERADMIN';
   const [anchorNotif, setAnchorNotif] = useState<null | HTMLElement>(null);
   const [anchorUser, setAnchorUser] = useState<null | HTMLElement>(null);
 
@@ -324,7 +324,7 @@ const Topbar = () => {
             <Logo
               id="topbar-logo"
               onClick={() => router.push(Routes.Common.Home)}
-              sx={{ cursor: 'pointer', mr: 2 }}
+              sx={{ cursor: 'pointer', mr: 2, ml: openLeftbar ? 0 : 4 }}
             />
             {/* Org/Project Switcher Placeholder */}
             <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
@@ -458,9 +458,11 @@ const Topbar = () => {
           </Stack>
 
           {/* Mobile menu button */}
-          <IconButton onClick={toggleSidebar} sx={{ display: { md: 'none', sm: 'flex' }, ml: 1 }}>
-            <MenuIcon fontSize="medium" sx={{ color: 'grey.700' }} />
-          </IconButton>
+          {!isAdmin && (
+            <IconButton onClick={toggleSidebar} sx={{ display: { md: 'none', sm: 'flex' }, ml: 1 }}>
+              <MenuIcon fontSize="medium" sx={{ color: 'grey.700' }} />
+            </IconButton>
+          )}
         </Toolbar>
       </Container>
       <Drawer

@@ -88,7 +88,6 @@ const ClientDetailsPage = () => {
         margin: '0 auto',
         bgcolor: 'white',
         pt: 4,
-        border: `2px solid ${theme.palette.divider}`,
       }}
     >
       {/* <Container maxWidth="xl"> */}

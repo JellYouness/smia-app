@@ -1,0 +1,22 @@
+{
+  "dashboard_title": "Panel de Administración",
+  "total_users": "Total de Usuarios",
+  "total_creators": "Total de Creadores",
+  "total_clients": "Total de Clientes",
+  "total_ambassadors": "Total de Embajadores",
+  "project_statistics": "Estadísticas de Proyectos",
+  "total_projects": "Total de Proyectos",
+  "active_projects": "Proyectos Activos",
+  "completed_projects": "Proyectos Completados",
+  "applications": "Solicitudes",
+  "pending_applications": "Solicitudes Pendientes",
+  "applications_description": "Solicitudes pendientes de revisión y aprobación",
+  "view_all_applications": "Ver todas las solicitudes",
+  "system_health": "Estado del Sistema",
+  "uptime": "Tiempo de Actividad",
+  "active_connections": "Conexiones Activas",
+  "avg_response_time": "Tiempo de Respuesta Promedio",
+  "recent_activity": "Actividad Reciente",
+  "no_data_available": "No hay datos disponibles",
+  "error_loading_dashboard": "Error al cargar el panel"
+}

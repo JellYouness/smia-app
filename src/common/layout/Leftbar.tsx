@@ -11,7 +11,6 @@ import {
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import { useRouter } from 'next/router';
-import Typography from '@mui/material/Typography';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import { useState, useEffect } from 'react';
 import Logo from '@common/assets/svgs/Logo';
@@ -144,11 +143,12 @@ const Leftbar = (props: LeftbarProps) => {
             borderBottomColor: 'grey.300',
           }}
         >
-          <Stack direction="row" alignItems="center">
+          <Stack
+            direction="row"
+            alignItems="center"
+            onClick={() => router.push(Routes.Common.Home)}
+          >
             <Logo id="leftbar-logo" sx={{ marginRight: 2 }} />
-            <Typography variant="h6" sx={{ color: 'primary.main' }}>
-              {process.env.NEXT_PUBLIC_APP_TITLE}
-            </Typography>
           </Stack>
 
           <IconButton onClick={toggleLeftbar}>
@@ -256,11 +256,12 @@ const Leftbar = (props: LeftbarProps) => {
           sx={{
             position: 'absolute',
             display: 'flex',
-            top: 20,
+            top: 10,
             left: {
               xs: 6,
               sm: 14,
             },
+            zIndex: 9999,
           }}
         >
           <IconButton
@@ -270,7 +271,7 @@ const Leftbar = (props: LeftbarProps) => {
               height: 40,
             }}
           >
-            <MenuIcon fontSize="medium" sx={{ color: 'grey.700' }} />
+            <MenuIcon sx={{ color: 'grey.700', fontSize: 26 }} />
           </IconButton>
         </Box>
       )}

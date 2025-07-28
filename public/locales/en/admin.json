@@ -1,0 +1,22 @@
+{
+  "dashboard_title": "Admin Dashboard",
+  "total_users": "Total Users",
+  "total_creators": "Total Creators",
+  "total_clients": "Total Clients",
+  "total_ambassadors": "Total Ambassadors",
+  "project_statistics": "Project Statistics",
+  "total_projects": "Total Projects",
+  "active_projects": "Active Projects",
+  "completed_projects": "Completed Projects",
+  "applications": "Applications",
+  "pending_applications": "Pending Applications",
+  "applications_description": "Applications awaiting review and approval",
+  "view_all_applications": "View all applications",
+  "system_health": "System Health",
+  "uptime": "Uptime",
+  "active_connections": "Active Connections",
+  "avg_response_time": "Avg Response Time",
+  "recent_activity": "Recent Activity",
+  "no_data_available": "No data available",
+  "error_loading_dashboard": "Error loading dashboard"
+}
