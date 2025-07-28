@@ -122,6 +122,7 @@ const Leftbar = (props: LeftbarProps) => {
         }}
         sx={{
           display: open ? 'block' : 'none',
+          zIndex: 9999,
         }}
       >
         <NestedDrawer

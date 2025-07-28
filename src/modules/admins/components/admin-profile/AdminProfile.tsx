@@ -4,8 +4,7 @@ import React from 'react';
 import { User } from '@modules/users/defs/types';
 import { useTheme } from '@mui/material/styles';
 import { TFunction } from 'i18next';
-import { Creator } from '@modules/creators/defs/types';
-import ProfileHeader from '@modules/creators/components/creator-profle/partials/ProfileHeader';
+import ProfileHeader from '@modules/admins/components/admin-profile/partials/ProfileHeader';
 
 interface AdminProfileProps {
   user: User;
@@ -21,12 +20,11 @@ const AdminProfile = ({ user, t }: AdminProfileProps) => {
         margin: '0 auto',
         bgcolor: 'white',
         pt: 4,
-        border: `2px solid ${theme.palette.divider}`,
       }}
     >
       <Grid container spacing={4}>
         <Grid item xs={12}>
-          <ProfileHeader user={user} creator={user?.creator as Creator} isUserProfile t={t} />
+          <ProfileHeader user={user} t={t} />
         </Grid>
         <Grid
           item
@@ -38,14 +36,14 @@ const AdminProfile = ({ user, t }: AdminProfileProps) => {
         >
           <Sidebar user={user} />
         </Grid>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        md={8}
-        sx={{ pl: { xs: 0, md: '0 !important' }, pt: { xs: 0, md: '0 !important' } }}
-      >
-        <MainContent user={user} t={t} />
+        <Grid
+          item
+          xs={12}
+          md={8}
+          sx={{ pl: { xs: 0, md: '0 !important' }, pt: { xs: 0, md: '0 !important' } }}
+        >
+          <MainContent user={user} t={t} />
+        </Grid>
       </Grid>
     </Box>
   );
