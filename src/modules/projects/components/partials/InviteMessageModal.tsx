@@ -103,12 +103,17 @@ const InviteMessageModal = ({ open, creator, onClose, onSubmit }: InviteMessageM
           </Typography>
 
           <Stack direction="row" alignItems="center" spacing={2} mb={3}>
-            <Avatar src={creator.user?.profileImage ?? undefined} sx={{ width: 56, height: 56 }}>
+            <Avatar
+              src={creator.user?.profileImage ?? undefined}
+              sx={{ width: 56, height: 56, background: (theme) => theme.palette.primary.main }}
+            >
               {creator.user?.firstName[0]}
             </Avatar>
             <Box>
               <Link
                 href={Routes.Creators.ReadOne.replace('{id}', creator.id.toString())}
+                target="_blank"
+                rel="noopener noreferrer"
                 underline="none"
                 sx={{ fontWeight: 600, color: 'primary.main' }}
               >

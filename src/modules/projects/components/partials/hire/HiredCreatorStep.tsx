@@ -43,6 +43,7 @@ import {
 import useProjects, { projectCacheKey } from '@modules/projects/hooks/useProjects';
 import { Id } from '@common/defs/types';
 import useSWR, { mutate } from 'swr';
+import StepperEmptyState from '../StepperEmptyState';
 
 interface HiredCreatorStepProps {
   projectId: Id;
@@ -58,6 +59,8 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
   const { data: projectData, isLoading } = useSWR(projectCacheKey(projectId), () =>
     readOne(projectId)
   );
+
+  console.log(projectData);
 
   const project = projectData?.data?.item || propProject;
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -541,48 +544,14 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
   );
 
   const renderEmptyState = () => (
-    <Paper
-      elevation={0}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        p: 8,
-        textAlign: 'center',
-        borderRadius: '16px',
-        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.02)} 0%, ${alpha(
-          theme.palette.primary.main,
-          0.05
-        )} 100%)`,
-        border: `2px dashed ${alpha(theme.palette.primary.main, 0.2)}`,
-        maxWidth: 600,
-        mx: 'auto',
-        my: 6,
-      }}
-    >
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        mb={4}
-        sx={{
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-          borderRadius: '50%',
-          width: 100,
-          height: 100,
-          boxShadow: `0 8px 32px ${alpha(theme.palette.primary.main, 0.3)}`,
-        }}
-      >
-        <PersonOffOutlined sx={{ fontSize: 48, color: 'white' }} />
-      </Box>
-      <Typography variant="h5" mb={2} fontWeight="bold">
-        {t('project:no_hired_creators_title')}
-      </Typography>
-      <Typography variant="body1" color="textSecondary" mb={4} maxWidth={400}>
-        {t('project:no_hired_creators_description')}
-      </Typography>
-    </Paper>
+    <Box width="100%" height="100%" display="flex" justifyContent="center" alignItems="center">
+      <StepperEmptyState
+        icon={<PersonOffOutlined />}
+        title={t('project:no_hired_creators_title')}
+        description={t('project:no_hired_creators_description')}
+        showButton={false}
+      />
+    </Box>
   );
 
   return (

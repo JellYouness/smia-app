@@ -166,7 +166,18 @@ const UpsertProjectStepper = ({
         }
       }
       if (!quickEdit) {
-        router.push(Routes.Common.Home);
+        // For new projects or when activating a draft, redirect to invite page; for other edits, go to home
+        if (
+          (!isEdit && res.data?.item?.id) ||
+          (isEdit && project?.status === PROJECT_STATUS.DRAFT && res.data?.item?.id)
+        ) {
+          router.push({
+            pathname: Routes.Projects.HireCreator.replace('{id}', res.data.item.id.toString()),
+            query: { step: 'invite' },
+          });
+        } else {
+          router.push(Routes.Common.Home);
+        }
       }
       if (onComplete) {
         onComplete();

@@ -88,7 +88,7 @@ export default withAuth(
   withPermissions(HireCreatorPage, {
     requiredPermissions: {
       entity: Namespaces.Projects,
-      action: CRUD_ACTION.CREATE,
+      action: CRUD_ACTION.UPDATE,
     },
     redirectUrl: Routes.Permissions.Forbidden,
   }),

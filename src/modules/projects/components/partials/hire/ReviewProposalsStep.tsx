@@ -1,11 +1,25 @@
-import { Box, Typography, Card, CardContent, Skeleton, useTheme, Grid } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Skeleton,
+  useTheme,
+  Grid,
+  Button,
+} from '@mui/material';
 import { Project, PROJECT_PROPOSAL_STATUS, ProjectProposal } from '@modules/projects/defs/types';
 import useProjects from '@modules/projects/hooks/useProjects';
 import { useEffect, useState } from 'react';
 import { Id } from '@common/defs/types';
 import ProposalReviewCard from '../ProposalReviewCard';
 import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined';
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
 import { useTranslation } from 'react-i18next';
+import { PersonAddOutlined } from '@mui/icons-material';
+import { useRouter } from 'next/router';
+import StepperEmptyState from '../StepperEmptyState';
 
 interface Props {
   projectId: Id;
@@ -14,6 +28,7 @@ interface Props {
 }
 
 const ReviewProposalsStep = ({ projectId, onStatusChange }: Props) => {
+  const router = useRouter();
   const { t } = useTranslation(['project']);
   const theme = useTheme();
   const { readAllProposalsByProject, approveProposal, declineProposal } = useProjects();
@@ -99,39 +114,39 @@ const ReviewProposalsStep = ({ projectId, onStatusChange }: Props) => {
     </Box>
   );
 
+  const renderEmptyState = () => (
+    <StepperEmptyState
+      icon={<InboxOutlinedIcon />}
+      title={t('project:no_proposals_title') || 'No Proposals Yet'}
+      description={
+        t('project:no_proposals_description') ||
+        'Your project is live and waiting for talented professionals to submit their proposals. Great things are coming!'
+      }
+      buttonText={t('project:invite_creators', 'Invite Creators')}
+      buttonIcon={<PersonAddOutlined />}
+      onButtonClick={() => {
+        router.push({
+          pathname: router.pathname,
+          query: { ...router.query, step: 'invite' },
+        });
+      }}
+    />
+  );
+
   return (
     <Box>
-      <Box height={600} overflow="auto" pt={2}>
+      <Box height={600} overflow="auto" p={2}>
         {loading && renderSkeleton()}
 
         {!loading && proposals.length === 0 ? (
           <Box
+            width="100%"
+            height="100%"
             display="flex"
-            flexDirection="column"
-            alignItems="center"
             justifyContent="center"
-            p={4}
-            textAlign="center"
+            alignItems="center"
           >
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              mb={2}
-              mt={6}
-              sx={{
-                width: 72,
-                height: 72,
-              }}
-            >
-              <InboxOutlinedIcon sx={{ fontSize: 50, color: theme.palette.primary.main }} />
-            </Box>
-            <Typography variant="h6" mb={1}>
-              {t('project:no_proposals_title')}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {t('project:no_proposals_description')}
-            </Typography>
+            {renderEmptyState()}
           </Box>
         ) : (
           <Box>

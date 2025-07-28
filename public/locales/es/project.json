@@ -63,5 +63,10 @@
   "revert_to_default_message": "Revertir a un mensaje por defecto",
   "send_invitation": "Enviar invitación",
   "no_creators_found": "No se encontraron creadores",
-  "no_creators_description": "No se encontraron creadores para este proyecto. Por favor, inténtelo de nuevo más tarde."
+  "no_creators_description": "No se encontraron creadores para este proyecto. Por favor, inténtelo de nuevo más tarde.",
+  "workshop_access_denied_title": "Acceso al taller restringido",
+  "workshop_access_denied_message": "El taller de proyecto solo está disponible para proyectos en progreso o completados.",
+  "workshop_draft_message": "El taller de proyecto solo está disponible una vez que el proyecto esté en progreso o completado. Este proyecto está actualmente en estado de borrador.",
+  "workshop_creator_not_assigned_message": "Necesitas estar asignado a este proyecto para acceder al taller. Por favor, contacta al propietario del proyecto para ser asignado.",
+  "back_to_project": "Volver al proyecto"
 }

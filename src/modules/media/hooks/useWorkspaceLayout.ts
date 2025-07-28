@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 
-const MIN_SIDEBAR = 150;
+const MIN_SIDEBAR = 240;
 const MAX_SIDEBAR = 600;
 const HIDDEN_WIDTH = 40;
-const DEFAULT_LAYOUT = { left: 240, right: 240, hideLeft: false, hideRight: false };
+const DEFAULT_LAYOUT = { left: 300, right: 300, hideLeft: false, hideRight: false };
 
 const getKey = (projectId: number) => `workspace-layout:${projectId}`;
 
@@ -38,7 +38,7 @@ const useWorkspaceLayout = (projectId: number) => {
       if (newLayout.hideLeft) {
         // Show the pane with a reasonable width
         newLayout.hideLeft = false;
-        newLayout.left = 240;
+        newLayout.left = 300;
       } else {
         // Hide the pane
         newLayout.hideLeft = true;
@@ -46,7 +46,7 @@ const useWorkspaceLayout = (projectId: number) => {
     } else if (newLayout.hideRight) {
       // Show the pane with a reasonable width
       newLayout.hideRight = false;
-      newLayout.right = 240;
+      newLayout.right = 300;
     } else {
       // Hide the pane
       newLayout.hideRight = true;

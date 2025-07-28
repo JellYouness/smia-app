@@ -11,6 +11,9 @@ import {
   Button,
   CircularProgress,
   Fade,
+  Alert,
+  AlertTitle,
+  Chip,
 } from '@mui/material';
 import {
   ExpandMore,
@@ -28,6 +31,8 @@ import {
   CloudDone,
   DeleteSweep,
   Visibility as VisibilityIcon,
+  Warning as WarningIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { mutate } from 'swr';
@@ -50,6 +55,14 @@ interface FileSectionProps {
   user?: User;
   suspendedMessage?: string;
 }
+
+interface UnsupportedFile {
+  name: string;
+  type: string;
+  size: number;
+}
+
+const SUPPORTED_FILE_TYPES = ['image/', 'video/', 'audio/', 'application/pdf'];
 
 const formatFileSize = (bytes: number): string => {
   if (bytes === 0) {
@@ -82,7 +95,8 @@ const getFileIcon = (mimeType: string) => {
   }
   if (
     mimeType === 'application/vnd.ms-excel' ||
-    mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+    mimeType === 'text/csv'
   ) {
     return <TableChart sx={{ fontSize: 20 }} />;
   }
@@ -103,6 +117,43 @@ const canPreviewFile = (mimeType: string): boolean => {
     mimeType.startsWith('audio/') ||
     mimeType === 'application/pdf'
   );
+};
+
+// Check if file type is supported
+const isFileTypeSupported = (mimeType: string): boolean => {
+  return SUPPORTED_FILE_TYPES.some((supportedType) => mimeType.startsWith(supportedType));
+};
+
+// Get friendly file type name
+const getFriendlyFileType = (mimeType: string): string => {
+  if (mimeType.startsWith('image/')) {
+    return 'Image';
+  }
+  if (mimeType.startsWith('video/')) {
+    return 'Video';
+  }
+  if (mimeType.startsWith('audio/')) {
+    return 'Audio';
+  }
+  if (mimeType === 'application/pdf') {
+    return 'PDF';
+  }
+  if (mimeType === 'text/csv') {
+    return 'CSV';
+  }
+  if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) {
+    return 'Excel';
+  }
+  if (mimeType.includes('word') || mimeType.includes('document')) {
+    return 'Word Document';
+  }
+  if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) {
+    return 'PowerPoint';
+  }
+  if (mimeType.startsWith('text/')) {
+    return 'Text File';
+  }
+  return 'File';
 };
 
 const LoadingOverlay = ({
@@ -184,6 +235,103 @@ const LoadingOverlay = ({
   );
 };
 
+const UnsupportedFilesAlert = ({
+  unsupportedFiles,
+  onDismiss,
+}: {
+  unsupportedFiles: UnsupportedFile[];
+  onDismiss: () => void;
+}) => {
+  const theme = useTheme();
+
+  if (unsupportedFiles.length === 0) {
+    return null;
+  }
+
+  return (
+    <Fade in>
+      <Alert
+        severity="warning"
+        sx={{
+          mb: 2,
+          borderRadius: '12px',
+          border: '1px solid rgba(237, 108, 2, 0.2)',
+          background:
+            'linear-gradient(135deg, rgba(255, 243, 224, 0.8) 0%, rgba(255, 248, 240, 0.9) 100%)',
+          backdropFilter: 'blur(10px)',
+          '& .MuiAlert-icon': {
+            color: theme.palette.warning.main,
+          },
+        }}
+        action={
+          <IconButton size="small" onClick={onDismiss} sx={{ color: theme.palette.warning.main }}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        }
+        icon={<WarningIcon />}
+      >
+        <AlertTitle sx={{ fontWeight: 600, mb: 1 }}>
+          {unsupportedFiles.length === 1 ? 'Unsupported File Type' : 'Some Files Not Supported'}
+        </AlertTitle>
+
+        <Typography variant="body2" sx={{ mb: 2, color: theme.palette.warning.dark }}>
+          {unsupportedFiles.length === 1
+            ? 'The following file type is not supported:'
+            : 'The following file types are not supported:'}
+        </Typography>
+
+        <Box sx={{ mb: 2 }}>
+          {unsupportedFiles.map((file, index) => (
+            <Box
+              key={index}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                mb: 1,
+                p: 1,
+                background: 'rgba(255, 255, 255, 0.7)',
+                borderRadius: '8px',
+                border: '1px solid rgba(237, 108, 2, 0.1)',
+              }}
+            >
+              {getFileIcon(file.type)}
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    color: theme.palette.text.primary,
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  {file.name}
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                  <Chip
+                    label={getFriendlyFileType(file.type)}
+                    size="small"
+                    sx={{
+                      height: 20,
+                      fontSize: '0.7rem',
+                      background: 'rgba(237, 108, 2, 0.1)',
+                      color: theme.palette.warning.dark,
+                      fontWeight: 500,
+                    }}
+                  />
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                    {formatFileSize(file.size)}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </Alert>
+    </Fade>
+  );
+};
+
 const MediaFileSection = ({
   title,
   files,
@@ -200,8 +348,8 @@ const MediaFileSection = ({
 }: FileSectionProps) => {
   const theme = useTheme();
   const [isDragOver, setIsDragOver] = useState(false);
+  const [unsupportedFiles, setUnsupportedFiles] = useState<UnsupportedFile[]>([]);
 
-  // File viewer modal state
   const [viewerOpen, setViewerOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<{
     id: string;
@@ -214,17 +362,45 @@ const MediaFileSection = ({
   const { requestReview } = useMedia();
   const [reviewLoading, setReviewLoading] = useState(false);
 
-  // Only editors can see the Request Review button
   const isEditor = !!(
     user &&
     user.userType === 'CREATOR' &&
     assignments.some((a) => a.role === 'EDITOR' && a.creator && a.creator.userId === user.id)
   );
 
-  // For reference section, only client/owner can upload
   const canShowUploadInput =
     (title === 'Reference Assets' && user?.userType === 'CLIENT') ||
     (title === 'Draft Files' && isEditor);
+
+  const validateAndProcessFiles = useCallback(
+    (fileList: FileList) => {
+      const supportedFiles: File[] = [];
+      const unsupported: UnsupportedFile[] = [];
+
+      Array.from(fileList).forEach((file) => {
+        if (isFileTypeSupported(file.type)) {
+          supportedFiles.push(file);
+        } else {
+          unsupported.push({
+            name: file.name,
+            type: file.type,
+            size: file.size,
+          });
+        }
+      });
+
+      if (unsupported.length > 0) {
+        setUnsupportedFiles(unsupported);
+      }
+
+      if (supportedFiles.length > 0) {
+        const dt = new DataTransfer();
+        supportedFiles.forEach((file) => dt.items.add(file));
+        onFilesAdd(dt.files);
+      }
+    },
+    [onFilesAdd]
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -241,19 +417,21 @@ const MediaFileSection = ({
       e.preventDefault();
       setIsDragOver(false);
       if (e.dataTransfer.files) {
-        onFilesAdd(e.dataTransfer.files);
+        validateAndProcessFiles(e.dataTransfer.files);
       }
     },
-    [onFilesAdd]
+    [validateAndProcessFiles]
   );
 
   const handleFileSelect = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files) {
-        onFilesAdd(e.target.files);
+        validateAndProcessFiles(e.target.files);
       }
+      // Reset the input value to allow selecting the same file again
+      e.target.value = '';
     },
-    [onFilesAdd]
+    [validateAndProcessFiles]
   );
 
   // Handle file preview
@@ -306,9 +484,19 @@ const MediaFileSection = ({
     }
   };
 
+  const handleDismissUnsupportedAlert = () => {
+    setUnsupportedFiles([]);
+  };
+
   return (
     <>
       <Box sx={{ mb: 1 }}>
+        {/* Unsupported Files Alert */}
+        <UnsupportedFilesAlert
+          unsupportedFiles={unsupportedFiles}
+          onDismiss={handleDismissUnsupportedAlert}
+        />
+
         {/* Section Header */}
         <Box
           sx={{
@@ -452,6 +640,16 @@ const MediaFileSection = ({
                     Browse Files
                     <input type="file" hidden multiple onChange={handleFileSelect} />
                   </Button>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: theme.palette.text.disabled,
+                      textAlign: 'center',
+                      mt: 0.5,
+                    }}
+                  >
+                    Supported: Images, Videos, Audio, PDF
+                  </Typography>
                 </Box>
               </Box>
             )}
@@ -521,14 +719,19 @@ const MediaFileSection = ({
                       }}
                     >
                       <ListItemIcon sx={{ minWidth: 36 }}>
-                        {file.isUploading && (
-                          <CloudDone sx={{ fontSize: 20, color: theme.palette.primary.main }} />
-                        )}
-                        {!file.isUploading && file.isDeleting ? (
-                          <DeleteSweep sx={{ fontSize: 20, color: theme.palette.error.main }} />
-                        ) : (
-                          getFileIcon(file.type)
-                        )}
+                        {(() => {
+                          if (file.isUploading) {
+                            return (
+                              <CloudDone sx={{ fontSize: 20, color: theme.palette.primary.main }} />
+                            );
+                          }
+                          if (file.isDeleting) {
+                            return (
+                              <DeleteSweep sx={{ fontSize: 20, color: theme.palette.error.main }} />
+                            );
+                          }
+                          return getFileIcon(file.type);
+                        })()}
                       </ListItemIcon>
                       <ListItemText
                         primary={

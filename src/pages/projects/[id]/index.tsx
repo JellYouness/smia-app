@@ -17,9 +17,15 @@ import { useMemo, useState, useEffect } from 'react';
 import CustomBreadcrumbs from '@common/components/lib/navigation/CustomBreadCrumbs';
 import PageHeader from '@common/components/lib/partials/PageHeader';
 import Labels from '@common/defs/labels';
-import { ProjectUpdate, PROJECT_UPDATE_TYPE } from '@modules/projects/defs/types';
+import {
+  ProjectUpdate,
+  PROJECT_UPDATE_TYPE,
+  PROJECT_CREATOR_STATUS,
+} from '@modules/projects/defs/types';
 import ChatIcon from '@mui/icons-material/Chat';
 import UpdatesTimeline from '@modules/media/components/UpdatesTimeline';
+import useAuth from '@modules/auth/hooks/api/useAuth';
+import { ROLE } from '@modules/permissions/defs/types';
 
 const ProjectDetailsPage: NextPage = () => {
   const { t } = useTranslation(['project', 'common', 'user']);
@@ -35,6 +41,22 @@ const ProjectDetailsPage: NextPage = () => {
   const project = projectData?.data?.item;
   const [updates, setUpdates] = useState<ProjectUpdate[]>([]);
   const [updatesLoading, setUpdatesLoading] = useState(false);
+  const { user } = useAuth();
+
+  const isCreator = user?.userType === ROLE.CREATOR;
+  const isProjectOwner = user?.client?.id === project?.clientId;
+
+  console.log('isProjectOwner', isProjectOwner);
+
+  const isAssignedCreator = useMemo(() => {
+    if (!isCreator || !user?.creator?.id || !project?.projectCreators) {
+      return false;
+    }
+
+    return project.projectCreators.some(
+      (pc) => pc.creatorId === user?.creator?.id && pc.status === PROJECT_CREATOR_STATUS.ASSIGNED
+    );
+  }, [isCreator, user?.creator?.id, project?.projectCreators]);
 
   useEffect(() => {
     if (!projectId) {
@@ -70,11 +92,15 @@ const ProjectDetailsPage: NextPage = () => {
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <PageHeader
         title={t(`project:${Labels.Projects.ReadOne}`)}
-        action={{
-          label: t('project:open_project_chat', 'Chat'),
-          onClick: () => router.push(`/projects/${project.id}/chat`),
-          startIcon: <ChatIcon />,
-        }}
+        action={
+          isProjectOwner || isAssignedCreator
+            ? {
+                label: t('project:open_project_chat', 'Chat'),
+                onClick: () => router.push(`/projects/${project.id}/chat`),
+                startIcon: <ChatIcon />,
+              }
+            : undefined
+        }
       />
       <CustomBreadcrumbs
         links={[
@@ -83,26 +109,35 @@ const ProjectDetailsPage: NextPage = () => {
         ]}
       />
 
-      {/* Project Details Section */}
-      <ProjectDetailsSection project={project} />
+      <ProjectDetailsSection project={project} isProjectOwner={isProjectOwner} />
 
-      <Divider sx={{ my: 4 }} />
+      {isProjectOwner && (
+        <>
+          <Divider sx={{ my: 4 }} />
+          <Typography variant="h6" fontWeight={600} mb={2}>
+            {t('project:team_and_permissions', 'Team & Permissions')}
+          </Typography>
+          <CreatorsPermissionsList
+            projectId={project.id}
+            creators={project.projectCreators || []}
+          />
+        </>
+      )}
 
-      {/* Team & Permissions List */}
-      <Typography variant="h6" fontWeight={600} mb={2}>
-        {t('project:team_and_permissions', 'Team & Permissions')}
-      </Typography>
-      <CreatorsPermissionsList projectId={project.id} creators={project.projectCreators || []} />
-
-      <Divider sx={{ my: 4 }} />
-
-      {/* Updates Timeline */}
-      <Typography variant="h6" fontWeight={600} mb={2}>
-        {t('project:updates_timeline', 'Project Updates')}
-      </Typography>
-      <Paper elevation={0} sx={{ maxHeight: 400, overflowY: 'auto', p: 2, background: '#fafbfc' }}>
-        <UpdatesTimeline updates={updates} loading={updatesLoading} />
-      </Paper>
+      {isAssignedCreator && (
+        <>
+          <Divider sx={{ my: 4 }} />
+          <Typography variant="h6" fontWeight={600} mb={2}>
+            {t('project:updates_timeline', 'Project Updates')}
+          </Typography>
+          <Paper
+            elevation={0}
+            sx={{ maxHeight: 400, overflowY: 'auto', p: 2, background: '#fafbfc' }}
+          >
+            <UpdatesTimeline updates={updates} loading={updatesLoading} />
+          </Paper>
+        </>
+      )}
     </Container>
   );
 };

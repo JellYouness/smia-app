@@ -10,14 +10,22 @@ import {
   Divider,
   Menu,
   MenuItem,
+  Button,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import { MediaPost, MediaPostAsset, MediaPostReview, MediaPostComment } from '../../../defs/types';
+import {
+  MediaPost,
+  MediaPostAsset,
+  MediaPostReview,
+  MediaPostComment,
+  MEDIA_POST_PRIORITY,
+} from '../../../defs/types';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import MediaCommentsSide from './MediaCommentsSide';
-import MediaReviews from './MediaReviews';
-import MediaAssets from './MediaAssets';
 import dayjs from 'dayjs';
 import MediaAssignees from './MediaAssignees';
 import useSWR, { mutate } from 'swr';
@@ -41,7 +49,6 @@ const STATUS_CONFIG = {
   ARCHIVED: { color: '#57606f', bg: '#f1f2f6', label: 'Archived' },
 };
 
-// Cache key helper for media post data
 const mediaPostCacheKey = (id: number) => ['/media_posts', id];
 
 interface MediaPostDetailsModalProps {
@@ -58,13 +65,19 @@ const MediaPostDetailsModal = ({
   onOptimisticDelete,
 }: MediaPostDetailsModalProps) => {
   const { t } = useTranslation(['media', 'common']);
-  const { readOne, addComment, deleteOne } = useMedia();
+  const { readOne, addComment, deleteOne, updateOne } = useMedia();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [titleValue, setTitleValue] = useState('');
   const [descriptionValue, setDescriptionValue] = useState('');
+  const [priorityValue, setPriorityValue] = useState<MEDIA_POST_PRIORITY>(MEDIA_POST_PRIORITY.LOW);
+  const [dueDateValue, setDueDateValue] = useState('');
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [priorityAnchorEl, setPriorityAnchorEl] = useState<null | HTMLElement>(null);
+  const [dueDateAnchorEl, setDueDateAnchorEl] = useState<null | HTMLElement>(null);
 
   const { user } = useAuth();
 
@@ -74,19 +87,34 @@ const MediaPostDetailsModal = ({
 
   const isCreator = user.userType === 'CREATOR';
 
-  // Use SWR directly to get live media post data
   const { data: mediaPostData, isLoading } = useSWR(
     propMediaPost ? mediaPostCacheKey(propMediaPost.id) : null,
     () => readOne(propMediaPost!.id)
   );
 
-  // Use SWR data if available, fallback to prop
   const currentMediaPost = mediaPostData?.data?.item || propMediaPost;
 
   useEffect(() => {
     setTitleValue(currentMediaPost?.title || '');
     setDescriptionValue(currentMediaPost?.description || '');
+    setPriorityValue(currentMediaPost?.priority || MEDIA_POST_PRIORITY.LOW);
+    setDueDateValue(currentMediaPost?.dueDate || '');
+    setHasUnsavedChanges(false);
   }, [currentMediaPost]);
+
+  useEffect(() => {
+    if (!currentMediaPost) {
+      return;
+    }
+
+    const hasChanges =
+      titleValue !== currentMediaPost.title ||
+      descriptionValue !== currentMediaPost.description ||
+      priorityValue !== currentMediaPost.priority ||
+      dueDateValue !== currentMediaPost.dueDate;
+
+    setHasUnsavedChanges(hasChanges);
+  }, [titleValue, descriptionValue, priorityValue, dueDateValue, currentMediaPost]);
 
   useEffect(() => {
     setMenuAnchorEl(null);
@@ -96,7 +124,6 @@ const MediaPostDetailsModal = ({
     return null;
   }
 
-  // Map assignments to assignees for UI
   const assignees =
     currentMediaPost.assignments?.map((a: any, idx: number) => {
       const firstName = a.creator?.user?.firstName ?? '';
@@ -111,11 +138,9 @@ const MediaPostDetailsModal = ({
       };
     }) ?? [];
 
-  // Use real assets and reviews
   const assets: MediaPostAsset[] = currentMediaPost.assets || [];
   const reviews: MediaPostReview[] = currentMediaPost.reviews || [];
 
-  // Map comments for comments sidebar
   const comments: (MediaPostComment & {
     avatar: string;
     authorName: string;
@@ -158,10 +183,49 @@ const MediaPostDetailsModal = ({
     }
   };
 
-  const priorityConfig = PRIORITY_CONFIG[currentMediaPost.priority];
+  const handleSaveChanges = async () => {
+    if (!hasUnsavedChanges || isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const updateData: any = {};
+
+      if (titleValue !== currentMediaPost.title) {
+        updateData.title = titleValue;
+      }
+      if (descriptionValue !== currentMediaPost.description) {
+        updateData.description = descriptionValue;
+      }
+      if (priorityValue !== currentMediaPost.priority) {
+        updateData.priority = priorityValue;
+      }
+      if (dueDateValue !== currentMediaPost.dueDate) {
+        updateData.dueDate = dueDateValue;
+      }
+
+      const response = await updateOne(currentMediaPost.id, updateData);
+
+      if (response.success) {
+        setHasUnsavedChanges(false);
+        mutate(mediaPostCacheKey(currentMediaPost.id));
+      }
+    } catch (error) {
+      console.error('Error saving changes:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePrioritySelect = (newPriority: MEDIA_POST_PRIORITY) => {
+    setPriorityValue(newPriority);
+    setTimeout(() => setPriorityAnchorEl(null), 100);
+  };
+
+  const priorityConfig = PRIORITY_CONFIG[priorityValue];
   const statusConfig = STATUS_CONFIG[currentMediaPost.status];
 
-  // Dropdown menu handlers
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMenuAnchorEl(event.currentTarget);
   };
@@ -224,8 +288,46 @@ const MediaPostDetailsModal = ({
           <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
             Created {dayjs(currentMediaPost.createdAt).fromNow()}
           </Typography>
+          {hasUnsavedChanges && (
+            <Chip
+              label="Unsaved changes"
+              size="small"
+              sx={{
+                backgroundColor: '#fff3cd',
+                color: '#856404',
+                fontWeight: 600,
+                fontSize: '0.75rem',
+                height: '24px',
+                border: '1px solid #ffeaa7',
+              }}
+            />
+          )}
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {hasUnsavedChanges && !isCreator && (
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleSaveChanges}
+              disabled={isSaving}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 600,
+                px: 2,
+                py: 0.5,
+                fontSize: '0.75rem',
+                backgroundColor: 'primary.main',
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                },
+                '&:disabled': {
+                  backgroundColor: 'action.disabled',
+                },
+              }}
+            >
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </Button>
+          )}
           {!isCreator && (
             <IconButton size="small" sx={{ color: 'grey.500' }} onClick={handleMenuOpen}>
               <MoreHoriz fontSize="small" />
@@ -265,7 +367,11 @@ const MediaPostDetailsModal = ({
                 value={titleValue}
                 onChange={(e) => setTitleValue(e.target.value)}
                 onBlur={() => setIsEditingTitle(false)}
-                onKeyDown={(e) => e.key === 'Enter' && setIsEditingTitle(false)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setIsEditingTitle(false);
+                  }
+                }}
                 variant="standard"
                 sx={{
                   '& .MuiInput-root': {
@@ -329,6 +435,7 @@ const MediaPostDetailsModal = ({
               <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 {/* Priority Card */}
                 <Box
+                  onClick={(e) => !isCreator && setPriorityAnchorEl(e.currentTarget)}
                   sx={{
                     minWidth: 220,
                     p: 3,
@@ -337,6 +444,14 @@ const MediaPostDetailsModal = ({
                     border: `2px solid ${priorityConfig.color}20`,
                     position: 'relative',
                     overflow: 'hidden',
+                    cursor: isCreator ? 'default' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': isCreator
+                      ? undefined
+                      : {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                        },
                   }}
                 >
                   <Box sx={{ position: 'absolute', top: 10, right: 10, fontSize: '1.5rem' }}>
@@ -355,6 +470,55 @@ const MediaPostDetailsModal = ({
                   >
                     Priority Level
                   </Typography>
+                  {!isCreator ? (
+                    <Menu
+                      anchorEl={priorityAnchorEl}
+                      open={Boolean(priorityAnchorEl)}
+                      onClose={() => setPriorityAnchorEl(null)}
+                      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                      transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                      PaperProps={{
+                        sx: {
+                          mt: 1,
+                          minWidth: 200,
+                          boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(0,0,0,0.1)',
+                        },
+                      }}
+                    >
+                      {Object.values(MEDIA_POST_PRIORITY).map((priority) => (
+                        <MenuItem
+                          key={priority}
+                          onClick={() => handlePrioritySelect(priority)}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            py: 1.5,
+                            px: 2,
+                            '&:hover': {
+                              backgroundColor: PRIORITY_CONFIG[priority].bg,
+                            },
+                          }}
+                        >
+                          <Box sx={{ fontSize: '1.2rem' }}>{PRIORITY_CONFIG[priority].icon}</Box>
+                          <Typography
+                            sx={{
+                              fontWeight: priority === priorityValue ? 600 : 400,
+                              color:
+                                priority === priorityValue
+                                  ? PRIORITY_CONFIG[priority].color
+                                  : 'inherit',
+                              textTransform: 'capitalize',
+                            }}
+                          >
+                            {priority.toLowerCase()} Priority
+                          </Typography>
+                        </MenuItem>
+                      ))}
+                    </Menu>
+                  ) : null}
                   <Typography
                     variant="h6"
                     sx={{
@@ -364,12 +528,13 @@ const MediaPostDetailsModal = ({
                       textTransform: 'capitalize',
                     }}
                   >
-                    {currentMediaPost.priority.toLowerCase()} Priority
+                    {priorityValue.toLowerCase()} Priority
                   </Typography>
                 </Box>
 
                 {/* Due Date Card */}
                 <Box
+                  onClick={(e) => !isCreator && setDueDateAnchorEl(e.currentTarget)}
                   sx={{
                     minWidth: 220,
                     p: 3,
@@ -378,6 +543,14 @@ const MediaPostDetailsModal = ({
                     border: '2px solid #e2e8f020',
                     position: 'relative',
                     overflow: 'hidden',
+                    cursor: isCreator ? 'default' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': isCreator
+                      ? undefined
+                      : {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                        },
                   }}
                 >
                   <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
@@ -396,6 +569,58 @@ const MediaPostDetailsModal = ({
                   >
                     Due Date
                   </Typography>
+                  {!isCreator ? (
+                    <Menu
+                      anchorEl={dueDateAnchorEl}
+                      open={Boolean(dueDateAnchorEl)}
+                      onClose={() => setDueDateAnchorEl(null)}
+                      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                      transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                      PaperProps={{
+                        sx: {
+                          mt: 1,
+                          minWidth: 320,
+                          boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(0,0,0,0.1)',
+                          p: 2,
+                        },
+                      }}
+                    >
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                          Set Due Date
+                        </Typography>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DatePicker
+                            value={dueDateValue ? dayjs(dueDateValue) : null}
+                            onChange={(newValue) => {
+                              if (newValue) {
+                                const newDate = newValue.format('YYYY-MM-DD');
+                                setDueDateValue(newDate);
+                                setTimeout(() => setDueDateAnchorEl(null), 100);
+                              }
+                            }}
+                            slotProps={{
+                              textField: {
+                                size: 'small',
+                                fullWidth: true,
+                                sx: {
+                                  '& .MuiInputBase-root': {
+                                    fontSize: '0.9rem',
+                                  },
+                                },
+                              },
+                              popper: {
+                                placement: 'bottom-start',
+                              },
+                            }}
+                            closeOnSelect
+                          />
+                        </LocalizationProvider>
+                      </Box>
+                    </Menu>
+                  ) : null}
                   <Typography
                     variant="h6"
                     sx={{
@@ -404,9 +629,7 @@ const MediaPostDetailsModal = ({
                       color: '#1e293b',
                     }}
                   >
-                    {currentMediaPost.dueDate
-                      ? dayjs(currentMediaPost.dueDate).format('MMMM D, YYYY')
-                      : 'No deadline set'}
+                    {dueDateValue ? dayjs(dueDateValue).format('MMMM D, YYYY') : 'No deadline set'}
                   </Typography>
                 </Box>
               </Box>
