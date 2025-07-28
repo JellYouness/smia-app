@@ -110,3 +110,5 @@ export type Department =
   | 'BILLING'
   | 'SUPPORT'
   | 'SYSTEM';
+
+export type { Client };

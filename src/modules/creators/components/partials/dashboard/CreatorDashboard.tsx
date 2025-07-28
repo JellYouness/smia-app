@@ -5,7 +5,7 @@ import { Project } from '@modules/projects/defs/types';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import useProjects from '@modules/projects/hooks/useProjects';
 import { useTranslation } from 'react-i18next';
-import { Creator } from '@modules/users/defs/types';
+import { Creator } from '@modules/creators/defs/types';
 import ProjectsPanel from './ProjectsPanel';
 import DetailsPanel from './DetailsPanel';
 import OffersPanel from './OffersPanel';

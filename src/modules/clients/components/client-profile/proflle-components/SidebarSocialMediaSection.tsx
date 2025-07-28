@@ -13,7 +13,7 @@ const SidebarSocialMediaSection = ({ user, onEdit, readOnly }: SidebarSocialMedi
     <UserSocialMedia
       socialMediaLinks={user?.profile?.socialMediaLinks || {}}
       onEdit={onEdit}
-      editable={!readOnly}
+      readOnly={!readOnly}
     />
   );
 };

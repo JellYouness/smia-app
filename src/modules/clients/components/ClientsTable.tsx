@@ -6,7 +6,7 @@ import useItems from '@common/hooks/useItems';
 import { GridColumns } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import Namespaces from '@common/defs/namespaces';
-import { CrudRow } from '@common/defs/types';
+import { Any, CrudRow } from '@common/defs/types';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { Visibility } from '@mui/icons-material';
@@ -51,7 +51,7 @@ const ClientsTable = () => {
     setTranslatedColumns(columns);
   }, [t, i18n.language]);
 
-  const itemToRow = (item: any): Row => {
+  const itemToRow = (item: Client): Row => {
     const user = item.user || {};
     return {
       id: item.id,
@@ -64,10 +64,10 @@ const ClientsTable = () => {
     };
   };
 
-  const useClients = (options?: any) => useItems(ClientsApiRoutes, options);
+  const useClients = (options?: Any) => useItems(ClientsApiRoutes, options);
 
   return (
-    <ItemsTable<any, any, any, Row>
+    <ItemsTable<Any, Any, Any, Row>
       namespace={Namespaces.Users}
       routes={ClientsRoutes}
       useItems={useClients}

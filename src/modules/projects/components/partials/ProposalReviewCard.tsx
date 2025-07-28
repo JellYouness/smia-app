@@ -201,12 +201,12 @@ const ProposalReviewCard = ({ proposal, onApprove, onDecline }: Props) => {
             <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
               <Stack direction="row" spacing={2} alignItems="center">
                 <Avatar
-                  src={proposal.creator?.user.profileImage ?? undefined}
+                  src={proposal.creator?.user?.profile?.profilePicture ?? undefined}
                   sx={{ width: 56, height: 56 }}
                 />
                 <Box>
                   <Typography variant="h6" fontWeight={700}>
-                    {proposal.creator?.user.firstName} {proposal.creator?.user.lastName}
+                    {proposal.creator?.user?.firstName} {proposal.creator?.user?.lastName}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" mt={0.5}>
                     {t('proposal:submitted_on')} {dayjs(proposal.createdAt).format('MMM D, YYYY')}

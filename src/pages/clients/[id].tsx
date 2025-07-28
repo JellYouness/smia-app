@@ -15,6 +15,7 @@ import { User } from '@modules/users/defs/types';
 import NotFound from '@common/components/pages/NotFound';
 import { Skeleton, Box, Grid, useTheme } from '@mui/material';
 import ClientSidebar from '@modules/clients/components/client-profile/ClientSidebar';
+import ProfileHeader from '@modules/clients/components/client-profile/partials/ProfileHeader';
 
 const ClientDetailsPage = () => {
   const theme = useTheme();
@@ -92,6 +93,9 @@ const ClientDetailsPage = () => {
     >
       {/* <Container maxWidth="xl"> */}
       <Grid container spacing={4}>
+        <Grid item xs={12}>
+          <ProfileHeader user={item} t={t} />
+        </Grid>
         <Grid
           item
           xs={12}
@@ -101,13 +105,7 @@ const ClientDetailsPage = () => {
             // pr: { xs: 0, md: 4 },
           }}
         >
-          <ClientSidebar
-            user={item}
-            profilePicture={item.profilePicture}
-            handleUploadPicture={async () => {}}
-            handleDeletePicture={async () => {}}
-            readOnly
-          />
+          <ClientSidebar user={item} readOnly />
         </Grid>
         <Grid
           item
