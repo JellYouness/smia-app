@@ -8,11 +8,6 @@
   "no_projects_found": "No projects found",
   "no_projects_match": "No projects match \"{{searchTerm}}\"",
   "no_projects_available": "No projects available",
-  "status": {
-    "in_progress": "In Progress",
-    "completed": "Completed",
-    "pending": "Pending"
-  },
   "common": {
     "create_new_one": "Create New Project",
     "new_one": "New Project",
@@ -45,7 +40,6 @@
   "status": "Status",
   "draft": "Draft",
   "in_progress": "In Progress",
-  "completed": "Completed",
   "edit_project": "Edit Project",
   "delete_project": "Delete Project",
   "view_details": "View Details",
@@ -67,5 +61,12 @@
   "confirmed_soft_hire": "Confirmed (soft-hire)",
   "assigned_active_hire": "Assigned (active hire)",
   "no_hired_creators_title": "No hired creators yet",
-  "no_hired_creators_description": "You haven't hired any creators for this project yet. Review proposals to start hiring."
+  "no_hired_creators_description": "You haven't hired any creators for this project yet. Review proposals to start hiring.",
+  "open_project_chat": "Chat",
+  "team_and_permissions": "Team & Permissions",
+  "updates_timeline": "Project Updates",
+  "project_chat": "Project Chat",
+  "min_budget": "Min Budget",
+  "max_budget": "Max Budget",
+  "send_kickoff": "Send"
 }

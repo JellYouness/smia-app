@@ -253,9 +253,9 @@ const UserSettingsPage: NextPage = () => {
                 </Grid> */}
                 <Grid item xs={12} md={6}>
                   <RHFSelect name="language" label={t('user:language_preference', 'Language')}>
-                    <MenuItem value="en">English</MenuItem>
-                    <MenuItem value="fr">Français</MenuItem>
-                    <MenuItem value="es">Español</MenuItem>
+                    <MenuItem value="en">{t('topbar:language_english')}</MenuItem>
+                    <MenuItem value="fr">{t('topbar:language_french')}</MenuItem>
+                    <MenuItem value="es">{t('topbar:language_spanish')}</MenuItem>
                   </RHFSelect>
                 </Grid>
               </Grid>

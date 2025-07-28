@@ -8,17 +8,13 @@
   "no_projects_found": "No se encontraron proyectos",
   "no_projects_match": "No hay proyectos que coincidan con \"{{searchTerm}}\"",
   "no_projects_available": "No hay proyectos disponibles",
-  "status": {
-    "in_progress": "En progreso",
-    "completed": "Completado",
-    "pending": "Pendiente"
-  },
   "common": {
     "create_new_one": "Crear nuevo proyecto",
     "new_one": "Nuevo proyecto",
     "read_all": "Todos los proyectos",
     "items": "Proyectos",
-    "edit_one": "Editar proyecto"
+    "edit_one": "Editar proyecto",
+    "read_one": "Ver proyecto"
   },
   "steps": {
     "step1": {
@@ -45,7 +41,6 @@
   "status": "Estado",
   "draft": "Borrador",
   "in_progress": "En progreso",
-  "completed": "Completado",
   "edit_project": "Editar proyecto",
   "delete_project": "Eliminar proyecto",
   "view_details": "Ver detalles",
@@ -53,7 +48,6 @@
   "hire_creator": "Contratar un creador",
   "loading_project_form": "Configuración del formulario de proyecto...",
   "loading_project_form_description": "Por favor, espere mientras cargamos todo lo que necesita para crear su proyecto. Esto solo debería tomar un momento.",
-  "loading_project_details_title": "Cargando detalles del proyecto...",
   "loading_project_details_description": "Por favor, espere mientras cargamos los detalles del proyecto. Esto solo debería tomar un momento.",
   "invite_creators": "Invitar creadores",
   "proposals": "Propuestas",
@@ -63,5 +57,17 @@
   "revert_to_default_message": "Revertir a un mensaje por defecto",
   "send_invitation": "Enviar invitación",
   "no_creators_found": "No se encontraron creadores",
-  "no_creators_description": "No se encontraron creadores para este proyecto. Por favor, inténtelo de nuevo más tarde."
+  "no_creators_description": "No se encontraron creadores para este proyecto. Por favor, inténtelo de nuevo más tarde.",
+  "confirmed_soft_hire": "Confirmado (contratación suave)",
+  "assigned_active_hire": "Asignado (contratación activa)",
+  "no_hired_creators_title": "Aún no hay creadores contratados",
+  "no_hired_creators_description": "Aún no has contratado creadores para este proyecto. Revisa las propuestas para comenzar a contratar.",
+  "open_project_chat": "Chat",
+  "team_and_permissions": "Equipo y permisos",
+  "updates_timeline": "Actualizaciones del proyecto",
+  "project_chat": "Chat del proyecto",
+  "min_budget": "Presupuesto mínimo",
+  "max_budget": "Presupuesto máximo",
+  "loading_project_details_title": "Cargando detalles del proyecto...",
+  "send_kickoff": "Enviar"
 }

@@ -19,6 +19,7 @@ import {
   PictureAsPdf as PdfIcon,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 interface FileViewerModalProps {
   open: boolean;
@@ -60,6 +61,7 @@ const getFileTypeInfo = (mimeType: string) => {
 
 const FileViewer = ({ file }: { file: NonNullable<FileViewerModalProps['file']> }) => {
   const theme = useTheme();
+  const { t } = useTranslation(['common']);
 
   if (!file.url) {
     return (
@@ -144,11 +146,11 @@ const FileViewer = ({ file }: { file: NonNullable<FileViewerModalProps['file']> 
             kind="captions"
             src={`/captions/${file.id}.vtt`}
             srcLang="en"
-            label="English captions"
+            label={t('common:english_captions')}
             default
           />
           <Typography variant="body2" sx={{ color: theme.palette.error.main, p: 2 }}>
-            Your browser does not support the video tag or the video format.
+            {t('common:browser_no_video_support')}
           </Typography>
         </video>
       </Box>
@@ -199,11 +201,11 @@ const FileViewer = ({ file }: { file: NonNullable<FileViewerModalProps['file']> 
             kind="captions"
             src={`/captions/${file.id}.vtt`}
             srcLang="en"
-            label="English captions"
+            label={t('common:english_captions')}
             default
           />
           <Typography variant="body2" sx={{ color: theme.palette.error.main }}>
-            Your browser does not support the audio element.
+            {t('common:browser_no_audio_support')}
           </Typography>
         </audio>
         <Typography variant="h6" sx={{ textAlign: 'center', fontWeight: 500 }}>

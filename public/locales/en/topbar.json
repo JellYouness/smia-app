@@ -19,5 +19,8 @@
   "dark_mode": "Dark Mode",
   "light_mode": "Light Mode",
   "profile": "Profile",
-  "chat": "Chat"
+  "chat": "Chat",
+  "browse_creators": "Browse Creators",
+  "browse_projects": "Browse Projects",
+  "browse_ambassadors": "Browse Ambassadors"
 }

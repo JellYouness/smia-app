@@ -10,7 +10,7 @@
   "type_message": "Type a message...",
   "send": "Send",
   "no_messages": "No messages yet",
-  "loading": "Loading...",
+  "loading": "Loading chat...",
   "new_message": "New Message",
   "message_edited": "Message edited",
   "message_deleted": "Message deleted",
@@ -48,5 +48,6 @@
   "message_failed": "Failed to send message",
   "connection_lost": "Connection lost. Trying to reconnect...",
   "reconnected": "Reconnected",
-  "connection_error": "Connection error"
+  "connection_error": "Connection error",
+  "error_loading_conversation": "Error loading project chat."
 }

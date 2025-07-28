@@ -10,7 +10,7 @@
   "type_message": "Tapez un message...",
   "send": "Envoyer",
   "no_messages": "Aucun message pour le moment",
-  "loading": "Chargement...",
+  "loading": "Chargement du chat...",
   "new_message": "Nouveau message",
   "message_edited": "Message modifié",
   "message_deleted": "Message supprimé",
@@ -48,5 +48,6 @@
   "message_failed": "Échec de l'envoi du message",
   "connection_lost": "Connexion perdue. Tentative de reconnexion...",
   "reconnected": "Reconnecté",
-  "connection_error": "Erreur de connexion"
+  "connection_error": "Erreur de connexion",
+  "error_loading_conversation": "Erreur lors du chargement du chat du projet."
 }

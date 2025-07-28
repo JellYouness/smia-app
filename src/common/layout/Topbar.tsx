@@ -97,33 +97,43 @@ const Topbar = () => {
       onClick: () => router.push(Routes.Common.Home),
     },
     {
-      label: 'Browse Creators',
+      label: t('topbar:browse_creators'),
       link: '/creators',
       onClick: () => router.push('/creators'),
     },
     {
-      label: t('topbar:language'),
-      dropdown: [
-        {
-          label: t('topbar:language_french'),
-          link: asPath,
-          value: 'fr',
-          flag: 'fr',
-        },
-        {
-          label: t('topbar:language_english'),
-          link: `${asPath}`,
-          value: 'en',
-          flag: 'us',
-        },
-        {
-          label: t('topbar:language_spanish'),
-          link: `${asPath}`,
-          value: 'es',
-          flag: 'es',
-        },
-      ],
+      label: t('topbar:browse_projects'),
+      link: '/projects',
+      onClick: () => router.push('/projects'),
     },
+    {
+      label: t('topbar:browse_ambassadors'),
+      link: '/ambassadors',
+      onClick: () => router.push('/ambassadors'),
+    },
+    // {
+    //   label: t('topbar:language'),
+    //   dropdown: [
+    //     {
+    //       label: t('topbar:language_french'),
+    //       link: asPath,
+    //       value: 'fr',
+    //       flag: 'fr',
+    //     },
+    //     {
+    //       label: t('topbar:language_english'),
+    //       link: `${asPath}`,
+    //       value: 'en',
+    //       flag: 'us',
+    //     },
+    //     {
+    //       label: t('topbar:language_spanish'),
+    //       link: `${asPath}`,
+    //       value: 'es',
+    //       flag: 'es',
+    //     },
+    //   ],
+    // },
     ...(user
       ? [
           {
@@ -150,7 +160,6 @@ const Topbar = () => {
       link: '/creators',
       onClick: () => router.push('/creators'),
     },
-    // Add Browse Projects
     {
       label: t('topbar:browse_projects'),
       link: '/projects',
@@ -264,25 +273,28 @@ const Topbar = () => {
                       onClick={() => {
                         setUserLanguage('fr');
                         setShowDropdown(false);
+                        router.push(asPath);
                       }}
                     >
-                      Français
+                      {t('topbar:language_french')}
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
                         setUserLanguage('en');
                         setShowDropdown(false);
+                        router.push(asPath);
                       }}
                     >
-                      English
+                      {t('topbar:language_english')}
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
                         setUserLanguage('es');
                         setShowDropdown(false);
+                        router.push(asPath);
                       }}
                     >
-                      Español
+                      {t('topbar:language_spanish')}
                     </MenuItem>
                   </Menu>
                 </Box>
@@ -578,44 +590,7 @@ const Topbar = () => {
               </ListItem>
             );
           })}
-          {/* Add Browse Projects to mobile drawer */}
-          <ListItem key="browse-projects" disablePadding>
-            <ListItemButton
-              onClick={() => {
-                setShowDrawer(false);
-                router.push('/projects');
-              }}
-              sx={{ width: '100%' }}
-            >
-              <ListItemText
-                primaryTypographyProps={{
-                  ...(router.pathname === '/projects' && {
-                    color: 'primary.main',
-                  }),
-                }}
-              >
-                Browse Projects
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-          <ListItem key="profile" disablePadding>
-            <ListItemButton
-              onClick={() => router.push(Routes.Users.Me)}
-              sx={{
-                width: '100%',
-              }}
-            >
-              <ListItemText
-                primaryTypographyProps={{
-                  ...(router.pathname === Routes.Users.Me && {
-                    color: 'primary.main',
-                  }),
-                }}
-              >
-                Mon Profil
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
+
           {!user ? (
             <>
               <ListItem

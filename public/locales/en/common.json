@@ -148,5 +148,14 @@
   "availability": "Availability",
   "make_viewer": "Make Viewer",
   "make_editor": "Make Editor",
-  "creators": "creators"
+  "creators": "creators",
+  "english_captions": "English captions",
+  "browser_no_video_support": "Your browser does not support the video tag or the video format.",
+  "browser_no_audio_support": "Your browser does not support the audio element.",
+  "go_home": "Go Home",
+  "personal_information": "Personal Information",
+  "loading": "Loading...",
+  "sending": "Sending...",
+  "updating": "Updating...",
+  "update": "Update"
 }

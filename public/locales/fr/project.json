@@ -8,17 +8,13 @@
   "no_projects_found": "Aucun projet trouvé",
   "no_projects_match": "Aucun projet ne correspond à \"{{searchTerm}}\"",
   "no_projects_available": "Aucun projet disponible",
-  "status": {
-    "in_progress": "En cours",
-    "completed": "Terminé",
-    "pending": "En attente"
-  },
   "common": {
     "create_new_one": "Créer un nouveau projet",
     "new_one": "Nouveau projet",
     "read_all": "Tous les projets",
     "items": "Projets",
-    "edit_one": "Modifier le projet"
+    "edit_one": "Modifier le projet",
+    "read_one": "Voir le projet"
   },
   "steps": {
     "step1": {
@@ -45,7 +41,6 @@
   "status": "Statut",
   "draft": "Brouillon",
   "in_progress": "En cours",
-  "completed": "Terminé",
   "edit_project": "Modifier le projet",
   "delete_project": "Supprimer le projet",
   "view_details": "Voir les détails",
@@ -64,5 +59,16 @@
   "send_invitation": "Envoyer une invitation",
   "language_proficiency": "Niveau de compétence linguistique",
   "no_creators_found": "Aucun créateur trouvé",
-  "no_creators_description": "Aucun créateur trouvé pour ce projet. Veuillez réessayer plus tard."
+  "no_creators_description": "Aucun créateur trouvé pour ce projet. Veuillez réessayer plus tard.",
+  "confirmed_soft_hire": "Confirmé (embauche douce)",
+  "assigned_active_hire": "Assigné (embauche active)",
+  "no_hired_creators_title": "Aucun créateur embauché pour le moment",
+  "no_hired_creators_description": "Vous n'avez pas encore embauché de créateurs pour ce projet. Passez en revue les propositions pour commencer à embaucher.",
+  "open_project_chat": "Chat",
+  "team_and_permissions": "Équipe et permissions",
+  "updates_timeline": "Mises à jour du projet",
+  "project_chat": "Chat du projet",
+  "min_budget": "Budget minimum",
+  "max_budget": "Budget maximum",
+  "send_kickoff": "Envoyer"
 }
