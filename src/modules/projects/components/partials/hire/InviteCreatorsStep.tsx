@@ -13,15 +13,45 @@ import {
   useTheme,
   Stack,
   Divider,
+  Fade,
+  Slide,
+  Zoom,
+  IconButton,
+  Tooltip,
+  Badge,
+  alpha,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Check, Done, Star, PersonOffOutlined } from '@mui/icons-material';
+import {
+  Check,
+  Done,
+  Star,
+  PersonOffOutlined,
+  LocationOn,
+  Verified,
+  TrendingUp,
+  Schedule,
+  AttachMoney,
+  Language as LanguageIcon,
+  WorkOutline,
+  EmojiEvents,
+  Visibility,
+} from '@mui/icons-material';
 import LanguageChips from '../LanguageChips';
 import useProjects from '@modules/projects/hooks/useProjects';
 import { Id } from '@common/defs/types';
-import { Project } from '@modules/projects/defs/types';
+import { FilterParam } from '@common/hooks/useItems';
+import {
+  Project,
+  PROJECT_INVITE_FILTER,
+  PROJECT_INVITE_STATUS,
+} from '@modules/projects/defs/types';
 import InviteMessageModal from '../InviteMessageModal';
+import Routes from '@common/defs/routes';
+import StepperEmptyState from '../StepperEmptyState';
 
 interface InviteCreatorsStepProps {
   projectId: Id;
@@ -35,31 +65,61 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
   const { inviteCreator } = useProjects();
   const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
-  const [invited, setInvited] = useState<number[]>([]);
   const [inviteMessageModalOpen, setInviteMessageModalOpen] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<Id | null>(null);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     fetchCreators();
-  }, []);
-
-  useEffect(() => {
-    setInvited(project.invitedCreatorIds ?? []);
-  }, [project.invitedCreatorIds]);
-
-  // Get assigned creator IDs from projectCreators
-  const assignedCreatorIds = project.projectCreators?.map((pc) => pc.creatorId) ?? [];
-
-  // Filter out already assigned creators
-  const availableCreators = creators.filter((creator) => !assignedCreatorIds.includes(creator.id));
-
-  console.log(project);
+  }, [activeTab]);
 
   const fetchCreators = async () => {
     setLoading(true);
-    const response = await readAll();
+
+    // Create filters based on active tab
+    const filters: FilterParam[] = [];
+
+    if (activeTab === 1) {
+      filters.push({
+        filterColumn: 'project_invite_status',
+        filterOperator: 'equals',
+        filterValue: {
+          status: PROJECT_INVITE_FILTER.UNINVITED,
+          projectId,
+        },
+      });
+    } else if (activeTab === 2) {
+      filters.push({
+        filterColumn: 'project_invite_status',
+        filterOperator: 'equals',
+        filterValue: {
+          status: PROJECT_INVITE_FILTER.PENDING,
+          projectId,
+        },
+      });
+    } else if (activeTab === 3) {
+      filters.push({
+        filterColumn: 'project_invite_status',
+        filterOperator: 'equals',
+        filterValue: {
+          status: PROJECT_INVITE_FILTER.ACCEPTED,
+          projectId,
+        },
+      });
+    } else if (activeTab === 4) {
+      filters.push({
+        filterColumn: 'project_invite_status',
+        filterOperator: 'equals',
+        filterValue: {
+          status: PROJECT_INVITE_FILTER.DECLINED,
+          projectId,
+        },
+      });
+    }
+
+    const response = await readAll(1, 'all', undefined, filters);
     if (response.success && response.data) {
-      // Parse JSON string fields
       const parsedCreators = response.data.items.map((creator) => ({
         ...creator,
         skills: typeof creator.skills === 'string' ? JSON.parse(creator.skills) : creator.skills,
@@ -82,242 +142,640 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
       message,
     });
     if (response.success) {
-      setInvited((prev) => [...prev, creatorId]);
       setInviteMessageModalOpen(false);
     }
+  };
+
+  const handleViewProfile = (creatorId: Id) => {
+    window.open(Routes.Creators.ReadOne.replace('{id}', creatorId.toString()), '_blank');
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'AVAILABLE':
-        return 'success';
+        return { main: '#10b981', bg: alpha('#10b981', 0.1), text: '#065f46' };
       case 'BUSY':
-        return 'warning';
+        return { main: '#f59e0b', bg: alpha('#f59e0b', 0.1), text: '#92400e' };
       case 'LIMITED':
-        return 'info';
+        return { main: '#3b82f6', bg: alpha('#3b82f6', 0.1), text: '#1e40af' };
       default:
-        return 'error';
+        return { main: '#ef4444', bg: alpha('#ef4444', 0.1), text: '#dc2626' };
     }
   };
 
-  const getVerificationIcon = (status: string) => {
+  const getVerificationConfig = (status: string) => {
     switch (status) {
       case 'VERIFIED':
-        return <Check fontSize="small" />;
+        return {
+          icon: <Verified fontSize="small" />,
+          color: '#10b981',
+          bg: alpha('#10b981', 0.1),
+          label: 'Verified Creator',
+        };
       case 'FEATURED':
-        return <Star fontSize="small" />;
+        return {
+          icon: <EmojiEvents fontSize="small" />,
+          color: '#f59e0b',
+          bg: alpha('#f59e0b', 0.1),
+          label: 'Featured Creator',
+        };
       default:
         return null;
     }
   };
 
-  const renderSkeleton = () => (
-    <Box height="100%" overflow="auto">
-      {[1, 2, 3, 4].map((item) => (
-        <Card key={item} sx={{ mb: 2 }}>
-          <CardContent>
-            <Box display="flex" alignItems="center">
-              <Skeleton variant="circular" width={40} height={40} />
-              <Box ml={2} flexGrow={1}>
-                <Skeleton width="30%" />
-                <Skeleton width="20%" />
+  const renderEnhancedSkeleton = () => (
+    <Box>
+      {[1, 2, 3, 4].map((item, index) => (
+        <Fade in timeout={300 + index * 100} key={item}>
+          <Card
+            sx={{
+              mb: 3,
+              borderRadius: 3,
+              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              background: 'linear-gradient(145deg, #ffffff 0%, #fafafa 100%)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Box display="flex" alignItems="flex-start" mb={3}>
+                <Box position="relative">
+                  <Skeleton variant="circular" width={64} height={64} />
+                  <Skeleton
+                    variant="circular"
+                    width={20}
+                    height={20}
+                    sx={{ position: 'absolute', top: -2, right: -2 }}
+                  />
+                </Box>
+                <Box ml={3} flexGrow={1}>
+                  <Skeleton width="40%" height={28} sx={{ mb: 1 }} />
+                  <Skeleton width="60%" height={20} sx={{ mb: 2 }} />
+                  <Box display="flex" gap={1}>
+                    <Skeleton width={80} height={24} sx={{ borderRadius: 12 }} />
+                    <Skeleton width={100} height={24} sx={{ borderRadius: 12 }} />
+                  </Box>
+                </Box>
+                <Skeleton width={120} height={40} sx={{ borderRadius: 2 }} />
               </Box>
-              <Skeleton width={100} height={36} />
-            </Box>
-            <Box mt={2} display="flex">
-              <Box flexGrow={1}>
-                <Skeleton width="80%" />
-                <Skeleton width="60%" />
-                <Skeleton width="70%" />
+
+              <Box display="flex" gap={4} mb={2}>
+                <Skeleton width={80} height={20} />
+                <Skeleton width={120} height={20} />
               </Box>
-              <Skeleton width={80} height={32} />
-            </Box>
-          </CardContent>
-        </Card>
+
+              <Box display="flex" gap={1} flexWrap="wrap">
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} width={80} height={28} sx={{ borderRadius: 14 }} />
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
+        </Fade>
       ))}
     </Box>
   );
 
+  const renderCreatorCard = (creator: Creator, index: number) => {
+    const invite = project?.invites?.find((inv) => inv.creatorId === creator.id);
+    const statusColors = getStatusColor(creator.availability);
+    const verificationConfig = getVerificationConfig(creator.verificationStatus);
+
+    // Determine button state based on invite status
+    const getInviteButtonProps = () => {
+      if (!invite) {
+        return {
+          variant: 'contained' as const,
+          color: 'primary' as const,
+          disabled: false,
+          onClick: () => {
+            setSelectedCreator(creator);
+            setInviteMessageModalOpen(true);
+          },
+          startIcon: null,
+          children: t('common:invite'),
+          sx: {
+            minWidth: 140,
+            height: 44,
+            borderRadius: 2.5,
+            textTransform: 'none',
+            fontWeight: 600,
+            boxShadow: '0 4px 14px rgba(59, 130, 246, 0.25)',
+            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+            '&:hover': {
+              transform: 'translateY(-1px)',
+              boxShadow: '0 6px 20px rgba(59, 130, 246, 0.35)',
+            },
+            transition: 'all 0.2s ease',
+          },
+        };
+      }
+
+      switch (invite.status) {
+        case PROJECT_INVITE_STATUS.PENDING:
+          return {
+            variant: 'contained' as const,
+            disabled: true,
+            startIcon: <Done />,
+            children: t('common:invited'),
+            sx: {
+              minWidth: 140,
+              height: 44,
+              borderRadius: 2.5,
+              textTransform: 'none',
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+              color: 'white !important',
+              opacity: 0.6,
+            },
+          };
+        case PROJECT_INVITE_STATUS.DECLINED:
+          return {
+            variant: 'contained' as const,
+            disabled: true,
+            children: t('project:declined', 'Declined'),
+            sx: {
+              minWidth: 140,
+              height: 44,
+              borderRadius: 2.5,
+              textTransform: 'none',
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+              color: 'white !important',
+              opacity: 0.6,
+            },
+          };
+        case PROJECT_INVITE_STATUS.ACCEPTED:
+          return {
+            variant: 'contained' as const,
+            disabled: true,
+            startIcon: <Done />,
+            children: t('common:invited'),
+            sx: {
+              minWidth: 140,
+              height: 44,
+              borderRadius: 2.5,
+              textTransform: 'none',
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white !important',
+              opacity: 0.6,
+            },
+          };
+        default:
+          return {
+            variant: 'contained' as const,
+            disabled: true,
+            children: t('project:expired', 'Expired'),
+            sx: {
+              minWidth: 140,
+              height: 44,
+              borderRadius: 2.5,
+              textTransform: 'none',
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              color: 'white !important',
+              opacity: 0.6,
+            },
+          };
+      }
+    };
+
+    const inviteBtnProps = getInviteButtonProps() as any;
+
+    return (
+      <Slide in direction="up" timeout={300 + index * 100} key={creator.id}>
+        <Card
+          onMouseEnter={() => setHoveredCard(creator.id)}
+          onMouseLeave={() => setHoveredCard(null)}
+          sx={{
+            mb: 3,
+            borderRadius: 3,
+            border:
+              invite?.status === PROJECT_INVITE_STATUS.ACCEPTED
+                ? `2px solid ${alpha('#10b981', 0.3)}`
+                : `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+            background:
+              invite?.status === PROJECT_INVITE_STATUS.ACCEPTED
+                ? 'linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%)'
+                : 'linear-gradient(145deg, #ffffff 0%, #fafafa 100%)',
+            boxShadow: '0 2px 2px rgba(0,0,0,0.12)',
+            position: 'relative',
+            overflow: 'visible',
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            {/* Header Section */}
+            <Box display="flex" alignItems="flex-start" mb={3}>
+              <Box position="relative">
+                <Badge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  badgeContent={
+                    <Box
+                      sx={{
+                        width: 16,
+                        height: 16,
+                        borderRadius: '50%',
+                        backgroundColor: statusColors.main,
+                        border: '2px solid white',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                      }}
+                    />
+                  }
+                >
+                  <Avatar
+                    src={creator.user?.profileImage || ''}
+                    sx={{
+                      width: 64,
+                      height: 64,
+                      background: (theme) => theme.palette.primary.main,
+                      fontSize: '1.5rem',
+                      fontWeight: 600,
+                      border: '3px solid white',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                    }}
+                  >
+                    {creator.user?.firstName?.[0]}
+                    {creator.user?.lastName?.[0]}
+                  </Avatar>
+                </Badge>
+              </Box>
+
+              <Box ml={3} flexGrow={1}>
+                <Box display="flex" alignItems="center" mb={1}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      color: theme.palette.text.primary,
+                      letterSpacing: '-0.02em',
+                    }}
+                  >
+                    {creator.user?.firstName} {creator.user?.lastName}
+                  </Typography>
+                  {verificationConfig && (
+                    <Tooltip title={verificationConfig.label} arrow>
+                      <Box
+                        sx={{
+                          ml: 1,
+                          p: 0.5,
+                          borderRadius: '50%',
+                          backgroundColor: verificationConfig.bg,
+                          color: verificationConfig.color,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {verificationConfig.icon}
+                      </Box>
+                    </Tooltip>
+                  )}
+                  <Tooltip title="View full profile" arrow>
+                    <Box
+                      onClick={() => handleViewProfile(creator.id)}
+                      sx={{
+                        cursor: 'pointer',
+                        ml: 1,
+                        p: 0.5,
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                        color: theme.palette.primary.main,
+                        '&:hover': {
+                          backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                        },
+                      }}
+                    >
+                      <Visibility fontSize="small" />
+                    </Box>
+                  </Tooltip>
+                </Box>
+
+                <Box display="flex" alignItems="center" mb={2}>
+                  <Rating
+                    value={creator.averageRating}
+                    precision={0.1}
+                    readOnly
+                    size="small"
+                    sx={{
+                      '& .MuiRating-iconFilled': {
+                        color: '#fbbf24',
+                      },
+                    }}
+                  />
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      ml: 1,
+                      color: theme.palette.text.secondary,
+                      fontWeight: 500,
+                    }}
+                  >
+                    ({creator.ratingCount})
+                  </Typography>
+                </Box>
+
+                <Box display="flex" gap={1} flexWrap="wrap">
+                  <Chip
+                    label={t(`user:${creator.verificationStatus.toLowerCase()}`)}
+                    size="small"
+                    icon={verificationConfig?.icon}
+                    sx={{
+                      backgroundColor:
+                        verificationConfig?.bg || alpha(theme.palette.primary.main, 0.1),
+                      color: verificationConfig?.color || theme.palette.primary.main,
+                      fontWeight: 600,
+                      border: 'none',
+                      '& .MuiChip-icon': {
+                        color: 'inherit',
+                      },
+                    }}
+                  />
+                  <Chip
+                    label={t(`user:${creator.availability.toLowerCase()}`)}
+                    size="small"
+                    sx={{
+                      backgroundColor: statusColors.bg,
+                      color: statusColors.text,
+                      fontWeight: 600,
+                      border: 'none',
+                    }}
+                  />
+                </Box>
+              </Box>
+
+              <Box display="flex" flexDirection="row" alignItems="flex-end" gap={1}>
+                <Button {...inviteBtnProps} />
+              </Box>
+            </Box>
+
+            <Divider sx={{ my: 2, opacity: 0.6 }} />
+
+            {/* Details Section */}
+            <Box display="flex" flexWrap="wrap" gap={4} mb={3}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <AttachMoney sx={{ fontSize: 20, color: theme.palette.success.main }} />
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 700, color: theme.palette.text.primary }}
+                >
+                  ${creator.hourlyRate.toFixed(2)}/hr
+                </Typography>
+              </Box>
+
+              <Box display="flex" alignItems="center" gap={1}>
+                <WorkOutline sx={{ fontSize: 20, color: theme.palette.info.main }} />
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 600, color: theme.palette.text.primary }}
+                >
+                  {creator.experience} {t('common:years_experience')}
+                </Typography>
+              </Box>
+
+              <Box display="flex" alignItems="center" gap={1}>
+                <LanguageIcon sx={{ fontSize: 20, color: theme.palette.warning.main }} />
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                  {creator.languages?.length || 0} languages
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Languages */}
+            <Box mb={3}>
+              <LanguageChips languages={creator.languages} />
+            </Box>
+
+            {/* Skills */}
+            <Box>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  mb: 1.5,
+                  fontWeight: 700,
+                  color: theme.palette.text.primary,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                <TrendingUp sx={{ fontSize: 18 }} />
+                {t('common:skills')}
+              </Typography>
+              <Stack direction="row" flexWrap="wrap" gap={1}>
+                {creator.skills?.slice(0, 6).map((skill, skillIndex) => (
+                  <Zoom in timeout={400 + skillIndex * 50} key={skillIndex}>
+                    <Chip
+                      label={skill.replace(/_/g, ' ')}
+                      size="small"
+                      sx={{
+                        backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                        color: theme.palette.primary.main,
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                        border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                        '&:hover': {
+                          backgroundColor: alpha(theme.palette.primary.main, 0.15),
+                          transform: 'translateY(-1px)',
+                        },
+                        transition: 'all 0.2s ease',
+                      }}
+                    />
+                  </Zoom>
+                ))}
+                {creator.skills?.length > 6 && (
+                  <Chip
+                    label={`+${creator.skills.length - 6} more`}
+                    size="small"
+                    sx={{
+                      backgroundColor: alpha(theme.palette.grey[500], 0.1),
+                      color: theme.palette.text.secondary,
+                      fontWeight: 600,
+                      fontSize: '0.75rem',
+                    }}
+                  />
+                )}
+              </Stack>
+            </Box>
+          </CardContent>
+        </Card>
+      </Slide>
+    );
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
+  const getEmptyStateContent = () => {
+    switch (activeTab) {
+      case 0: // All Creators
+        return {
+          title: t('project:no_creators_found', 'No Creators Found'),
+          description: t(
+            'project:no_creators_description',
+            'There are no creators available in the system at the moment.'
+          ),
+          icon: <PersonOffOutlined />,
+        };
+      case 1: // Uninvited
+        return {
+          title: t('project:no_uninvited_creators', 'No Uninvited Creators'),
+          description: t(
+            'project:no_uninvited_creators_description',
+            'All available creators have already been invited to this project.'
+          ),
+          icon: <PersonOffOutlined />,
+        };
+      case 2: // Pending
+        return {
+          title: t('project:no_pending_invites', 'No Pending Invites'),
+          description: t(
+            'project:no_pending_invites_description',
+            'There are no pending invitations for this project.'
+          ),
+          icon: <PersonOffOutlined />,
+        };
+      case 3: // Accepted
+        return {
+          title: t('project:no_accepted_invites', 'No Accepted Invites'),
+          description: t(
+            'project:no_accepted_invites_description',
+            'No creators have accepted invitations to this project yet.'
+          ),
+          icon: <PersonOffOutlined />,
+        };
+      case 4: // Declined
+        return {
+          title: t('project:no_declined_invites', 'No Declined Invites'),
+          description: t(
+            'project:no_declined_invites_description',
+            'No creators have declined invitations to this project.'
+          ),
+          icon: <PersonOffOutlined />,
+        };
+      default:
+        return {
+          title: t('project:no_creators_found', 'No Creators Found'),
+          description: t(
+            'project:no_creators_description',
+            'There are no creators available in the system at the moment.'
+          ),
+          icon: <PersonOffOutlined />,
+        };
+    }
+  };
+
   return (
     <Box>
-      <Box height={600} overflow="auto">
+      {/* Tabs for filtering creators */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          sx={{
+            '& .MuiTab-root': {
+              textTransform: 'none',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              minHeight: 48,
+            },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: '3px 3px 0 0',
+              backgroundColor: (() => {
+                switch (activeTab) {
+                  case 1:
+                    return theme.palette.info.main;
+                  case 2:
+                    return theme.palette.warning.main;
+                  case 3:
+                    return theme.palette.success.main;
+                  case 4:
+                    return theme.palette.error.main;
+                  default:
+                    return theme.palette.primary.main;
+                }
+              })(),
+            },
+          }}
+        >
+          <Tab
+            label={t('project:all_creators', 'All Creators')}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&.Mui-selected': {
+                color: theme.palette.primary.main,
+              },
+            }}
+          />
+          <Tab
+            label={t('project:uninvited', 'Uninvited')}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&.Mui-selected': {
+                color: theme.palette.info.main,
+              },
+            }}
+          />
+          <Tab
+            label={t('project:pending_invites', 'Pending')}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&.Mui-selected': {
+                color: theme.palette.warning.main,
+              },
+            }}
+          />
+          <Tab
+            label={t('project:accepted_invites', 'Accepted')}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&.Mui-selected': {
+                color: theme.palette.success.main,
+              },
+            }}
+          />
+          <Tab
+            label={t('project:declined_invites', 'Declined')}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&.Mui-selected': {
+                color: theme.palette.error.main,
+              },
+            }}
+          />
+        </Tabs>
+      </Box>
+
+      <Box height={650} overflow="auto" sx={{ pr: 1 }}>
         {loading ? (
-          renderSkeleton()
+          renderEnhancedSkeleton()
         ) : (
-          <>
-            {availableCreators.map((creator, index) => {
-              return (
-                <Card
-                  key={creator.id}
-                  sx={{
-                    mb: 2,
-                    borderLeft: invited.includes(creator.id)
-                      ? `4px solid ${theme.palette.success.main}`
-                      : 'none',
-                    transition: 'all 0.2s ease',
-                    border: '1px solid #e0e0e0',
-                  }}
-                >
-                  <CardContent>
-                    <Box display="flex" alignItems="center" flexWrap="wrap">
-                      {/* Avatar and Basic Info */}
-                      <Box display="flex" alignItems="center" flexGrow={1} mb={{ xs: 2, sm: 0 }}>
-                        <Avatar
-                          src={creator.user?.profileImage || ''}
-                          sx={{
-                            bgcolor: theme.palette.primary.main,
-                            width: 56,
-                            height: 56,
-                            mr: 2,
-                          }}
-                        >
-                          {creator.user?.firstName[0]}
-                          {creator.user?.lastName[0]}
-                        </Avatar>
-                        <Box>
-                          <Typography variant="subtitle1" fontWeight="bold">
-                            {creator.user?.firstName} {creator.user?.lastName}
-                          </Typography>
-
-                          <Box display="flex" alignItems="center">
-                            <Rating
-                              value={creator.averageRating}
-                              precision={0.1}
-                              readOnly
-                              size="small"
-                            />
-                            <Typography variant="body2" ml={1} color="textSecondary">
-                              ({creator.ratingCount})
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Box>
-
-                      {/* Status Chips */}
-                      <Box
-                        display="flex"
-                        mb={{ xs: 2, sm: 0 }}
-                        mx={{ xs: 0, sm: 2 }}
-                        alignItems="center"
-                      >
-                        <Chip
-                          label={t(`user:${creator.verificationStatus.toLowerCase()}`)}
-                          size="small"
-                          color={creator.verificationStatus === 'FEATURED' ? 'primary' : 'default'}
-                          icon={
-                            getVerificationIcon(creator.verificationStatus) as React.ReactElement
-                          }
-                          sx={{ mr: 1, p: 2 }}
-                        />
-                        <Chip
-                          label={t(`user:${creator.availability.toLowerCase()}`)}
-                          size="small"
-                          color={getStatusColor(creator.availability)}
-                          variant="outlined"
-                          sx={{ p: 2 }}
-                        />
-                      </Box>
-
-                      {/* Invite Button */}
-                      <Button
-                        variant={invited.includes(creator.id) ? 'contained' : 'outlined'}
-                        color={invited.includes(creator.id) ? 'success' : 'primary'}
-                        onClick={() => {
-                          setSelectedCreator(creator);
-                          setInviteMessageModalOpen(true);
-                        }}
-                        disabled={invited.includes(creator.id)}
-                        startIcon={invited.includes(creator.id) ? <Done /> : null}
-                        size="medium"
-                        sx={{ minWidth: 120 }}
-                      >
-                        {invited.includes(creator.id) ? t('common:invited') : t('common:invite')}
-                      </Button>
-                    </Box>
-
-                    <Divider sx={{ my: 2 }} />
-
-                    {/* Detailed Information */}
-                    <Box display="flex" flexWrap="wrap">
-                      <Box
-                        flexGrow={1}
-                        minWidth={300}
-                        mb={{ xs: 2, md: 0 }}
-                        gap={1}
-                        display="flex"
-                        flexDirection="column"
-                      >
-                        <Box display="flex" flexWrap="wrap" gap={3} alignItems="center">
-                          <Typography variant="body1" color="textPrimary">
-                            ${creator.hourlyRate.toFixed(2)}/hr
-                          </Typography>
-
-                          <Typography variant="body1" color="textPrimary">
-                            {creator.experience} {t('common:years_experience')}
-                          </Typography>
-                        </Box>
-
-                        <LanguageChips languages={creator.languages} />
-
-                        <Box>
-                          <Typography variant="subtitle2" mb={1}>
-                            {t('common:skills')}
-                          </Typography>
-                          <Stack direction="row" flexWrap="wrap" gap={0.5}>
-                            {creator.skills.slice(0, 4).map((skill, index) => (
-                              <Chip
-                                key={index}
-                                label={skill.replace(/_/g, ' ')}
-                                size="small"
-                                sx={{
-                                  fontSize: '0.75rem',
-                                  p: 2,
-                                }}
-                              />
-                            ))}
-                          </Stack>
-                        </Box>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </>
+          <Box>{creators.map((creator, index) => renderCreatorCard(creator, index))}</Box>
         )}
 
         {!loading && creators.length === 0 && (
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            height="100%"
-            p={4}
-          >
+          <Fade in timeout={600}>
             <Box
+              width="100%"
+              height="100%"
               display="flex"
-              alignItems="center"
               justifyContent="center"
-              mb={2}
-              sx={{
-                background: (theme) =>
-                  `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
-                borderRadius: '50%',
-                width: 72,
-                height: 72,
-                boxShadow: 3,
-              }}
+              alignItems="center"
             >
-              <PersonOffOutlined sx={{ fontSize: 40, color: 'white' }} />
+              <StepperEmptyState
+                icon={getEmptyStateContent().icon}
+                title={getEmptyStateContent().title}
+                description={getEmptyStateContent().description}
+                showButton={false}
+              />
             </Box>
-            <Typography variant="h6" mb={2}>
-              {t('project:no_creators_found')}
-            </Typography>
-            <Typography variant="body1" color="textSecondary" textAlign="center">
-              {t('project:no_creators_description')}
-            </Typography>
-          </Box>
+          </Fade>
         )}
       </Box>
 

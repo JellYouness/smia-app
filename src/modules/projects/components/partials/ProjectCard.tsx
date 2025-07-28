@@ -78,11 +78,19 @@ const ProjectCard = ({
     }
   };
 
-  const isUnassigned = project.creatorId === null;
+  const isUnassigned = !project.projectCreators || project.projectCreators.length === 0;
 
   const getActionLabel = () => {
     if (isDraft) {
       return t('project:resume_creation', 'Resume project creation');
+    }
+
+    if (project.status === PROJECT_STATUS.COMPLETED) {
+      return t('project:view_project', 'View Project');
+    }
+
+    if (project.status === PROJECT_STATUS.CANCELLED) {
+      return t('project:view_project', 'View Project');
     }
 
     if (isUnassigned && project.proposalsCount === 0) {
@@ -104,6 +112,13 @@ const ProjectCard = ({
       return Routes.Projects.UpdateOne.replace('{id}', project.id.toString());
     }
 
+    if (
+      project.status === PROJECT_STATUS.COMPLETED ||
+      project.status === PROJECT_STATUS.CANCELLED
+    ) {
+      return Routes.Projects.ReadOne.replace('{id}', project.id.toString());
+    }
+
     if (isUnassigned) {
       const step = project.proposalsCount === 0 ? 'invite' : 'review';
       return { pathname: base, query: { step } };
@@ -117,11 +132,27 @@ const ProjectCard = ({
     router.push(route);
   };
 
+  const isOnProjectPage =
+    router.pathname === Routes.Projects.ReadOne.replace('{id}', '[id]') &&
+    router.query.id === project.id.toString();
+
+  const wouldNavigateToProjectPage = () => {
+    const route = getProjectRoute();
+    if (typeof route === 'string') {
+      return route === Routes.Projects.ReadOne.replace('{id}', project.id.toString());
+    }
+    return false;
+  };
+
+  const shouldHideAction = isOnProjectPage && wouldNavigateToProjectPage();
+
   let statusLabel;
   if (isDraft) {
     statusLabel = t('project:draft');
   } else if (project.status === PROJECT_STATUS.IN_PROGRESS) {
     statusLabel = t('project:in_progress');
+  } else if (project.status === PROJECT_STATUS.CANCELLED) {
+    statusLabel = t('project:cancelled');
   } else {
     statusLabel = t('project:completed');
   }
@@ -151,7 +182,7 @@ const ProjectCard = ({
           <Typography variant="h6" fontWeight={600} sx={{ wordBreak: 'break-word' }}>
             {project.title}
           </Typography>
-          {!browsing && (
+          {!browsing && !hideAction && (
             <>
               <IconButton
                 aria-label="project actions"
@@ -177,8 +208,36 @@ const ProjectCard = ({
                   'aria-labelledby': 'project-actions-button',
                 }}
               >
-                {project.status === PROJECT_STATUS.IN_PROGRESS && (
+                {project.status === PROJECT_STATUS.CANCELLED ? (
+                  <MenuItem onClick={handleDeleteClick}>
+                    <Delete fontSize="small" sx={{ mr: 1.5, color: 'error.main' }} />
+                    <Typography variant="body2" color="error">
+                      {t('project:delete_project')}
+                    </Typography>
+                  </MenuItem>
+                ) : (
                   <>
+                    {(project.status === PROJECT_STATUS.IN_PROGRESS ||
+                      project.status === PROJECT_STATUS.COMPLETED) && (
+                      <MenuItem
+                        onClick={() => {
+                          handleMenuClose();
+                          router.push({
+                            pathname: Routes.Projects.ReadOne.replace(
+                              '{id}',
+                              project.id.toString()
+                            ),
+                            query: { tab: 'media' },
+                          });
+                        }}
+                      >
+                        <WorkOutline fontSize="small" sx={{ mr: 1.5 }} />
+                        <Typography variant="body2">Media Workshop</Typography>
+                      </MenuItem>
+                    )}
+
+                    <Divider sx={{ my: 1 }} />
+
                     <MenuItem
                       onClick={() => {
                         handleMenuClose();
@@ -240,18 +299,19 @@ const ProjectCard = ({
                       <Typography variant="body2">{t('project:kickoff', 'Kick-off')}</Typography>
                     </MenuItem>
                     <Divider sx={{ my: 1 }} />
+
+                    <MenuItem onClick={handleEditClick}>
+                      <Edit fontSize="small" sx={{ mr: 1.5 }} />
+                      <Typography variant="body2">{t('project:edit_project')}</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleDeleteClick}>
+                      <Delete fontSize="small" sx={{ mr: 1.5, color: 'error.main' }} />
+                      <Typography variant="body2" color="error">
+                        {t('project:delete_project')}
+                      </Typography>
+                    </MenuItem>
                   </>
                 )}
-                <MenuItem onClick={handleEditClick}>
-                  <Edit fontSize="small" sx={{ mr: 1.5 }} />
-                  <Typography variant="body2">{t('project:edit_project')}</Typography>
-                </MenuItem>
-                <MenuItem onClick={handleDeleteClick}>
-                  <Delete fontSize="small" sx={{ mr: 1.5, color: 'error.main' }} />
-                  <Typography variant="body2" color="error">
-                    {t('project:delete_project')}
-                  </Typography>
-                </MenuItem>
               </Menu>
             </>
           )}
@@ -308,7 +368,7 @@ const ProjectCard = ({
         </Grid>
       </CardContent>
 
-      {!hideAction && !browsing && (
+      {!hideAction && !browsing && !shouldHideAction && (
         <Box sx={{ p: 2, pt: 0 }}>
           <Button fullWidth variant="outlined" onClick={handleActionClick}>
             {actionLabel}

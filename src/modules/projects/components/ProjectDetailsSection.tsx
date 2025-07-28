@@ -4,13 +4,16 @@ import ProjectCard from './partials/ProjectCard';
 
 interface Props {
   project: Project;
+  isProjectOwner?: boolean;
 }
 
-const ProjectDetailsSection = ({ project }: Props) => {
+const ProjectDetailsSection = ({ project, isProjectOwner }: Props) => {
   const owner = project.client?.user;
+
+  console.log(isProjectOwner);
   return (
     <Box>
-      <ProjectCard project={project} hideAction />
+      <ProjectCard project={project} hideAction={!isProjectOwner} />
       {owner && (
         <Paper
           elevation={2}

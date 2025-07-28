@@ -1,23 +1,14 @@
 import { Any, CrudObject, Id } from '@common/defs/types';
 import { Ambassador } from '@modules/ambassadors/defs/types';
+import { Client } from '@modules/clients/defs/types';
 import { Creator } from '@modules/creators/defs/types';
-import { Client, User } from '@modules/users/defs/types';
+import { User } from '@modules/users/defs/types';
 
 export enum PROJECT_STATUS {
-  DRAFT = 'draft',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-}
-
-export interface ProjectCreator {
-  id: Id;
-  projectId: Id;
-  creatorId: Id;
-  role?: string;
-  status?: PROJECT_CREATOR_STATUS;
-  permission: PROJECT_CREATOR_PERMISSION;
-  creator?: Creator;
+  DRAFT = 'DRAFT',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
 }
 
 export interface Project extends CrudObject {
@@ -28,15 +19,26 @@ export interface Project extends CrudObject {
   endDate?: string;
   budget?: number;
   clientId?: Id;
-  client?: User;
   creatorId?: Id;
-  creator?: User;
   ambassadorId?: Id;
-  ambassador?: User;
+
+  client?: User;
+  creator?: Creator;
+  ambassador?: Ambassador;
+  invites?: ProjectInvite[];
   proposalsCount?: number;
   hiresCount?: number;
-  invitedCreatorIds?: number[];
   projectCreators?: ProjectCreator[];
+}
+
+export interface ProjectCreator {
+  id: Id;
+  projectId: Id;
+  creatorId: Id;
+  role?: string;
+  status?: PROJECT_CREATOR_STATUS;
+  permission: PROJECT_CREATOR_PERMISSION | null;
+  creator?: Creator;
 }
 
 export interface ProjectInvite {
@@ -58,6 +60,14 @@ export enum PROJECT_INVITE_STATUS {
   ACCEPTED = 'ACCEPTED',
   DECLINED = 'DECLINED',
   EXPIRED = 'EXPIRED',
+}
+
+export enum PROJECT_INVITE_FILTER {
+  ALL = 'ALL',
+  UNINVITED = 'UNINVITED',
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  DECLINED = 'DECLINED',
 }
 
 export interface ProjectProposal extends CrudObject {

@@ -10,6 +10,7 @@ interface HireStepperBarProps {
   proposalsCount?: number;
   hiresCount?: number;
   onStepChange?: (step: StepKey) => void;
+  disabled?: boolean;
 }
 
 type StepStatus = 'active' | 'default';
@@ -21,10 +22,11 @@ interface StepItemProps {
 }
 
 const StepItem = styled('li', {
-  shouldForwardProp: (prop) => prop !== 'status' && prop !== 'last' && prop !== 'clickable',
-})<StepItemProps>(({ theme, status, last, clickable }) => {
+  shouldForwardProp: (prop) =>
+    prop !== 'status' && prop !== 'last' && prop !== 'clickable' && prop !== 'disabled',
+})<StepItemProps & { disabled?: boolean }>(({ theme, status, last, clickable, disabled }) => {
   const primary = theme.palette.primary.main;
-  const bg = status === 'active' ? primary : theme.palette.background.paper;
+  const bg = status === 'active' && !disabled ? primary : theme.palette.background.paper;
 
   return {
     flex: 1,
@@ -36,11 +38,30 @@ const StepItem = styled('li', {
     fontWeight: 600,
     textTransform: 'uppercase',
     userSelect: 'none',
-    cursor: clickable ? 'pointer' : 'default',
+    cursor: (() => {
+      if (disabled) {
+        return 'default';
+      }
+      if (clickable) {
+        return 'pointer';
+      }
+      return 'default';
+    })(),
     backgroundColor: bg,
-    color: status === 'active' ? theme.palette.common.white : theme.palette.text.primary,
-    border: `2px solid ${alpha(theme.palette.divider, 0.2)}`,
+    color: (() => {
+      if (disabled) {
+        return theme.palette.text.secondary;
+      }
+      if (status === 'active') {
+        return theme.palette.common.white;
+      }
+      return theme.palette.text.primary;
+    })(),
+    border: `2px solid ${
+      disabled ? alpha(theme.palette.divider, 0.3) : alpha(theme.palette.divider, 0.2)
+    }`,
     borderLeftWidth: 1,
+    opacity: disabled ? 1 : 1,
     '&:first-of-type': {
       borderTopLeftRadius: 4,
       borderBottomLeftRadius: 4,
@@ -49,26 +70,28 @@ const StepItem = styled('li', {
       borderTopRightRadius: 4,
       borderBottomRightRadius: 4,
     },
-    '&:hover': {
-      border: `2px solid ${primary}`,
-      color: status === 'active' ? theme.palette.common.white : primary,
-      '&::after': {
-        boxShadow: `3px -3px ${primary}`,
-      },
-    },
+    '&:hover': disabled
+      ? {}
+      : {
+          border: `2px solid ${primary}`,
+          color: status === 'active' ? theme.palette.common.white : primary,
+          '&::after': {
+            boxShadow: `3px -3px ${primary}`,
+          },
+        },
     '&::after': last
       ? {}
       : {
           content: '""',
           position: 'absolute',
           top: '58%',
-          right: -22,
+          right: -21,
           width: 44,
           height: 44,
           marginTop: -25,
           background: bg,
           transform: 'scale(0.7071) rotate(45deg)',
-          boxShadow: `2px -2px black`,
+          boxShadow: disabled ? `2px -2px ${alpha(theme.palette.divider, 0.7)}` : `2px -2px black`,
           zIndex: 1,
         },
   };
@@ -79,6 +102,7 @@ const HireStepperBar = ({
   proposalsCount = 0,
   hiresCount = 0,
   onStepChange,
+  disabled = false,
 }: HireStepperBarProps) => {
   const { t } = useTranslation(['project']);
 
@@ -88,12 +112,12 @@ const HireStepperBar = ({
 
   const steps: { key: StepKey; label: string; count?: number }[] = [
     { key: 'invite', label: t('project:invite_creators') },
-    { key: 'review', label: t('project:proposals'), count: proposalsCount },
-    { key: 'hire', label: t('project:hire'), count: hiresCount },
+    { key: 'review', label: t('project:proposals'), count: disabled ? undefined : proposalsCount },
+    { key: 'hire', label: t('project:hire'), count: disabled ? undefined : hiresCount },
     { key: 'kickoff', label: t('project:kickoff', 'Kick-off') },
   ];
 
-  const activeIdx = steps.findIndex((s) => s.key === active);
+  const activeIdx = disabled ? -1 : steps.findIndex((s) => s.key === active);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   return (
@@ -111,29 +135,33 @@ const HireStepperBar = ({
               key={step.key}
               status={status}
               last={idx === steps.length - 1}
-              clickable={!!onStepChange}
-              onClick={() => onStepChange?.(step.key)}
-              onMouseEnter={() => setHoveredIdx(idx)}
-              onMouseLeave={() => setHoveredIdx(null)}
+              clickable={!!onStepChange && !disabled}
+              disabled={disabled}
+              onClick={disabled ? undefined : () => onStepChange?.(step.key)}
+              onMouseEnter={disabled ? undefined : () => setHoveredIdx(idx)}
+              onMouseLeave={disabled ? undefined : () => setHoveredIdx(null)}
               sx={{
                 fontSize: smDown ? 12 : 14,
                 py: smDown ? 1 : 1.5,
 
-                ...(isPrevActive && {
-                  '&::after': {
-                    boxShadow: `2px -2px ${primary}`,
-                  },
-                }),
+                ...(isPrevActive &&
+                  !disabled && {
+                    '&::after': {
+                      boxShadow: `2px -2px ${primary}`,
+                    },
+                  }),
 
-                ...(isActiveStep && {
-                  '&::after': { boxShadow: `2px -2px ${primary}` },
-                }),
+                ...(isActiveStep &&
+                  !disabled && {
+                    '&::after': { boxShadow: `2px -2px ${primary}` },
+                  }),
 
-                ...(arrowHighlightedOnHover && {
-                  '&::after': {
-                    boxShadow: `3px -3px ${primary}`,
-                  },
-                }),
+                ...(arrowHighlightedOnHover &&
+                  !disabled && {
+                    '&::after': {
+                      boxShadow: `3px -3px ${primary}`,
+                    },
+                  }),
               }}
             >
               <Typography component="span" sx={{ fontSize: smDown ? 10 : 12, fontWeight: 600 }}>

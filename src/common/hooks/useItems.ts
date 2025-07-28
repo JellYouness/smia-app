@@ -60,10 +60,12 @@ export interface UseItemsHook<Item, CreateOneInput, UpdateOneInput> {
 export interface UseItemsOptions {
   fetchItems?: boolean;
   pageSize?: number;
+  autoRefetchAfterMutation?: boolean;
 }
 export const defaultOptions = {
   fetchItems: false,
   pageSize: 25,
+  autoRefetchAfterMutation: true,
 };
 
 export type UseItems<Item, CreateOneInput = Any, UpdateOneInput = Any> = (
@@ -114,7 +116,7 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
       ...options,
     });
 
-    if (response.success) {
+    if (response.success && opts.autoRefetchAfterMutation) {
       mutateAndRefetch();
     }
 
@@ -189,7 +191,7 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
       }
     );
 
-    if (response.success) {
+    if (response.success && opts.autoRefetchAfterMutation) {
       mutateAndRefetch();
     }
 
@@ -206,7 +208,7 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
       }
     );
 
-    if (response.success) {
+    if (response.success && opts.autoRefetchAfterMutation) {
       mutateAndRefetch();
     }
 
@@ -222,7 +224,7 @@ const useItems = <Item, CreateOneInput, UpdateOneInput>(
       }
     );
 
-    if (response.success) {
+    if (response.success && opts.autoRefetchAfterMutation) {
       mutateAndRefetch();
     }
 

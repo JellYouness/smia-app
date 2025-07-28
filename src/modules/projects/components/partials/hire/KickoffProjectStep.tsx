@@ -14,14 +14,28 @@ import {
   Tooltip,
   Modal,
 } from '@mui/material';
-import { Edit as EditIcon, AttachMoney, CalendarToday } from '@mui/icons-material';
+import {
+  Edit as EditIcon,
+  AttachMoney,
+  CalendarToday,
+  Edit as EditIcon2,
+  CheckCircle,
+  PlayArrow,
+  Check,
+} from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import useProjectUpdates from '@modules/projects/hooks/useProjectUpdates';
 import useProjects, { projectCacheKey } from '@modules/projects/hooks/useProjects';
-import { Project, PROJECT_UPDATE_TYPE, ProjectUpdate } from '@modules/projects/defs/types';
+import {
+  Project,
+  PROJECT_UPDATE_TYPE,
+  ProjectUpdate,
+  PROJECT_STATUS,
+} from '@modules/projects/defs/types';
 import useSWR from 'swr';
 import dayjs from 'dayjs';
 import UpsertProjectStepper from '../UpsertProjectStepper';
+import StepperEmptyState from '../StepperEmptyState';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -128,6 +142,63 @@ const KickoffProjectStep = ({ projectId, project: propProject }: KickoffProjectS
       >
         <CircularProgress size={40} thickness={4} sx={{ mb: 2 }} />
         <Typography variant="body1">{t('project:loading_project_details_title')}</Typography>
+      </Box>
+    );
+  }
+
+  // Handle different project statuses
+  if (project.status === PROJECT_STATUS.DRAFT) {
+    return (
+      <Box minHeight={500} display="flex" justifyContent="center" alignItems="center">
+        <StepperEmptyState
+          icon={<EditIcon2 />}
+          title={t('project:draft_project_kickoff_title', 'Project is in Draft Mode')}
+          description={t(
+            'project:draft_project_kickoff_description',
+            'Your project needs to be published before you can start managing media and kickoff the project. Complete your project setup to make it live.'
+          )}
+          buttonText={t('project:edit_project', 'Edit Project')}
+          buttonIcon={<EditIcon2 />}
+          onButtonClick={() => {
+            router.push(Routes.Projects.UpdateOne.replace('{id}', projectId.toString()));
+          }}
+        />
+      </Box>
+    );
+  }
+
+  if (project.status === PROJECT_STATUS.COMPLETED) {
+    return (
+      <Box minHeight={500} display="flex" justifyContent="center" alignItems="center">
+        <StepperEmptyState
+          icon={<Check fontSize="large" />}
+          title={t('project:completed_project_kickoff_title', 'Project Completed!')}
+          description={t(
+            'project:completed_project_kickoff_description',
+            'Congratulations! This project has been successfully completed. You can view all the media content and project details in the workspace.'
+          )}
+          buttonText={t('project:go_to_workspace', 'Go to Workspace')}
+          buttonIcon={<PlayArrow />}
+          onButtonClick={() => {
+            router.push(Routes.Projects.Workspace.replace('{id}', projectId.toString()));
+          }}
+        />
+      </Box>
+    );
+  }
+
+  if (project.status !== PROJECT_STATUS.IN_PROGRESS) {
+    return (
+      <Box minHeight={500} display="flex" justifyContent="center" alignItems="center">
+        <StepperEmptyState
+          icon={<EditIcon2 />}
+          title={t('project:unknown_status_kickoff_title', 'Project Status Unknown')}
+          description={t(
+            'project:unknown_status_kickoff_description',
+            'Unable to determine project status. Please contact support if this issue persists.'
+          )}
+          showButton={false}
+        />
       </Box>
     );
   }

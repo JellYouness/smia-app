@@ -8,6 +8,7 @@ import {
   CardContent,
   Stack,
   Divider,
+  Chip,
 } from '@mui/material';
 import { Send, AccessTime } from '@mui/icons-material';
 import { MediaPostComment } from '../../../defs/types';
@@ -45,6 +46,26 @@ const MediaCommentsSide = ({ comments, onAddComment }: MediaCommentSideProps) =>
   const formatTimeAgo = (timeString: string) => {
     // Simple time ago formatting - you can enhance this
     return timeString;
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today';
+    }
+    if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday';
+    }
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   };
 
   const CommentCard = ({ comment }: { comment: MediaPostCommentUI }) => {
@@ -168,9 +189,58 @@ const MediaCommentsSide = ({ comments, onAddComment }: MediaCommentSideProps) =>
           </Box>
         ) : (
           <Stack spacing={0}>
-            {comments.map((comment) => (
-              <CommentCard key={comment.id} comment={comment} />
-            ))}
+            {(() => {
+              const groupedComments: { [key: string]: MediaPostCommentUI[] } = {};
+
+              // Group comments by date
+              comments.forEach((comment) => {
+                const dateKey = new Date(comment.createdAt).toDateString();
+                if (!groupedComments[dateKey]) {
+                  groupedComments[dateKey] = [];
+                }
+                groupedComments[dateKey].push(comment);
+              });
+
+              // Sort dates and render comments with date separators (oldest first for comments)
+              const sortedDates = Object.keys(groupedComments).sort(
+                (a, b) => new Date(a).getTime() - new Date(b).getTime()
+              );
+
+              return sortedDates.map((dateKey) => (
+                <Box key={dateKey}>
+                  {/* Date Separator */}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      my: 2,
+                      position: 'relative',
+                    }}
+                  >
+                    <Chip
+                      label={formatDate(dateKey)}
+                      size="small"
+                      sx={{
+                        backgroundColor: 'rgba(32, 101, 209, 0.1)',
+                        color: 'primary.main',
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                        height: '24px',
+                        border: '1px solid rgba(32, 101, 209, 0.2)',
+                        '& .MuiChip-label': {
+                          px: 2,
+                        },
+                      }}
+                    />
+                  </Box>
+
+                  {/* Comments for this date */}
+                  {groupedComments[dateKey].map((comment) => (
+                    <CommentCard key={comment.id} comment={comment} />
+                  ))}
+                </Box>
+              ));
+            })()}
           </Stack>
         )}
       </Box>
