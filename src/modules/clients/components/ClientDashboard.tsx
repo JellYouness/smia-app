@@ -38,7 +38,7 @@ const ClientDashboard = ({ user }: ClientDashboardProps) => {
 
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-  const isLarge = useMediaQuery(theme.breakpoints.up('lg'));
+  const isLarge = useMediaQuery(theme.breakpoints.up('md'));
 
   const slidesToShow = isLarge ? 2 : 1;
   const showArrows = projects.length > slidesToShow;

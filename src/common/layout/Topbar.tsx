@@ -33,6 +33,7 @@ import { setUserLanguage } from '@common/components/lib/utils/language';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { NotificationDropdown } from '@modules/notifications/components/NotificationDropdown';
 import { useUnreadCount } from '@modules/notifications/hooks/useNotifications';
+import { useNotificationContext } from '@modules/notifications/contexts/NotificationContext';
 import { useUnreadConversations } from '@modules/chat/hooks/useUnreadConversations';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -61,9 +62,11 @@ const Topbar = ({ openLeftbar }: { openLeftbar: boolean }) => {
   const [anchorNotif, setAnchorNotif] = useState<null | HTMLElement>(null);
   const [anchorUser, setAnchorUser] = useState<null | HTMLElement>(null);
 
-  // Get unread notification count
+  // Get unread notification count with real-time updates
   const { data: unreadCountData, refetch: refetchUnreadCount } = useUnreadCount();
-  const unreadCount = unreadCountData?.unreadCount || 0;
+  const { unreadCount: realTimeUnreadCount } = useNotificationContext();
+  const unreadCount =
+    realTimeUnreadCount !== undefined ? realTimeUnreadCount : unreadCountData?.unreadCount || 0;
 
   // Get unread conversation count
   const { data: unreadConversationsData } = useUnreadConversations();
@@ -291,7 +294,7 @@ const Topbar = ({ openLeftbar }: { openLeftbar: boolean }) => {
               </ListItem>
               <ListItem>
                 <Button
-                  variant="contained"
+                  variant="gradient"
                   onClick={() => onAuthButtonClick('register')}
                   sx={{ textTransform: 'none' }}
                 >

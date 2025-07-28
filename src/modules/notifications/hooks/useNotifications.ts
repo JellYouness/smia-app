@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import useApi from '@common/hooks/useApi';
 import useAuth from '@modules/auth/hooks/api/useAuth';
+import { useNotificationContext } from '../contexts/NotificationContext';
 import { API_ROUTES } from '../defs/api-routes';
 import {
   Notification,
@@ -12,8 +14,9 @@ import {
 export const useNotifications = (filters: NotificationFilters = {}) => {
   const api = useApi();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['notifications', filters.type, filters.read, filters.perPage, filters.page],
     queryFn: async () => {
       const queryParams = new URLSearchParams();
@@ -42,6 +45,39 @@ export const useNotifications = (filters: NotificationFilters = {}) => {
     staleTime: 10000, // Consider data fresh for 10 seconds
     gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
   });
+
+  // Listen for real-time notification events
+  useEffect(() => {
+    const handleNotificationReceived = (event: CustomEvent) => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    };
+
+    const handleNotificationRead = (event: CustomEvent) => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    };
+
+    const handleNotificationDeleted = (event: CustomEvent) => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    };
+
+    window.addEventListener('notification:received', handleNotificationReceived as EventListener);
+    window.addEventListener('notification:read', handleNotificationRead as EventListener);
+    window.addEventListener('notification:deleted', handleNotificationDeleted as EventListener);
+
+    return () => {
+      window.removeEventListener(
+        'notification:received',
+        handleNotificationReceived as EventListener
+      );
+      window.removeEventListener('notification:read', handleNotificationRead as EventListener);
+      window.removeEventListener(
+        'notification:deleted',
+        handleNotificationDeleted as EventListener
+      );
+    };
+  }, [queryClient]);
+
+  return query;
 };
 
 export const useNotification = (id: string) => {
@@ -90,12 +126,16 @@ export const useNotificationTypes = () => {
 export const useUnreadCount = () => {
   const api = useApi();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { unreadCount: realTimeCount, updateUnreadCount } = useNotificationContext();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['unread-count'],
     queryFn: async () => {
       const response = await api<{ unreadCount: number }>(API_ROUTES.NOTIFICATIONS.UNREAD_COUNT);
       if (response.success && response.data) {
+        // Update the real-time count when we fetch from API
+        updateUnreadCount(response.data.unreadCount);
         return response.data;
       }
       throw new Error(response.errors?.[0] || 'Failed to load unread count');
@@ -105,6 +145,46 @@ export const useUnreadCount = () => {
     gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
     refetchInterval: 30000, // Refetch every 30 seconds
   });
+
+  // Listen for real-time notification events
+  useEffect(() => {
+    const handleNotificationReceived = (event: CustomEvent) => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
+    };
+
+    const handleNotificationRead = (event: CustomEvent) => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
+    };
+
+    const handleNotificationDeleted = (event: CustomEvent) => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['unread-count'] });
+    };
+
+    window.addEventListener('notification:received', handleNotificationReceived as EventListener);
+    window.addEventListener('notification:read', handleNotificationRead as EventListener);
+    window.addEventListener('notification:deleted', handleNotificationDeleted as EventListener);
+
+    return () => {
+      window.removeEventListener(
+        'notification:received',
+        handleNotificationReceived as EventListener
+      );
+      window.removeEventListener('notification:read', handleNotificationRead as EventListener);
+      window.removeEventListener(
+        'notification:deleted',
+        handleNotificationDeleted as EventListener
+      );
+    };
+  }, [queryClient]);
+
+  // Return real-time count if available, otherwise use query data
+  return {
+    ...query,
+    data: realTimeCount !== undefined ? { unreadCount: realTimeCount } : query.data,
+  };
 };
 
 export const useMarkAsRead = () => {
