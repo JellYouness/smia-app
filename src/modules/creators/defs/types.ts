@@ -40,7 +40,8 @@ export interface PortfolioItem {
 
 export interface RegionalExpertise {
   region: string;
-  expertiseLevel: 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
+  expertiseLevel?: 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
+  proficiencyLevel?: 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
 }
 
 export interface Language {

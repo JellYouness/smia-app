@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, CardContent, Typography, Grid, Divider, Box } from '@mui/material';
+import { Ambassador } from '../defs/types';
 
 const InfoItem = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <Grid item xs={12} sm={6}>
@@ -12,7 +13,11 @@ const InfoItem = ({ label, value }: { label: string; value: React.ReactNode }) =
   </Grid>
 );
 
-const AmbassadorDetailsCard = ({ ambassador }: { ambassador: any }) => {
+interface AmbassadorDetailsCardProps {
+  ambassador: Ambassador;
+}
+
+const AmbassadorDetailsCard = ({ ambassador }: AmbassadorDetailsCardProps) => {
   const user = ambassador.user || {};
   return (
     <Box sx={{ maxWidth: 900, mx: 'auto', mt: 4 }}>

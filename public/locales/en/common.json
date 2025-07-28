@@ -10,6 +10,9 @@
   "remove": "Remove",
   "reset": "Reset",
   "save": "Save",
+  "saving": "Saving...",
+  "submitting": "Submitting...",
+  "save_changes": "Save Changes",
   "finish": "Finish",
   "next": "Next",
   "previous": "Previous",
@@ -122,6 +125,7 @@
   "bio_too_long": "Biography must be less than 1000 characters",
   "password_min_length": "Password must be at least 8 characters",
   "update_failed": "Update failed",
+  "updated_successfully": "Updated successfully",
   "gender": "Gender",
   "select_gender": "Select gender",
   "male": "Male",
@@ -144,5 +148,14 @@
   "availability": "Availability",
   "make_viewer": "Make Viewer",
   "make_editor": "Make Editor",
-  "creators": "creators"
+  "creators": "creators",
+  "english_captions": "English captions",
+  "browser_no_video_support": "Your browser does not support the video tag or the video format.",
+  "browser_no_audio_support": "Your browser does not support the audio element.",
+  "go_home": "Go Home",
+  "personal_information": "Personal Information",
+  "loading": "Loading...",
+  "sending": "Sending...",
+  "updating": "Updating...",
+  "update": "Update"
 }

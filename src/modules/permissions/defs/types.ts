@@ -4,7 +4,8 @@ export enum ROLE {
   CLIENT = 'CLIENT',
   CREATOR = 'CREATOR',
   AMBASSADOR = 'AMBASSADOR',
-  SYSTEM_ADMINISTRATOR = 'ADMIN',
+  ADMIN = 'ADMIN',
+  USER = 'USER',
 }
 
 export interface Permission {

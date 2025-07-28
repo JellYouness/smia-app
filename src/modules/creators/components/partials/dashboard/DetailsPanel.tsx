@@ -354,12 +354,16 @@ const DetailsPanel = ({ creator, user, projects }: DetailsPanelProps) => {
                             height: 8,
                             borderRadius: '50%',
                             backgroundColor:
-                              expertiseColorMap[expertise.expertiseLevel] ??
-                              theme.palette.info.main,
+                              expertiseColorMap?.[
+                                expertise.expertiseLevel as keyof typeof expertiseColorMap
+                              ] ?? theme.palette.info.main,
                           }}
                         />
                         <Typography variant="body2" color="text.secondary">
-                          {t(`user:expertise.${expertise.expertiseLevel.toLowerCase()}`)}
+                          {t(
+                            `user:expertise.${expertise.expertiseLevel?.toLowerCase() ?? ''}`,
+                            expertise.expertiseLevel ?? ''
+                          )}
                         </Typography>
                       </Stack>
                     </Box>

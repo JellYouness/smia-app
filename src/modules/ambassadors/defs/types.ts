@@ -2,7 +2,6 @@ import { CrudObject } from '@common/defs/types';
 
 export interface Ambassador extends CrudObject {
   userId: number;
-  teamMembers: number[];
   teamName: string;
   specializations: string[];
   regionalExpertise: RegionalExpertise[];
@@ -30,9 +29,25 @@ export type ApplicationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export interface RegionalExpertise {
   region: string;
-  expertiseLevel: 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
+  proficiencyLevel: 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
 }
 export interface FeaturedWork {
   projectId: number;
   description: string;
+}
+
+export interface TeamMember extends CrudObject {
+  ambassadorId: number;
+  userId: number;
+  role?: string;
+  isPrimary: boolean;
+  joinedAt: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+    profile?: {
+      avatar?: string;
+    };
+  };
 }

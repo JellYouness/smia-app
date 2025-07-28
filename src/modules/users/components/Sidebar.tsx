@@ -1,40 +1,18 @@
 import React from 'react';
-import { Box, Stack, Typography, Divider } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { Any } from '@common/defs/types';
-import UserProfileHeader from '@common/components/UserProfileHeader';
 import { useTranslation } from 'react-i18next';
 
 interface SidebarProps {
   user: Any;
-  profilePicture: string | null;
-  handleUploadPicture: (file: File) => Promise<void>;
-  handleDeletePicture: () => Promise<void>;
 }
 
-const Sidebar = ({
-  user,
-  profilePicture,
-  handleUploadPicture,
-  handleDeletePicture,
-}: SidebarProps) => {
+const Sidebar = ({ user }: SidebarProps) => {
   const { t } = useTranslation();
   return (
     <>
       <Stack spacing={3}>
         <Box sx={{ p: 3, textAlign: 'center' }}>
-          {/* Profile Picture */}
-          <UserProfileHeader
-            profilePicture={profilePicture}
-            firstName={user?.firstName}
-            lastName={user?.lastName}
-            city={user?.profile?.city}
-            country={user?.profile?.country}
-            onUploadPicture={handleUploadPicture}
-            onDeletePicture={handleDeletePicture}
-            userRole="admin"
-            user={user}
-          />
-          <Divider sx={{ my: 2 }} />
           {/* Email */}
           <Typography variant="body2" sx={{ mt: 1 }}>
             {user?.email}

@@ -71,7 +71,7 @@ const LoginForm = () => {
             <Grid item xs={12} sx={{ textAlign: 'center' }}>
               <LoadingButton
                 size="large"
-                variant="contained"
+                variant="gradient"
                 type="submit"
                 startIcon={<LockOpen />}
                 loadingPosition="start"
@@ -86,6 +86,12 @@ const LoginForm = () => {
                 <Link href={Routes.Auth.RequestPasswordReset}>
                   {t('sign-in:forgot_password_link_text')}
                 </Link>
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                {t('sign-in:no_account_text')}{' '}
+                <Link href={Routes.Auth.Register}>{t('sign-in:register_link_text')}</Link>
               </Typography>
             </Grid>
           </Grid>

@@ -34,7 +34,6 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { NotificationDropdown } from '@modules/notifications/components/NotificationDropdown';
 import { useUnreadCount } from '@modules/notifications/hooks/useNotifications';
 import { useUnreadConversations } from '@modules/chat/hooks/useUnreadConversations';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ChatIcon from '@mui/icons-material/Chat';
 
@@ -97,51 +96,43 @@ const Topbar = () => {
       onClick: () => router.push(Routes.Common.Home),
     },
     {
-      label: 'Browse Creators',
+      label: t('topbar:browse_creators'),
       link: '/creators',
       onClick: () => router.push('/creators'),
     },
     {
-      label: t('topbar:language'),
-      dropdown: [
-        {
-          label: t('topbar:language_french'),
-          link: asPath,
-          value: 'fr',
-          flag: 'fr',
-        },
-        {
-          label: t('topbar:language_english'),
-          link: `${asPath}`,
-          value: 'en',
-          flag: 'us',
-        },
-        {
-          label: t('topbar:language_spanish'),
-          link: `${asPath}`,
-          value: 'es',
-          flag: 'es',
-        },
-      ],
+      label: t('topbar:browse_projects'),
+      link: '/projects',
+      onClick: () => router.push('/projects'),
     },
-    ...(user
-      ? [
-          {
-            label: t('topbar:user'),
-            dropdown: [
-              {
-                label: t('topbar:profile'),
-                link: Routes.Users.Me,
-                onClick: () => router.push(Routes.Users.Me),
-              },
-              {
-                label: t('topbar:logged.logout'),
-                onClick: () => logout(),
-              },
-            ],
-          },
-        ]
-      : []),
+    {
+      label: t('topbar:browse_ambassadors'),
+      link: '/ambassadors',
+      onClick: () => router.push('/ambassadors'),
+    },
+    // {
+    //   label: t('topbar:language'),
+    //   dropdown: [
+    //     {
+    //       label: t('topbar:language_french'),
+    //       link: asPath,
+    //       value: 'fr',
+    //       flag: 'fr',
+    //     },
+    //     {
+    //       label: t('topbar:language_english'),
+    //       link: `${asPath}`,
+    //       value: 'en',
+    //       flag: 'us',
+    //     },
+    //     {
+    //       label: t('topbar:language_spanish'),
+    //       link: `${asPath}`,
+    //       value: 'es',
+    //       flag: 'es',
+    //     },
+    //   ],
+    // },
   ];
 
   const directoryNavItems: TopbarItem[] = [
@@ -150,11 +141,15 @@ const Topbar = () => {
       link: '/creators',
       onClick: () => router.push('/creators'),
     },
-    // Add Browse Projects
     {
       label: t('topbar:browse_projects'),
       link: '/projects',
       onClick: () => router.push('/projects'),
+    },
+    {
+      label: t('topbar:browse_ambassadors'),
+      link: '/ambassadors',
+      onClick: () => router.push('/ambassadors'),
     },
   ];
 
@@ -259,25 +254,28 @@ const Topbar = () => {
                       onClick={() => {
                         setUserLanguage('fr');
                         setShowDropdown(false);
+                        router.push(asPath);
                       }}
                     >
-                      Français
+                      {t('topbar:language_french')}
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
                         setUserLanguage('en');
                         setShowDropdown(false);
+                        router.push(asPath);
                       }}
                     >
-                      English
+                      {t('topbar:language_english')}
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
                         setUserLanguage('es');
                         setShowDropdown(false);
+                        router.push(asPath);
                       }}
                     >
-                      Español
+                      {t('topbar:language_spanish')}
                     </MenuItem>
                   </Menu>
                 </Box>
@@ -301,12 +299,8 @@ const Topbar = () => {
                 </Button>
               </ListItem>
             </List>
-            <IconButton onClick={toggleSidebar} sx={{ display: { md: 'none', sm: 'flex' }, ml: 1 }}>
-              <MenuIcon fontSize="medium" sx={{ color: 'grey.700' }} />
-            </IconButton>
           </Toolbar>
         </Container>
-        {/* Drawer for mobile nav remains unchanged */}
       </AppBar>
     );
   }
@@ -353,12 +347,17 @@ const Topbar = () => {
 
           {/* Center: Quick Links */}
           <Stack direction="row" spacing={1} alignItems="center" sx={{ flexGrow: 0 }}>
-            <Tooltip title={t('topbar:help', 'Help & Support')}>
+            {/* <Tooltip title={t('topbar:help', 'Help & Support')}>
               <IconButton>
                 <HelpOutlineIcon />
               </IconButton>
-            </Tooltip>
-            <Tooltip title={t('topbar:dashboard', 'Dashboard')}>
+            </Tooltip> */}
+            <Tooltip
+              title={t('topbar:dashboard', 'Dashboard')}
+              sx={{
+                display: { xs: 'none', sm: 'block' },
+              }}
+            >
               <IconButton onClick={() => router.push(Routes.Common.Home)}>
                 <DashboardIcon />
               </IconButton>
@@ -403,7 +402,7 @@ const Topbar = () => {
                     <Avatar
                       src={user.profile?.profile_picture || undefined}
                       alt={user.firstName || user.email}
-                      sx={{ width: 40, height: 40, ml: 1 }}
+                      sx={{ width: 40, height: 40 }}
                     />
                   </IconButton>
                 </Tooltip>
@@ -464,7 +463,12 @@ const Topbar = () => {
           </IconButton>
         </Toolbar>
       </Container>
-      <Drawer anchor="right" open={showDrawer} onClose={() => setShowDrawer(false)}>
+      <Drawer
+        anchor="right"
+        open={showDrawer}
+        onClose={() => setShowDrawer(false)}
+        sx={{ zIndex: 9999 }}
+      >
         <List
           sx={{
             display: 'flex',
@@ -573,44 +577,7 @@ const Topbar = () => {
               </ListItem>
             );
           })}
-          {/* Add Browse Projects to mobile drawer */}
-          <ListItem key="browse-projects" disablePadding>
-            <ListItemButton
-              onClick={() => {
-                setShowDrawer(false);
-                router.push('/projects');
-              }}
-              sx={{ width: '100%' }}
-            >
-              <ListItemText
-                primaryTypographyProps={{
-                  ...(router.pathname === '/projects' && {
-                    color: 'primary.main',
-                  }),
-                }}
-              >
-                Browse Projects
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-          <ListItem key="profile" disablePadding>
-            <ListItemButton
-              onClick={() => router.push(Routes.Users.Me)}
-              sx={{
-                width: '100%',
-              }}
-            >
-              <ListItemText
-                primaryTypographyProps={{
-                  ...(router.pathname === Routes.Users.Me && {
-                    color: 'primary.main',
-                  }),
-                }}
-              >
-                Mon Profil
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
+
           {!user ? (
             <>
               <ListItem

@@ -8,11 +8,6 @@
   "no_projects_found": "No projects found",
   "no_projects_match": "No projects match \"{{searchTerm}}\"",
   "no_projects_available": "No projects available",
-  "status": {
-    "in_progress": "In Progress",
-    "completed": "Completed",
-    "pending": "Pending"
-  },
   "common": {
     "create_new_one": "Create New Project",
     "new_one": "New Project",
@@ -45,7 +40,6 @@
   "status": "Status",
   "draft": "Draft",
   "in_progress": "In Progress",
-  "completed": "Completed",
   "edit_project": "Edit Project",
   "delete_project": "Delete Project",
   "view_details": "View Details",
@@ -72,5 +66,12 @@
   "workshop_access_denied_message": "The project workshop is only available for projects that are in progress or completed.",
   "workshop_draft_message": "The project workshop is only available once the project is in progress or completed. This project is currently in draft status.",
   "workshop_creator_not_assigned_message": "You need to be assigned to this project to access the workshop. Please contact the project owner to get assigned.",
-  "back_to_project": "Back to Project"
+  "back_to_project": "Back to Project",
+  "open_project_chat": "Chat",
+  "team_and_permissions": "Team & Permissions",
+  "updates_timeline": "Project Updates",
+  "project_chat": "Project Chat",
+  "min_budget": "Min Budget",
+  "max_budget": "Max Budget",
+  "send_kickoff": "Send"
 }

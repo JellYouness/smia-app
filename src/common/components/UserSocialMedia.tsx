@@ -1,7 +1,8 @@
 import React from 'react';
-import { Box, Typography, Stack, IconButton } from '@mui/material';
-import { LinkedIn, Twitter, Facebook, Instagram, GitHub, Edit } from '@mui/icons-material';
+import { Box, Typography, Stack } from '@mui/material';
+import { LinkedIn, Twitter, Facebook, Instagram, GitHub } from '@mui/icons-material';
 import Link from 'next/link';
+import SectionCard from '@modules/users/components/SectionCard';
 
 interface SocialMediaLinks {
   linkedin?: string;
@@ -14,92 +15,102 @@ interface SocialMediaLinks {
 interface UserSocialMediaProps {
   socialMediaLinks: SocialMediaLinks;
   onEdit?: () => void;
-  editable?: boolean;
-  fallbackText?: string;
+  readOnly?: boolean;
 }
 
 const UserSocialMedia: React.FC<UserSocialMediaProps> = ({
   socialMediaLinks,
   onEdit,
-  editable = false,
-  fallbackText = 'No social media links added yet',
+  readOnly = false,
 }) => {
-  const hasLinks = Object.values(socialMediaLinks).some(Boolean);
   return (
-    <Box sx={{ p: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Social Media
-          </Typography>
-        </Box>
-        {editable && onEdit && (
-          <IconButton size="small" onClick={onEdit} sx={{ color: 'primary.main' }}>
-            <Edit sx={{ fontSize: 16 }} />
-          </IconButton>
-        )}
-      </Box>
+    <SectionCard title="Social Media" readOnly={readOnly} onEdit={onEdit} titleSize="h5">
       <Stack spacing={1}>
-        {hasLinks ? (
-          <>
-            {socialMediaLinks.linkedin && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <LinkedIn sx={{ fontSize: 20, color: '#0077b5' }} />
-                <Link href={socialMediaLinks.linkedin} target="_blank" rel="noopener noreferrer">
-                  <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
-                    LinkedIn
-                  </Typography>
-                </Link>
-              </Box>
-            )}
-            {socialMediaLinks.twitter && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Twitter sx={{ fontSize: 20, color: '#1DA1F2' }} />
-                <Link href={socialMediaLinks.twitter} target="_blank" rel="noopener noreferrer">
-                  <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
-                    Twitter
-                  </Typography>
-                </Link>
-              </Box>
-            )}
-            {socialMediaLinks.facebook && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Facebook sx={{ fontSize: 20, color: '#1877F2' }} />
-                <Link href={socialMediaLinks.facebook} target="_blank" rel="noopener noreferrer">
-                  <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
-                    Facebook
-                  </Typography>
-                </Link>
-              </Box>
-            )}
-            {socialMediaLinks.instagram && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Instagram sx={{ fontSize: 20, color: '#E4405F' }} />
-                <Link href={socialMediaLinks.instagram} target="_blank" rel="noopener noreferrer">
-                  <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
-                    Instagram
-                  </Typography>
-                </Link>
-              </Box>
-            )}
-            {socialMediaLinks.github && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <GitHub sx={{ fontSize: 20, color: '#333' }} />
-                <Link href={socialMediaLinks.github} target="_blank" rel="noopener noreferrer">
-                  <Typography variant="body2" color="primary" sx={{ textDecoration: 'none' }}>
-                    GitHub
-                  </Typography>
-                </Link>
-              </Box>
-            )}
-          </>
-        ) : (
-          <Typography variant="body2" color="text.secondary">
-            {fallbackText}
-          </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <LinkedIn sx={{ fontSize: 20, color: '#0077b5' }} />
+          {socialMediaLinks.linkedin ? (
+            <Link href={socialMediaLinks.linkedin} target="_blank" rel="noopener noreferrer">
+              <Typography
+                variant="body2"
+                color={socialMediaLinks.linkedin ? 'primary' : 'text.secondary'}
+                sx={{ textDecoration: 'none' }}
+              >
+                LinkedIn
+              </Typography>
+            </Link>
+          ) : (
+            <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'none' }}>
+              LinkedIn
+            </Typography>
+          )}
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Twitter sx={{ fontSize: 20, color: '#1DA1F2' }} />
+          {socialMediaLinks.twitter ? (
+            <Link href={socialMediaLinks.twitter} target="_blank" rel="noopener noreferrer">
+              <Typography
+                variant="body2"
+                color={socialMediaLinks.twitter ? 'primary' : 'text.secondary'}
+                sx={{ textDecoration: 'none' }}
+              >
+                Twitter
+              </Typography>
+            </Link>
+          ) : (
+            <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'none' }}>
+              Twitter
+            </Typography>
+          )}
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Facebook sx={{ fontSize: 20, color: '#1877F2' }} />
+          {socialMediaLinks.facebook ? (
+            <Link href={socialMediaLinks.facebook} target="_blank" rel="noopener noreferrer">
+              <Typography
+                variant="body2"
+                color={socialMediaLinks.facebook ? 'primary' : 'text.secondary'}
+                sx={{ textDecoration: 'none' }}
+              >
+                Facebook
+              </Typography>
+            </Link>
+          ) : (
+            <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'none' }}>
+              Facebook
+            </Typography>
+          )}
+        </Box>
+        {socialMediaLinks.instagram && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Instagram sx={{ fontSize: 20, color: '#E4405F' }} />
+            <Link href={socialMediaLinks.instagram} target="_blank" rel="noopener noreferrer">
+              <Typography
+                variant="body2"
+                color={socialMediaLinks.instagram ? 'primary' : 'text.secondary'}
+                sx={{ textDecoration: 'none' }}
+              >
+                Instagram
+              </Typography>
+            </Link>
+          </Box>
+        )}
+
+        {socialMediaLinks.github && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <GitHub sx={{ fontSize: 20, color: '#333' }} />
+            <Link href={socialMediaLinks.github} target="_blank" rel="noopener noreferrer">
+              <Typography
+                variant="body2"
+                color={socialMediaLinks.github ? 'primary' : 'text.secondary'}
+                sx={{ textDecoration: 'none' }}
+              >
+                GitHub
+              </Typography>
+            </Link>
+          </Box>
         )}
       </Stack>
-    </Box>
+    </SectionCard>
   );
 };
 

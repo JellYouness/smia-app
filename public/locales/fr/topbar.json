@@ -1,12 +1,26 @@
 {
-  "org_switcher": "Sélectionner une organisation/projet",
+  "home": "Accueil",
+  "language": "Langues",
+  "language_english": "Anglais",
+  "language_french": "Français",
+  "language_spanish": "Espagnol",
+  "logged": {
+    "logout": "Déconnexion"
+  },
+  "login": "Connexion",
+  "register": "S'inscrire",
+  "user": "Utilisateur",
+  "org_switcher": "Sélectionner Org/Projet",
   "dashboard": "Tableau de bord",
   "settings": "Paramètres",
-  "help": "Aide & Support",
+  "help": "Aide et support",
   "notifications": "Notifications",
   "no_notifications": "Aucune nouvelle notification",
   "dark_mode": "Mode sombre",
   "light_mode": "Mode clair",
   "profile": "Profil",
-  "chat": "Chat"
+  "chat": "Chat",
+  "browse_creators": "Parcourir les créateurs",
+  "browse_projects": "Parcourir les projets",
+  "browse_ambassadors": "Parcourir les ambassadeurs"
 }

@@ -34,6 +34,7 @@ import {
 import { mutate } from 'swr';
 import useMedia from '../hooks/useMedia';
 import { MEDIA_POST_REVIEW_DECISION } from '../defs/types';
+import { useTranslation } from 'react-i18next';
 
 interface ReviewVersionModalProps {
   open: boolean;
@@ -329,6 +330,7 @@ const ImagePreview = ({ file }: { file: ReviewVersionModalProps['files'][0] }) =
 // Enhanced Audio Preview with custom controls
 const AudioPreview = ({ file }: { file: ReviewVersionModalProps['files'][0] }) => {
   const theme = useTheme();
+  const { t } = useTranslation(['common']);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -465,7 +467,7 @@ const AudioPreview = ({ file }: { file: ReviewVersionModalProps['files'][0] }) =
           kind="captions"
           src={`/captions/${file.id}.vtt`}
           srcLang="en"
-          label="English captions"
+          label={t('common:english_captions')}
           default
         />
       </audio>
@@ -567,6 +569,7 @@ const AudioPreview = ({ file }: { file: ReviewVersionModalProps['files'][0] }) =
 // Enhanced Video Preview with custom controls
 const VideoPreview = ({ file }: { file: ReviewVersionModalProps['files'][0] }) => {
   const theme = useTheme();
+  const { t } = useTranslation(['common']);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -710,7 +713,7 @@ const VideoPreview = ({ file }: { file: ReviewVersionModalProps['files'][0] }) =
             kind="captions"
             src={`/captions/${file.id}.vtt`}
             srcLang="en"
-            label="English captions"
+            label={t('common:english_captions')}
             default
           />
         </video>

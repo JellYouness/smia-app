@@ -4,7 +4,11 @@ import Routes from '@common/defs/routes';
 import { Box, Card, Grid, Typography, Button, Stack, Container, Paper } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import FormProvider, { RHFPhoneField, RHFTextField } from '@common/components/lib/react-hook-form';
+import FormProvider, {
+  RHFPhoneField,
+  RHFTextField,
+  RHFProfilePicture,
+} from '@common/components/lib/react-hook-form';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import useAuth from '@modules/auth/hooks/api/useAuth';
@@ -22,6 +26,7 @@ import {
   PHONE_FIELD_PREFERRED_COUNTRIES,
 } from '@modules/creators/defs/enums';
 import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
+import useUploads from '@modules/uploads/hooks/api/useUploads';
 
 const EditProfile: NextPage = () => {
   const { user } = useAuth();
@@ -29,6 +34,7 @@ const EditProfile: NextPage = () => {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { createOne } = useUploads();
 
   // Get the mutate function from SWR to update user data
   const { mutate } = useSWR(ApiRoutes.Auth.Me);
@@ -47,6 +53,26 @@ const EditProfile: NextPage = () => {
     title: Yup.string().nullable().max(255, t('user:profile_title_too_long')),
     preferredLanguage: Yup.string().nullable(),
     timezone: Yup.string().nullable(),
+    profilePicture: Yup.mixed()
+      .nullable()
+      .test('file-size', t('common:file_size_error', { maxSize: 5 }), (value) => {
+        if (!value) {
+          return true; // Optional field
+        }
+        if (value instanceof File) {
+          return value.size <= 5 * 1024 * 1024; // 5MB
+        }
+        return true;
+      })
+      .test('file-type', t('user:invalid_image_format'), (value) => {
+        if (!value) {
+          return true; // Optional field
+        }
+        if (value instanceof File) {
+          return value.type.startsWith('image/');
+        }
+        return true;
+      }),
   });
 
   const methods = useForm({
@@ -61,6 +87,7 @@ const EditProfile: NextPage = () => {
       state: user?.profile?.state || '',
       country: user?.profile?.country || '',
       postalCode: user?.profile?.postalCode || '',
+      profilePicture: null,
     },
   });
 
@@ -75,6 +102,18 @@ const EditProfile: NextPage = () => {
     try {
       setIsSubmitting(true);
 
+      // Handle profile picture upload if provided
+      let profilePictureUrl = null;
+      if (data.profilePicture instanceof File) {
+        const uploadResult = await createOne({ file: data.profilePicture });
+        if (uploadResult.success && uploadResult.data?.item?.url) {
+          profilePictureUrl = uploadResult.data.item.url;
+        } else {
+          enqueueSnackbar(t('user:image_upload_error'), { variant: 'error' });
+          return;
+        }
+      }
+
       // Prepare data for API
       const updateData: Any = {
         firstName: data.firstName,
@@ -86,6 +125,11 @@ const EditProfile: NextPage = () => {
         country: data.country,
         postalCode: data.postalCode,
       };
+
+      // Add profile picture URL if uploaded
+      if (profilePictureUrl) {
+        updateData.profilePicture = profilePictureUrl;
+      }
 
       const result = await updateProfile(updateData);
 
@@ -146,6 +190,22 @@ const EditProfile: NextPage = () => {
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={3}>
+            {/* Profile Picture */}
+            <Card sx={{ p: 3 }}>
+              <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                {t('user:profile_picture')}
+              </Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <RHFProfilePicture
+                    name="profilePicture"
+                    label={t('user:profile_picture')}
+                    maxSize={5}
+                  />
+                </Grid>
+              </Grid>
+            </Card>
+
             {/* Basic Information */}
             <Card sx={{ p: 3 }}>
               <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>

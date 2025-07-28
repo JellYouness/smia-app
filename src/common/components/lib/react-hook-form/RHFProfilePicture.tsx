@@ -1,15 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-import {
-  Box,
-  Button,
-  Typography,
-  Avatar,
-  IconButton,
-  FormHelperText,
-  SxProps,
-  Theme,
-} from '@mui/material';
+import { Box, Button, Typography, Avatar, FormHelperText, SxProps, Theme } from '@mui/material';
 import { PhotoCamera, Delete } from '@mui/icons-material';
 import { useTranslation } from 'next-i18next';
 
@@ -42,12 +33,14 @@ const RHFProfilePicture = ({
   const handleFileSelect = (file: File) => {
     // Validate file size
     if (file.size > maxSize * 1024 * 1024) {
+      // eslint-disable-next-line no-alert
       alert(t('common:file_size_error', { maxSize }));
       return;
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
+      // eslint-disable-next-line no-alert
       alert(t('user:invalid_image_format'));
       return;
     }
@@ -85,7 +78,7 @@ const RHFProfilePicture = ({
     <Controller
       name={name}
       control={control}
-      render={({ field }) => (
+      render={() => (
         <Box sx={{ width: '100%', ...sx }}>
           {label && (
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>

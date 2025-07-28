@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import useItems from '@common/hooks/useItems';
-import { AmbassadorsApiRoutes } from '@modules/ambassadors/defs/api-routes';
+import AmbassadorsApiRoutes from '@modules/ambassadors/defs/api-routes';
 import AmbassadorMainContent from '@modules/ambassadors/components/AmbassadorMainContent';
 import { useTranslation } from 'react-i18next';
 import { GetServerSideProps } from 'next';
@@ -11,12 +11,14 @@ import Namespaces from '@common/defs/namespaces';
 import { CRUD_ACTION } from '@common/defs/types';
 import Routes from '@common/defs/routes';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { Ambassador } from '@modules/ambassadors/defs/types';
+import { User } from '@modules/users/defs/types';
 
 const AmbassadorDetailsPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const { readOne } = useItems(AmbassadorsApiRoutes);
-  const [item, setItem] = useState<any>(null);
+  const [item, setItem] = useState<Ambassador>();
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation(['user']);
 
@@ -27,7 +29,7 @@ const AmbassadorDetailsPage = () => {
         .then(({ data }) => {
           if (data && data.item) {
             // Structure data to match what AmbassadorMainContent expects
-            const item = data.item as any;
+            const item = data.item as Ambassador;
             const ambassadorData = {
               ...item.user,
               profile: item.user.profile,
@@ -74,7 +76,7 @@ const AmbassadorDetailsPage = () => {
     return <div>Ambassador not found</div>;
   }
 
-  return <AmbassadorMainContent user={item} t={t} readOnly />;
+  return <AmbassadorMainContent user={item.user as User} t={t} readOnly />;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

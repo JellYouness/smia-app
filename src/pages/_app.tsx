@@ -29,10 +29,12 @@ import { useRouter } from 'next/router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-// declare module '@mui/material/Button' { // If we add a color, then we need to add the color in each component
-//    interface ButtonPropsColorOverrides {
-//    }
-// }
+// Extend Button variant types to include 'gradient'
+declare module '@mui/material/Button' {
+  interface ButtonPropsVariantOverrides {
+    gradient: true;
+  }
+}
 
 // Create a client
 const queryClient = new QueryClient({
