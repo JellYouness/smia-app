@@ -391,24 +391,29 @@ const useProjects: UseProjects = (opts: UseItemsOptions = defaultOptions) => {
       projectId.toString()
     );
 
-    const data: Record<string, Any> = {
-      page,
-      perPage: pageSize,
+    const paginationOptions = {
+      page: (page || 1).toString(),
+      perPage: (pageSize || 50).toString(),
     };
+    const queryParams = new URLSearchParams(paginationOptions).toString();
 
-    if (columnsSort) {
-      data['order[column]'] = columnsSort.column;
-      data['order[dir]'] = columnsSort.dir;
-    }
-    if (filters?.length) {
-      data.filters = filters;
-    }
+    const filterParam = filters
+      ?.filter((filter) => filter !== undefined && filter !== null)
+      .map((filter) => encodeURIComponent(JSON.stringify(filter)))
+      .join('&filters[]=');
 
-    const response = await fetchApi<ItemsData<ProjectProposal>>(endpoint, {
-      method: 'GET',
-      data,
-      ...options,
-    });
+    const sortParams = columnsSort
+      ? `&order[column]=${columnsSort.column}&order[dir]=${columnsSort.dir}`
+      : '';
+
+    const response = await fetchApi<ItemsData<ProjectProposal>>(
+      `${endpoint}?${queryParams}${sortParams}${
+        filterParam !== undefined && filterParam !== null && filterParam !== ''
+          ? '&filters[]=' + filterParam
+          : ''
+      }`,
+      options
+    );
 
     return response;
   };

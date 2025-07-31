@@ -7,11 +7,15 @@ import {
   useTheme,
   Grid,
   Button,
+  Tabs,
+  Tab,
+  Fade,
 } from '@mui/material';
 import { Project, PROJECT_PROPOSAL_STATUS, ProjectProposal } from '@modules/projects/defs/types';
 import useProjects from '@modules/projects/hooks/useProjects';
 import { useEffect, useState } from 'react';
 import { Id } from '@common/defs/types';
+import { FilterParam } from '@common/hooks/useItems';
 import ProposalReviewCard from '../ProposalReviewCard';
 import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
@@ -34,14 +38,45 @@ const ReviewProposalsStep = ({ projectId, onStatusChange }: Props) => {
   const { readAllProposalsByProject, approveProposal, declineProposal } = useProjects();
   const [proposals, setProposals] = useState<ProjectProposal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     fetchProposals();
-  }, [projectId]);
+  }, [projectId, activeTab]);
 
   const fetchProposals = async () => {
     setLoading(true);
-    const res = await readAllProposalsByProject(projectId);
+
+    // Create filters based on active tab
+    const filters: FilterParam[] = [];
+
+    if (activeTab === 1) {
+      filters.push({
+        filterColumn: 'status',
+        filterOperator: 'equals',
+        filterValue: PROJECT_PROPOSAL_STATUS.PENDING,
+      });
+    } else if (activeTab === 2) {
+      filters.push({
+        filterColumn: 'status',
+        filterOperator: 'equals',
+        filterValue: PROJECT_PROPOSAL_STATUS.ACCEPTED,
+      });
+    } else if (activeTab === 3) {
+      filters.push({
+        filterColumn: 'status',
+        filterOperator: 'equals',
+        filterValue: PROJECT_PROPOSAL_STATUS.REJECTED,
+      });
+    } else if (activeTab === 4) {
+      filters.push({
+        filterColumn: 'status',
+        filterOperator: 'equals',
+        filterValue: PROJECT_PROPOSAL_STATUS.WITHDRAWN,
+      });
+    }
+
+    const res = await readAllProposalsByProject(projectId, 1, 'all', undefined, filters);
     if (res.success && res.data) {
       setProposals(res.data.items);
     }
@@ -53,7 +88,6 @@ const ReviewProposalsStep = ({ projectId, onStatusChange }: Props) => {
 
   const handleApprove = async (proposalId: number) => {
     setProposalStatus(proposalId, PROJECT_PROPOSAL_STATUS.ACCEPTED);
-    // SWR will handle optimistic updates automatically
 
     const res = await approveProposal(proposalId);
     if (!res.success) {
@@ -63,7 +97,6 @@ const ReviewProposalsStep = ({ projectId, onStatusChange }: Props) => {
 
   const handleDecline = async (proposalId: number) => {
     setProposalStatus(proposalId, PROJECT_PROPOSAL_STATUS.REJECTED);
-    // SWR will handle optimistic updates automatically
 
     const res = await declineProposal(proposalId);
     if (!res.success) {
@@ -114,14 +147,74 @@ const ReviewProposalsStep = ({ projectId, onStatusChange }: Props) => {
     </Box>
   );
 
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
+  const getEmptyStateContent = () => {
+    switch (activeTab) {
+      case 0: // All Proposals
+        return {
+          title: t('project:no_proposals_title', 'No Proposals Yet'),
+          description: t(
+            'project:no_proposals_description',
+            'Your project is live and waiting for talented professionals to submit their proposals. Great things are coming!'
+          ),
+          icon: <InboxOutlinedIcon />,
+        };
+      case 1: // Pending
+        return {
+          title: t('project:no_pending_proposals', 'No Pending Proposals'),
+          description: t(
+            'project:no_pending_proposals_description',
+            'There are no pending proposals for this project.'
+          ),
+          icon: <InboxOutlinedIcon />,
+        };
+      case 2: // Accepted
+        return {
+          title: t('project:no_accepted_proposals', 'No Accepted Proposals'),
+          description: t(
+            'project:no_accepted_proposals_description',
+            'No proposals have been accepted for this project yet.'
+          ),
+          icon: <InboxOutlinedIcon />,
+        };
+      case 3: // Rejected
+        return {
+          title: t('project:no_rejected_proposals', 'No Rejected Proposals'),
+          description: t(
+            'project:no_rejected_proposals_description',
+            'No proposals have been rejected for this project.'
+          ),
+          icon: <InboxOutlinedIcon />,
+        };
+      case 4: // Withdrawn
+        return {
+          title: t('project:no_withdrawn_proposals', 'No Withdrawn Proposals'),
+          description: t(
+            'project:no_withdrawn_proposals_description',
+            'No proposals have been withdrawn for this project.'
+          ),
+          icon: <InboxOutlinedIcon />,
+        };
+      default:
+        return {
+          title: t('project:no_proposals_title', 'No Proposals Yet'),
+          description: t(
+            'project:no_proposals_description',
+            'Your project is live and waiting for talented professionals to submit their proposals. Great things are coming!'
+          ),
+          icon: <InboxOutlinedIcon />,
+        };
+    }
+  };
+
   const renderEmptyState = () => (
     <StepperEmptyState
-      icon={<InboxOutlinedIcon />}
-      title={t('project:no_proposals_title') || 'No Proposals Yet'}
-      description={
-        t('project:no_proposals_description') ||
-        'Your project is live and waiting for talented professionals to submit their proposals. Great things are coming!'
-      }
+      icon={getEmptyStateContent().icon}
+      title={getEmptyStateContent().title}
+      description={getEmptyStateContent().description}
       buttonText={t('project:invite_creators', 'Invite Creators')}
       buttonIcon={<PersonAddOutlined />}
       onButtonClick={() => {
@@ -135,19 +228,101 @@ const ReviewProposalsStep = ({ projectId, onStatusChange }: Props) => {
 
   return (
     <Box>
+      {/* Tabs for filtering proposals */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          sx={{
+            '& .MuiTab-root': {
+              textTransform: 'none',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              minHeight: 48,
+            },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: '3px 3px 0 0',
+              backgroundColor: (() => {
+                switch (activeTab) {
+                  case 1:
+                    return theme.palette.warning.main;
+                  case 2:
+                    return theme.palette.success.main;
+                  case 3:
+                    return theme.palette.error.main;
+                  case 4:
+                    return theme.palette.info.main;
+                  default:
+                    return theme.palette.primary.main;
+                }
+              })(),
+            },
+          }}
+        >
+          <Tab
+            label={t('project:all_proposals', 'All Proposals')}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&.Mui-selected': {
+                color: theme.palette.primary.main,
+              },
+            }}
+          />
+          <Tab
+            label={t('project:pending_proposals', 'Pending')}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&.Mui-selected': {
+                color: theme.palette.warning.main,
+              },
+            }}
+          />
+          <Tab
+            label={t('project:accepted_proposals', 'Accepted')}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&.Mui-selected': {
+                color: theme.palette.success.main,
+              },
+            }}
+          />
+          <Tab
+            label={t('project:rejected_proposals', 'Rejected')}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&.Mui-selected': {
+                color: theme.palette.error.main,
+              },
+            }}
+          />
+          <Tab
+            label={t('project:withdrawn_proposals', 'Withdrawn')}
+            sx={{
+              color: theme.palette.text.secondary,
+              '&.Mui-selected': {
+                color: theme.palette.info.main,
+              },
+            }}
+          />
+        </Tabs>
+      </Box>
+
       <Box height={600} overflow="auto" p={2}>
         {loading && renderSkeleton()}
 
         {!loading && proposals.length === 0 ? (
-          <Box
-            width="100%"
-            height="100%"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            {renderEmptyState()}
-          </Box>
+          <Fade in timeout={600}>
+            <Box
+              width="100%"
+              height="100%"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              {renderEmptyState()}
+            </Box>
+          </Fade>
         ) : (
           <Box>
             {proposals.map((proposal) => (
