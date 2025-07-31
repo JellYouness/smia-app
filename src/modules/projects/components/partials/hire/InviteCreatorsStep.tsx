@@ -22,6 +22,7 @@ import {
   alpha,
   Tabs,
   Tab,
+  CircularProgress,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,7 +42,7 @@ import {
   Visibility,
 } from '@mui/icons-material';
 import LanguageChips from '../LanguageChips';
-import useProjects from '@modules/projects/hooks/useProjects';
+import useProjects, { projectCacheKey } from '@modules/projects/hooks/useProjects';
 import { Id } from '@common/defs/types';
 import { FilterParam } from '@common/hooks/useItems';
 import {
@@ -52,6 +53,7 @@ import {
 import InviteMessageModal from '../InviteMessageModal';
 import Routes from '@common/defs/routes';
 import StepperEmptyState from '../StepperEmptyState';
+import { useSWRConfig } from 'swr';
 
 interface InviteCreatorsStepProps {
   projectId: Id;
@@ -63,12 +65,14 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
   const theme = useTheme();
   const { readAll } = useCreators();
   const { inviteCreator } = useProjects();
+  const { mutate } = useSWRConfig();
   const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
   const [inviteMessageModalOpen, setInviteMessageModalOpen] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const [hoveredCard, setHoveredCard] = useState<Id | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+  const [invitingCreatorId, setInvitingCreatorId] = useState<Id | null>(null);
 
   useEffect(() => {
     fetchCreators();
@@ -130,19 +134,34 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
             ? JSON.parse(creator.regionalExpertise)
             : creator.regionalExpertise,
       }));
-      setCreators(parsedCreators);
+
+      // Filter out creators who are already hired in this project
+      const hiredCreatorIds = project?.projectCreators?.map((pc) => pc.creatorId) || [];
+      const availableCreators = parsedCreators.filter(
+        (creator) => !hiredCreatorIds.includes(creator.id)
+      );
+
+      setCreators(availableCreators);
     }
     setLoading(false);
   };
 
   const handleInvite = async (creatorId: Id, message: string) => {
-    const response = await inviteCreator({
-      projectId,
-      creatorId,
-      message,
-    });
-    if (response.success) {
-      setInviteMessageModalOpen(false);
+    setInvitingCreatorId(creatorId);
+    try {
+      const response = await inviteCreator({
+        projectId,
+        creatorId,
+        message,
+      });
+      if (response.success) {
+        setInviteMessageModalOpen(false);
+        await mutate(projectCacheKey(projectId));
+      }
+    } catch (error) {
+      console.error('Error inviting creator:', error);
+    } finally {
+      setInvitingCreatorId(null);
     }
   };
 
@@ -247,13 +266,13 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
         return {
           variant: 'contained' as const,
           color: 'primary' as const,
-          disabled: false,
+          disabled: invitingCreatorId === creator.id,
           onClick: () => {
             setSelectedCreator(creator);
             setInviteMessageModalOpen(true);
           },
           startIcon: null,
-          children: t('common:invite'),
+          children: invitingCreatorId === creator.id ? t('common:inviting') : t('common:invite'),
           sx: {
             minWidth: 140,
             height: 44,
@@ -262,6 +281,7 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
             fontWeight: 600,
             boxShadow: '0 4px 14px rgba(59, 130, 246, 0.25)',
             background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+            color: 'white !important',
             '&:hover': {
               transform: 'translateY(-1px)',
               boxShadow: '0 6px 20px rgba(59, 130, 246, 0.35)',
@@ -509,7 +529,21 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
               </Box>
 
               <Box display="flex" flexDirection="row" alignItems="flex-end" gap={1}>
-                <Button {...inviteBtnProps} />
+                <Button
+                  {...inviteBtnProps}
+                  startIcon={
+                    invitingCreatorId === creator.id ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      inviteBtnProps.startIcon
+                    )
+                  }
+                  disabled={invitingCreatorId === creator.id || inviteBtnProps.disabled}
+                >
+                  {invitingCreatorId === creator.id
+                    ? t('common:inviting')
+                    : inviteBtnProps.children}
+                </Button>
               </Box>
             </Box>
 
@@ -788,6 +822,7 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
             handleInvite(selectedCreator.id, message);
           }
         }}
+        loading={invitingCreatorId === selectedCreator?.id}
       />
     </Box>
   );

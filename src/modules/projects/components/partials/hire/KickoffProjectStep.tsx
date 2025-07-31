@@ -51,7 +51,7 @@ interface KickoffProjectStepProps {
 const KickoffProjectStep = ({ projectId, project: propProject }: KickoffProjectStepProps) => {
   const router = useRouter();
   const { t } = useTranslation(['project', 'common']);
-  const { readOne } = useProjects();
+  const { readOne } = useProjects({ autoRefetchAfterMutation: false });
   const { createOne, readAllByProject } = useProjectUpdates();
   const {
     data: projectData,

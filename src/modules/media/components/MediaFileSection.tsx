@@ -24,9 +24,10 @@ import {
   Slideshow,
   InsertDriveFile,
   Image,
-  Movie,
-  Audiotrack,
+  VideoFile as VideoIcon,
+  AudioFile as AudioIcon,
   PictureAsPdf,
+  FilePresent as FileIcon,
   Delete as DeleteIcon,
   CloudDone,
   DeleteSweep,
@@ -36,7 +37,7 @@ import {
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { mutate } from 'swr';
-import FileViewerModal from './FileViewer';
+import FileViewerModal from './FileViewerModal';
 import useMedia from '../hooks/useMedia';
 import { User } from '@modules/users/defs/types';
 import { FileItem, MediaPostAssignment } from '../defs/types';
@@ -79,10 +80,10 @@ const getFileIcon = (mimeType: string) => {
     return <Image sx={{ fontSize: 20 }} />;
   }
   if (mimeType.startsWith('video/')) {
-    return <Movie sx={{ fontSize: 20 }} />;
+    return <VideoIcon sx={{ fontSize: 20 }} />;
   }
   if (mimeType.startsWith('audio/')) {
-    return <Audiotrack sx={{ fontSize: 20 }} />;
+    return <AudioIcon sx={{ fontSize: 20 }} />;
   }
   if (mimeType === 'application/pdf') {
     return <PictureAsPdf sx={{ fontSize: 20 }} />;
@@ -106,7 +107,23 @@ const getFileIcon = (mimeType: string) => {
   ) {
     return <Slideshow sx={{ fontSize: 20 }} />;
   }
-  return <InsertDriveFile sx={{ fontSize: 20 }} />;
+  return <FileIcon sx={{ fontSize: 20 }} />;
+};
+
+const getFileTypeColor = (type: string) => {
+  if (type.startsWith('image/')) {
+    return '#10B981';
+  }
+  if (type.startsWith('video/')) {
+    return '#3B82F6';
+  }
+  if (type.startsWith('audio/')) {
+    return '#8B5CF6';
+  }
+  if (type === 'application/pdf') {
+    return '#EF4444';
+  }
+  return '#6B7280';
 };
 
 // Check if file type can be previewed
@@ -477,6 +494,7 @@ const MediaFileSection = ({
       // Refresh the assets and post data to update the UI
       await mutate(['/media_posts', postId, 'assets']);
       await mutate(['/media_posts', postId]);
+      await mutate('/media_posts'); // Added this line to update the board pane
     } catch (e) {
       console.log('error', e);
     } finally {
@@ -541,16 +559,17 @@ const MediaFileSection = ({
                 size="small"
                 sx={{ textTransform: 'none', fontWeight: 500 }}
                 onClick={handleRequestReview}
-                disabled={reviewLoading}
+                disabled={reviewLoading || files.some((file) => file.isUploading)}
               >
-                {reviewLoading ? (
+                {reviewLoading && (
                   <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
                     <CircularProgress size={16} sx={{ mr: 1 }} />
                     Request Review
                   </Box>
-                ) : (
-                  'Request Review'
                 )}
+                {!reviewLoading && files.some((file) => file.isUploading)
+                  ? 'Uploading...'
+                  : 'Request Review'}
               </Button>
             )}
 
@@ -730,7 +749,18 @@ const MediaFileSection = ({
                               <DeleteSweep sx={{ fontSize: 20, color: theme.palette.error.main }} />
                             );
                           }
-                          return getFileIcon(file.type);
+                          return (
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: getFileTypeColor(file.type),
+                              }}
+                            >
+                              {getFileIcon(file.type)}
+                            </Box>
+                          );
                         })()}
                       </ListItemIcon>
                       <ListItemText

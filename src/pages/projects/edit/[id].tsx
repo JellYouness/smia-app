@@ -19,7 +19,7 @@ import UpsertProjectStepper from '@modules/projects/components/partials/UpsertPr
 const ProjectsPage: NextPage = () => {
   const router = useRouter();
   const { start, stop } = useProgressBar();
-  const { readOne } = useProjects();
+  const { readOne } = useProjects({ autoRefetchAfterMutation: false });
   const [loaded, setLoaded] = useState(false);
   const [project, setProject] = useState<null | Project>(null);
   const id: Id = Number(router.query.id);

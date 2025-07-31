@@ -73,5 +73,19 @@
   "project_chat": "Project Chat",
   "min_budget": "Min Budget",
   "max_budget": "Max Budget",
-  "send_kickoff": "Send"
+  "send_kickoff": "Send",
+  "mark_as_completed": "Mark as Completed",
+  "cancel_project": "Cancel Project",
+  "reactivate_project": "Reactivate Project",
+  "project_marked_completed": "Project marked as completed successfully",
+  "project_cancelled": "Project cancelled successfully",
+  "project_reactivated": "Project reactivated successfully",
+  "cancel_project_warning_title": "Cancel Project",
+  "cancel_project_warning_message": "Are you sure you want to cancel this project? This action is irreversible and will result in:",
+  "cancel_project_warning_access": "• Loss of access to the media management workspace",
+  "cancel_project_warning_reactivate": "• Inability to reactivate or reopen the project",
+  "cancel_project_warning_media": "• All media content and project data will be permanently lost",
+  "cancel_project_warning_creators": "• All creator assignments and collaborations will be terminated",
+  "cancel_project_warning_final": "This action cannot be undone. Please confirm that you understand these consequences.",
+  "confirm_cancel_project": "Yes, Cancel Project"
 }

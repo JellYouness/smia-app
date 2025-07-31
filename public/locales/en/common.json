@@ -67,6 +67,7 @@
   "enable": "Enable",
   "disable": "Disable",
   "invite": "Invite",
+  "inviting": "Inviting...",
   "change_email": "Change email",
   "change_password": "Change password",
   "constraints": "Constraints",

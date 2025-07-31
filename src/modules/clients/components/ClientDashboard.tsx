@@ -13,7 +13,6 @@ import {
   CardContent,
   Divider,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import { Add, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
@@ -21,6 +20,7 @@ import { useRouter } from 'next/router';
 import Routes from '@common/defs/routes';
 import EmptyStateOverview from '@modules/projects/components/partials/EmptyStateOverview';
 import ProjectCard from '@modules/projects/components/partials/ProjectCard';
+import useSWR from 'swr';
 
 import useEmblaCarousel from 'embla-carousel-react';
 import { useTheme } from '@mui/material/styles';
@@ -29,16 +29,25 @@ interface ClientDashboardProps {
   user: User;
 }
 
+// Cache key for client projects
+const clientProjectsCacheKey = (clientId: number) => ['/projects/client', clientId];
+
 const ClientDashboard = ({ user }: ClientDashboardProps) => {
   const { t } = useTranslation(['client', 'common']);
-  const { readAllByClient, deleteOne } = useProjects();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { readAllByClient } = useProjects();
   const router = useRouter();
 
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   const isLarge = useMediaQuery(theme.breakpoints.up('md'));
+
+  // Use SWR for projects data with proper cache key
+  const { data: projectsData, isLoading: loading } = useSWR(
+    user?.client?.id ? clientProjectsCacheKey(user.client.id) : null,
+    () => readAllByClient(user.client!.id)
+  );
+
+  const projects = projectsData?.data?.items || [];
 
   const slidesToShow = isLarge ? 2 : 1;
   const showArrows = projects.length > slidesToShow;
@@ -48,24 +57,6 @@ const ClientDashboard = ({ user }: ClientDashboardProps) => {
     skipSnaps: false,
     align: 'start',
   });
-
-  useEffect(() => {
-    fetchProjects();
-  }, [user]);
-
-  const fetchProjects = async () => {
-    setLoading(true);
-    const response = await readAllByClient(user.client!.id);
-    if (response.success && response.data?.items) {
-      setProjects(response.data.items);
-    }
-    setLoading(false);
-  };
-
-  const handleDeleteProject = async (project: Project) => {
-    await deleteOne(project.id, { displayProgress: true, displaySuccess: true });
-    fetchProjects();
-  };
 
   if (loading) {
     return (
@@ -169,7 +160,7 @@ const ClientDashboard = ({ user }: ClientDashboardProps) => {
         <Grid container spacing={3}>
           {projects.map((project) => (
             <Grid item xs={12} key={project.id}>
-              <ProjectCard project={project} onDelete={handleDeleteProject} />
+              <ProjectCard project={project} />
             </Grid>
           ))}
         </Grid>
@@ -225,7 +216,7 @@ const ClientDashboard = ({ user }: ClientDashboardProps) => {
             >
               {projects.map((project) => (
                 <Box key={project.id} sx={{ flex: `0 0 ${slideWidthPct}` }}>
-                  <ProjectCard project={project} onDelete={handleDeleteProject} />
+                  <ProjectCard project={project} />
                 </Box>
               ))}
             </Box>

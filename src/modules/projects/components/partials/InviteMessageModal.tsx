@@ -8,6 +8,7 @@ import {
   Modal,
   Stack,
   Typography,
+  CircularProgress,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useForm, FormProvider, useWatch } from 'react-hook-form';
@@ -24,6 +25,7 @@ interface InviteMessageModalProps {
   creator: Creator | null;
   onClose: () => void;
   onSubmit: (message: string) => void;
+  loading?: boolean;
 }
 
 type FormValues = { message: string };
@@ -33,7 +35,13 @@ const schema = (t: TFunction) =>
     message: yup.string().required(t('common:field_required')),
   });
 
-const InviteMessageModal = ({ open, creator, onClose, onSubmit }: InviteMessageModalProps) => {
+const InviteMessageModal = ({
+  open,
+  creator,
+  onClose,
+  onSubmit,
+  loading = false,
+}: InviteMessageModalProps) => {
   const { t } = useTranslation(['project', 'common']);
 
   const defaultMsg = creator
@@ -155,9 +163,16 @@ const InviteMessageModal = ({ open, creator, onClose, onSubmit }: InviteMessageM
 
           {/* footer actions */}
           <Box mt={4} display="flex" justifyContent="flex-end" gap={1}>
-            <Button onClick={onClose}>{t('common:cancel')}</Button>
-            <Button variant="contained" type="submit">
-              {t('project:send_invitation')}
+            <Button onClick={onClose} disabled={loading}>
+              {t('common:cancel')}
+            </Button>
+            <Button
+              variant="contained"
+              type="submit"
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : undefined}
+            >
+              {loading ? t('common:inviting') : t('project:send_invitation')}
             </Button>
           </Box>
         </FormProvider>

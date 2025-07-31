@@ -54,7 +54,7 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
   const { t } = useTranslation(['project', 'common', 'user']);
   const theme = useTheme();
   const { updateCreatorPermission, readOne, revokeCreatorPermission, removeCreatorFromProject } =
-    useProjects();
+    useProjects({ autoRefetchAfterMutation: false });
 
   const { data: projectData, isLoading } = useSWR(projectCacheKey(projectId), () =>
     readOne(projectId)
