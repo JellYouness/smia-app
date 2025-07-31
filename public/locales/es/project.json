@@ -74,5 +74,19 @@
   "min_budget": "Presupuesto mínimo",
   "max_budget": "Presupuesto máximo",
   "loading_project_details_title": "Cargando detalles del proyecto...",
-  "send_kickoff": "Enviar"
+  "send_kickoff": "Enviar",
+  "mark_as_completed": "Marcar como completado",
+  "cancel_project": "Cancelar proyecto",
+  "reactivate_project": "Reactivar proyecto",
+  "project_marked_completed": "Proyecto marcado como completado exitosamente",
+  "project_cancelled": "Proyecto cancelado exitosamente",
+  "project_reactivated": "Proyecto reactivado exitosamente",
+  "cancel_project_warning_title": "Cancelar proyecto",
+  "cancel_project_warning_message": "¿Está seguro de que desea cancelar este proyecto? Esta acción es irreversible y resultará en:",
+  "cancel_project_warning_access": "• Pérdida de acceso al espacio de trabajo de gestión de medios",
+  "cancel_project_warning_reactivate": "• Imposibilidad de reactivar o reabrir el proyecto",
+  "cancel_project_warning_media": "• Todo el contenido multimedia y los datos del proyecto se perderán permanentemente",
+  "cancel_project_warning_creators": "• Todas las asignaciones de creadores y colaboraciones serán terminadas",
+  "cancel_project_warning_final": "Esta acción no se puede deshacer. Por favor confirme que entiende estas consecuencias.",
+  "confirm_cancel_project": "Sí, cancelar proyecto"
 }

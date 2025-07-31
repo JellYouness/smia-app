@@ -29,7 +29,7 @@ interface HireCreatorStepperProps {
 
 const HireCreatorStepper = ({ active, onStepChange }: HireCreatorStepperProps) => {
   const { t } = useTranslation(['project', 'common']);
-  const { readOne } = useProjects();
+  const { readOne } = useProjects({ autoRefetchAfterMutation: false });
   const router = useRouter();
   const { id } = router.query;
   const theme = useTheme();

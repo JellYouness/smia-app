@@ -22,16 +22,17 @@ import {
   Slideshow,
   InsertDriveFile,
   Image,
-  Movie,
-  Audiotrack,
+  VideoFile as VideoIcon,
+  AudioFile as AudioIcon,
   PictureAsPdf,
+  FilePresent as FileIcon,
   CheckCircle,
   Schedule,
   ErrorOutline,
   Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
-import FileViewerModal from './FileViewer';
+import FileViewerModal from './FileViewerModal';
 import ReviewVersionModal from './ReviewVersionModal';
 import { MediaPostReview } from '../defs/types';
 
@@ -78,10 +79,10 @@ const getFileIcon = (mimeType: string) => {
     return <Image sx={{ fontSize: 20 }} />;
   }
   if (mimeType.startsWith('video/')) {
-    return <Movie sx={{ fontSize: 20 }} />;
+    return <VideoIcon sx={{ fontSize: 20 }} />;
   }
   if (mimeType.startsWith('audio/')) {
-    return <Audiotrack sx={{ fontSize: 20 }} />;
+    return <AudioIcon sx={{ fontSize: 20 }} />;
   }
   if (mimeType === 'application/pdf') {
     return <PictureAsPdf sx={{ fontSize: 20 }} />;
@@ -104,7 +105,23 @@ const getFileIcon = (mimeType: string) => {
   ) {
     return <Slideshow sx={{ fontSize: 20 }} />;
   }
-  return <InsertDriveFile sx={{ fontSize: 20 }} />;
+  return <FileIcon sx={{ fontSize: 20 }} />;
+};
+
+const getFileTypeColor = (type: string) => {
+  if (type.startsWith('image/')) {
+    return '#10B981';
+  }
+  if (type.startsWith('video/')) {
+    return '#3B82F6';
+  }
+  if (type.startsWith('audio/')) {
+    return '#8B5CF6';
+  }
+  if (type === 'application/pdf') {
+    return '#EF4444';
+  }
+  return '#6B7280';
 };
 
 const getStatusChip = (status: Version['status']) => {
@@ -157,7 +174,7 @@ const formatDate = (dateString: string): string => {
   });
 };
 
-const VersionsSection: React.FC<VersionsSectionProps> = ({
+const VersionsSection = ({
   isExpanded,
   onToggle,
   versions,
@@ -165,9 +182,16 @@ const VersionsSection: React.FC<VersionsSectionProps> = ({
   lastVersionWithAssets,
   postId,
   reviews = [],
-}) => {
+}: VersionsSectionProps) => {
   const theme = useTheme();
   const [selectedTab, setSelectedTab] = useState(0);
+
+  // Set selected tab to the newest version when expanded
+  React.useEffect(() => {
+    if (isExpanded && versions && versions.length > 0) {
+      setSelectedTab(versions.length - 1);
+    }
+  }, [isExpanded, versions]);
 
   // File viewer modal state
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -314,21 +338,59 @@ const VersionsSection: React.FC<VersionsSectionProps> = ({
                       px: 2,
                     },
                     '& .MuiTabs-indicator': {
-                      backgroundColor: theme.palette.primary.main,
+                      backgroundColor: (() => {
+                        const isCurrentVersionSelected = selectedTab === versionsToShow.length - 1;
+                        if (isCurrentVersionSelected) {
+                          const currentVersion = versionsToShow[versionsToShow.length - 1];
+                          const statusConfig = {
+                            APPROVED: '#4caf50',
+                            IN_REVIEW: '#ff9800',
+                            CHANGES_REQUESTED: '#f44336',
+                          };
+                          return statusConfig[currentVersion.status] || theme.palette.primary.main;
+                        }
+                        return theme.palette.action.disabled;
+                      })(),
                     },
                   }}
                 >
-                  {versionsToShow.map((version, index) => (
-                    <Tab
-                      key={version.id}
-                      label={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="inherit">V{version.number}</Typography>
-                          {index === versionsToShow.length - 1 && getStatusChip(version.status)}
-                        </Box>
-                      }
-                    />
-                  ))}
+                  {versionsToShow.map((version, index) => {
+                    const isCurrentVersion = index === versionsToShow.length - 1;
+                    const statusConfig = {
+                      APPROVED: '#4caf50',
+                      IN_REVIEW: '#ff9800',
+                      CHANGES_REQUESTED: '#f44336',
+                    };
+                    const statusColor = statusConfig[version.status];
+
+                    return (
+                      <Tab
+                        key={version.id}
+                        label={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography
+                              variant="inherit"
+                              sx={{
+                                color: isCurrentVersion
+                                  ? statusColor || 'inherit'
+                                  : 'text.disabled',
+                                fontWeight: isCurrentVersion ? 500 : 400,
+                              }}
+                            >
+                              V{version.number}
+                            </Typography>
+                            {isCurrentVersion && getStatusChip(version.status)}
+                          </Box>
+                        }
+                        sx={{
+                          opacity: isCurrentVersion ? 1 : 0.6,
+                          '&.Mui-selected': {
+                            opacity: 1,
+                          },
+                        }}
+                      />
+                    );
+                  })}
                 </Tabs>
               </Box>
 
@@ -449,7 +511,16 @@ const VersionsSection: React.FC<VersionsSectionProps> = ({
                           }}
                         >
                           <ListItemIcon sx={{ minWidth: 36 }}>
-                            {getFileIcon(file.type)}
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: getFileTypeColor(file.type),
+                              }}
+                            >
+                              {getFileIcon(file.type)}
+                            </Box>
                           </ListItemIcon>
                           <ListItemText
                             primary={

@@ -12,10 +12,11 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, CircularProgress, Typography, Alert, Button } from '@mui/material';
 import StepProjectResources from './create/StepProjectResources';
 import StepProjectDetails from './create/StepProjectDetails';
 import dayjs from 'dayjs';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
 enum CREATE_PROJECT_STEP_ID {
   DETAILS = 'details',
@@ -38,16 +39,48 @@ const UpsertProjectStepper = ({
   quickEdit,
   onComplete,
 }: UpsertProjectStepperProps) => {
-  const { readOne, createOne, updateOne } = useProjects();
+  const { readOne, createOne, updateOne } = useProjects({ autoRefetchAfterMutation: false });
   const router = useRouter();
   const { t } = useTranslation(['project', 'common']);
+  const { user, mutate } = useAuth();
 
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState<boolean>(Boolean(projectId));
+  const [redirecting, setRedirecting] = useState<boolean>(false);
+  const [createdProjectId, setCreatedProjectId] = useState<number | null>(null);
+  const [permissionCheckAttempts, setPermissionCheckAttempts] = useState(0);
 
   useEffect(() => {
     fetchProject();
   }, [projectId]);
+
+  // Poll for permission readiness
+  useEffect(() => {
+    if (redirecting && createdProjectId && user) {
+      const checkPermission = () => {
+        const hasProjectPermission = user.permissionsNames?.some(
+          (permission: string) => permission === `projects.${createdProjectId}.read`
+        );
+
+        if (hasProjectPermission) {
+          // Permission is ready, redirect now
+          router.push({
+            pathname: Routes.Projects.HireCreator.replace('{id}', createdProjectId.toString()),
+            query: { step: 'invite' },
+          });
+        } else if (permissionCheckAttempts < 10) {
+          // Try again in 1 second
+          setPermissionCheckAttempts((prev) => prev + 1);
+          setTimeout(() => {
+            mutate(); // Refresh user data to get latest permissions
+          }, 1000);
+        }
+      };
+
+      const interval = setInterval(checkPermission, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [redirecting, createdProjectId, user, permissionCheckAttempts, router, mutate]);
 
   const fetchProject = async () => {
     try {
@@ -95,6 +128,15 @@ const UpsertProjectStepper = ({
     return isEdit
       ? updateOne(project!.id, payload, { displayProgress: true, displaySuccess: true })
       : createOne(payload, { displayProgress: true, displaySuccess: true });
+  };
+
+  const handleManualRedirect = () => {
+    if (createdProjectId) {
+      router.push({
+        pathname: Routes.Projects.HireCreator.replace('{id}', createdProjectId.toString()),
+        query: { step: 'invite' },
+      });
+    }
   };
 
   const onSubmit = async (data: CreateOneInput) => {
@@ -166,15 +208,15 @@ const UpsertProjectStepper = ({
         }
       }
       if (!quickEdit) {
-        // For new projects or when activating a draft, redirect to invite page; for other edits, go to home
+        // For new projects or when activating a draft, show redirecting state for debugging
         if (
           (!isEdit && res.data?.item?.id) ||
           (isEdit && project?.status === PROJECT_STATUS.DRAFT && res.data?.item?.id)
         ) {
-          router.push({
-            pathname: Routes.Projects.HireCreator.replace('{id}', res.data.item.id.toString()),
-            query: { step: 'invite' },
-          });
+          // Show redirecting state and start permission polling
+          setRedirecting(true);
+          setCreatedProjectId(res.data?.item?.id || null);
+          setPermissionCheckAttempts(0);
         } else {
           router.push(Routes.Common.Home);
         }
@@ -230,6 +272,38 @@ const UpsertProjectStepper = ({
         <Typography variant="body1" color="text.secondary" align="center" maxWidth={400}>
           {t('project:loading_project_form_description')}
         </Typography>
+      </Box>
+    );
+  }
+
+  if (redirecting) {
+    const hasPermission = user?.permissionsNames?.some(
+      (permission: string) => permission === `projects.${createdProjectId}.read`
+    );
+
+    return (
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        minHeight="40vh"
+        gap={3}
+        sx={{
+          width: '100%',
+          py: 8,
+        }}
+      >
+        <CircularProgress size={48} thickness={4} color="primary" />
+        <Typography variant="h5" fontWeight={500} color="text.primary" sx={{ mt: 2 }}>
+          {t('project:project_created_successfully', 'Project Created Successfully!')}
+        </Typography>
+        <Typography variant="body1" fontWeight={600} mb={1}>
+          {t('project:redirecting_to_invite', 'Redirecting to invite page...')}
+        </Typography>
+        <Button variant="outlined" onClick={handleManualRedirect} sx={{ mt: 2 }}>
+          Manual Redirect to Invite Page
+        </Button>
       </Box>
     );
   }

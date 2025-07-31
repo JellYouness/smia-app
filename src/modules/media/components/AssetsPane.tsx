@@ -67,6 +67,7 @@ const AssetsPane = ({ selectedPostId }: AssetsPaneProps) => {
       const createdBy = vcUser ? `${vcUser.firstName} ${vcUser.lastName}` : 'Unknown';
 
       versionsMap.set(vId, {
+        id: asset.versionId,
         number: asset.version.number,
         status: asset.version.status,
         createdBy,
@@ -102,6 +103,8 @@ const AssetsPane = ({ selectedPostId }: AssetsPaneProps) => {
 
   // Find the last version (with files)
   const lastVersionWithAssets = versions.length > 0 ? versions[versions.length - 1] : undefined;
+
+  console.log('versions', versions);
 
   if (!user) {
     return null;
@@ -226,14 +229,22 @@ const AssetsPane = ({ selectedPostId }: AssetsPaneProps) => {
       isDeleting: deletingFiles.has(String(a.id)),
       isReference: a.isReference,
       versionId: a.versionId,
-      uploadedBy: a.uploadedBy, // Add this line
+      uploadedBy: a.uploadedBy,
+      createdAt: a.upload?.createdAt || a.createdAt || '',
     }));
 
     const uploadingForSection = Array.from(uploadingFiles.values()).filter((file) => {
       return file.isReference === isReference && file.versionId === versionId;
     });
 
-    return [...realFiles, ...uploadingForSection];
+    // Sort real files by creation date (newest first) and put uploading files at the top
+    const sortedRealFiles = realFiles.sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // Newest first
+    });
+
+    return [...uploadingForSection, ...sortedRealFiles];
   };
 
   if (!selectedPostId) {

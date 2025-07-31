@@ -21,6 +21,7 @@ import {
   ProjectUpdate,
   PROJECT_UPDATE_TYPE,
   PROJECT_CREATOR_STATUS,
+  PROJECT_STATUS,
 } from '@modules/projects/defs/types';
 import ChatIcon from '@mui/icons-material/Chat';
 import UpdatesTimeline from '@modules/media/components/UpdatesTimeline';
@@ -32,7 +33,7 @@ const ProjectDetailsPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const projectId = useMemo(() => (id ? Number(id) : undefined), [id]);
-  const { readOne } = useProjects();
+  const { readOne } = useProjects({ autoRefetchAfterMutation: false });
   const { readAllByProject } = useProjectUpdates();
   const { data: projectData, isLoading: projectLoading } = useSWR(
     projectId ? projectCacheKey(projectId) : null,
@@ -111,7 +112,7 @@ const ProjectDetailsPage: NextPage = () => {
 
       <ProjectDetailsSection project={project} isProjectOwner={isProjectOwner} />
 
-      {isProjectOwner && (
+      {isProjectOwner && project.status !== PROJECT_STATUS.CANCELLED && (
         <>
           <Divider sx={{ my: 4 }} />
           <Typography variant="h6" fontWeight={600} mb={2}>
@@ -124,20 +125,21 @@ const ProjectDetailsPage: NextPage = () => {
         </>
       )}
 
-      {isAssignedCreator && (
-        <>
-          <Divider sx={{ my: 4 }} />
-          <Typography variant="h6" fontWeight={600} mb={2}>
-            {t('project:updates_timeline', 'Project Updates')}
-          </Typography>
-          <Paper
-            elevation={0}
-            sx={{ maxHeight: 400, overflowY: 'auto', p: 2, background: '#fafbfc' }}
-          >
-            <UpdatesTimeline updates={updates} loading={updatesLoading} />
-          </Paper>
-        </>
-      )}
+      {isAssignedCreator ||
+        (isProjectOwner && (
+          <>
+            <Divider sx={{ my: 4 }} />
+            <Typography variant="h6" fontWeight={600} mb={2}>
+              {t('project:updates_timeline', 'Project Updates')}
+            </Typography>
+            <Paper
+              elevation={0}
+              sx={{ maxHeight: 400, overflowY: 'auto', p: 2, background: '#fafbfc' }}
+            >
+              <UpdatesTimeline updates={updates} loading={updatesLoading} />
+            </Paper>
+          </>
+        ))}
     </Container>
   );
 };

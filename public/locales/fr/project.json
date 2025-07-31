@@ -75,5 +75,19 @@
   "project_chat": "Chat du projet",
   "min_budget": "Budget minimum",
   "max_budget": "Budget maximum",
-  "send_kickoff": "Envoyer"
+  "send_kickoff": "Envoyer",
+  "mark_as_completed": "Marquer comme terminé",
+  "cancel_project": "Annuler le projet",
+  "reactivate_project": "Réactiver le projet",
+  "project_marked_completed": "Projet marqué comme terminé avec succès",
+  "project_cancelled": "Projet annulé avec succès",
+  "project_reactivated": "Projet réactivé avec succès",
+  "cancel_project_warning_title": "Annuler le projet",
+  "cancel_project_warning_message": "Êtes-vous sûr de vouloir annuler ce projet ? Cette action est irréversible et entraînera :",
+  "cancel_project_warning_access": "• Perte d'accès à l'espace de travail de gestion des médias",
+  "cancel_project_warning_reactivate": "• Impossibilité de réactiver ou rouvrir le projet",
+  "cancel_project_warning_media": "• Tout le contenu multimédia et les données du projet seront définitivement perdus",
+  "cancel_project_warning_creators": "• Toutes les affectations de créateurs et collaborations seront terminées",
+  "cancel_project_warning_final": "Cette action ne peut pas être annulée. Veuillez confirmer que vous comprenez ces conséquences.",
+  "confirm_cancel_project": "Oui, annuler le projet"
 }

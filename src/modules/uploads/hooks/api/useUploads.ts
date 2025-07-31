@@ -1,6 +1,6 @@
 import ApiRoutes from '@common/defs/api-routes';
 import { Upload } from '@modules/uploads/defs/types';
-import useApi, { ApiResponse, FetchApiOptions } from '@common/hooks/useApi';
+import useApi, { ApiResponse, FetchApiOptions, ApiOptions } from '@common/hooks/useApi';
 import { Id } from '@common/defs/types';
 import useSWRImmutable from 'swr';
 import { useEffect, useState } from 'react';
@@ -29,6 +29,7 @@ interface UseUploadsResponse {
   ) => Promise<ApiResponse<{ item: Upload }>>;
   deleteOne: (id: Id, options?: FetchApiOptions) => Promise<ApiResponse<{ item: Upload | null }>>;
   deleteMulti: (ids: Id[], options?: FetchApiOptions) => Promise<ApiResponse<null>>;
+  downloadFile: (id: Id, filename: string, options?: ApiOptions) => Promise<ApiResponse<null>>;
 }
 
 interface UseUploadsOptions {
@@ -148,6 +149,59 @@ const useUploads = (opts: UseUploadsOptions = defaultOptions): UseUploadsRespons
     return response;
   };
 
+  const downloadFile = async (id: Id, filename: string, options?: ApiOptions) => {
+    try {
+      const customFetch = async (url: string, fetchOptions?: any) => {
+        const authToken = localStorage.getItem('authToken');
+        const headers: Headers = new Headers();
+        headers.set('Accept', '*/*');
+        headers.set('Accept-Language', 'en');
+        if (authToken) {
+          headers.set('Authorization', `Bearer ${authToken}`);
+        }
+        if (fetchOptions?.headers) {
+          Object.entries(fetchOptions.headers).forEach(([key, value]) => {
+            headers.set(key, value as string);
+          });
+        }
+
+        const response = await fetch(url, {
+          method: fetchOptions?.method || 'GET',
+          headers,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Download failed: ${response.status}`);
+        }
+
+        return response;
+      };
+
+      const url = `${
+        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      }${ApiRoutes.Uploads.DownloadFile.replace('{id}', id.toString())}`;
+
+      const fileResponse = await customFetch(url, options);
+
+      const blob = await fileResponse.blob();
+
+      const url2 = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url2;
+
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url2);
+
+      return { success: true, data: null };
+    } catch (error) {
+      console.error('Download failed:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Download failed' };
+    }
+  };
+
   return {
     items,
     createOne,
@@ -156,6 +210,7 @@ const useUploads = (opts: UseUploadsOptions = defaultOptions): UseUploadsRespons
     updateOne,
     deleteOne,
     deleteMulti,
+    downloadFile,
   };
 };
 

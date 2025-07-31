@@ -68,6 +68,7 @@
   "disable": "Désactiver",
   "disabled": "Désactivé",
   "invite": "Inviter",
+  "inviting": "Invitation...",
   "change_email": "Changer l'email",
   "change_password": "Changer le mot de passe",
   "constraints": "Contraintes",

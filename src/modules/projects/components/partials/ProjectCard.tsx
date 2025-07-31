@@ -28,12 +28,13 @@ import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import useProjects from '@modules/projects/hooks/useProjects';
+import { mutate } from 'swr';
 
 interface ProjectCardProps {
   project: Project;
   hideAction?: boolean;
   onEdit?: (project: Project) => void;
-  onDelete?: (project: Project) => void;
   browsing?: boolean;
 }
 
@@ -41,7 +42,6 @@ const ProjectCard = ({
   project,
   hideAction = false,
   onEdit,
-  onDelete,
   browsing = false,
 }: ProjectCardProps) => {
   const router = useRouter();
@@ -49,6 +49,7 @@ const ProjectCard = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const isDraft = project.status === PROJECT_STATUS.DRAFT;
+  const { deleteOne } = useProjects({ autoRefetchAfterMutation: false });
 
   const formatDate = (date?: string) => (date ? dayjs(date).format('MMM D, YYYY') : '');
 
@@ -71,10 +72,25 @@ const ProjectCard = ({
     }
   };
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = async () => {
     handleMenuClose();
-    if (onDelete) {
-      onDelete(project);
+    const response = await deleteOne(project.id, { displayProgress: true, displaySuccess: true });
+    if (response.success) {
+      // Invalidate all project-related caches
+      mutate((key) => Array.isArray(key) && key[0] === '/projects');
+      // Also invalidate specific client projects cache if we have client info
+      if (project.clientId) {
+        mutate(['/projects/client', project.clientId]);
+      }
+
+      // If we're on the project details page for this project, redirect to home
+      const isOnProjectDetailsPage =
+        router.pathname === Routes.Projects.ReadOne.replace('{id}', '[id]') &&
+        router.query.id === project.id.toString();
+
+      if (isOnProjectDetailsPage) {
+        router.push(Routes.Common.Home);
+      }
     }
   };
 
@@ -222,13 +238,9 @@ const ProjectCard = ({
                       <MenuItem
                         onClick={() => {
                           handleMenuClose();
-                          router.push({
-                            pathname: Routes.Projects.ReadOne.replace(
-                              '{id}',
-                              project.id.toString()
-                            ),
-                            query: { tab: 'media' },
-                          });
+                          router.push(
+                            Routes.Projects.Workspace.replace('{id}', project.id.toString())
+                          );
                         }}
                       >
                         <WorkOutline fontSize="small" sx={{ mr: 1.5 }} />
