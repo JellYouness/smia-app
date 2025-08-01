@@ -23,6 +23,8 @@ import {
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface ProjectsPanelProps {
   projects: Project[];
@@ -290,7 +292,7 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
 
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
                     <Stack direction="row" alignItems="center" spacing={1.5}>
-                      <Avatar sx={{ width: 32, height: 32 }} src={project.client?.profilePicture} />
+                      <UserAvatar user={project.client?.user as User} size="medium" />
                       <Box>
                         <Typography variant="body2">
                           {project.client?.firstName} {project.client?.lastName}

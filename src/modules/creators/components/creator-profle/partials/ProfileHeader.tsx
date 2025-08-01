@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import { useSavedProfiles } from '@modules/creators/hooks/useSavedProfiles';
 import { useSnackbar } from 'notistack';
 import { useRouter } from 'next/router';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
 
 const getAvailabilityChipProps = (status: string, t: TFunction) => {
   switch (status) {
@@ -112,7 +113,13 @@ const ProfileHeader = ({
         borderColor: 'divider',
       }}
     >
-      <Avatar src={user.profilePicture} sx={{ width: 120, height: 120, boxShadow: 2, mr: 3 }} />
+      <UserAvatar
+        user={user as User}
+        size="large"
+        width={120}
+        height={120}
+        sx={{ mr: 3, boxShadow: 2 }}
+      />
       <Box flex={1} minWidth={0} width="100%" sx={{ px: { xs: 2, md: 0 } }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
           <Stack direction="row" alignItems="center" spacing={2}>

@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTeamInvitation } from '@modules/ambassadors/hooks/useTeamInvitation';
 import Routes from '@common/defs/routes';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
 
 const TeamInvitationPage = () => {
   const router = useRouter();
@@ -144,12 +145,7 @@ const TeamInvitationPage = () => {
               {t('user:team_details') || 'Team Details'}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Avatar
-                src={invitation.ambassador.user.profile?.avatar}
-                sx={{ width: 48, height: 48, mr: 2 }}
-              >
-                <PersonIcon />
-              </Avatar>
+              <UserAvatar user={invitation.ambassador.user} size="large" />
               <Box>
                 <Typography variant="subtitle1" fontWeight="bold">
                   {invitation.ambassador.teamName || 'SMIA Ambassador Team'}

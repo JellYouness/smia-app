@@ -13,7 +13,7 @@ interface InvitationData {
       name: string;
       email: string;
       profile?: {
-        avatar?: string;
+        profilePicture?: string;
       };
     };
   };
@@ -22,7 +22,7 @@ interface InvitationData {
     name: string;
     email: string;
     profile?: {
-      avatar?: string;
+      profilePicture?: string;
     };
   };
   role: string | null;

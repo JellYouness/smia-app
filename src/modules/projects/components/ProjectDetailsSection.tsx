@@ -1,6 +1,8 @@
 import { Box, Typography, Avatar, Paper } from '@mui/material';
 import { Project } from '../defs/types';
 import ProjectCard from './partials/ProjectCard';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface Props {
   project: Project;
@@ -28,7 +30,7 @@ const ProjectDetailsSection = ({ project, isProjectOwner }: Props) => {
             boxShadow: '0 2px 8px rgba(80,120,200,0.06)',
           }}
         >
-          <Avatar src={owner.profileImage} sx={{ width: 40, height: 40, mr: 2 }} />
+          <UserAvatar user={owner as User} size="medium" />
           <Box>
             <Typography variant="subtitle2" fontWeight={600}>
               {owner.firstName} {owner.lastName}

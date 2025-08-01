@@ -19,6 +19,8 @@ import { Creator } from '@modules/creators/defs/types';
 import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
 import Routes from '@common/defs/routes';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface InviteMessageModalProps {
   open: boolean;
@@ -111,12 +113,7 @@ const InviteMessageModal = ({
           </Typography>
 
           <Stack direction="row" alignItems="center" spacing={2} mb={3}>
-            <Avatar
-              src={creator.user?.profileImage ?? undefined}
-              sx={{ width: 56, height: 56, background: (theme) => theme.palette.primary.main }}
-            >
-              {creator.user?.firstName[0]}
-            </Avatar>
+            <UserAvatar user={creator.user as User} size="medium" />
             <Box>
               <Link
                 href={Routes.Creators.ReadOne.replace('{id}', creator.id.toString())}

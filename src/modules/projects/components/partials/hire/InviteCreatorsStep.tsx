@@ -54,6 +54,8 @@ import InviteMessageModal from '../InviteMessageModal';
 import Routes from '@common/defs/routes';
 import StepperEmptyState from '../StepperEmptyState';
 import { useSWRConfig } from 'swr';
+import { User } from '@modules/users/defs/types';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
 
 interface InviteCreatorsStepProps {
   projectId: Id;
@@ -404,21 +406,13 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
                     />
                   }
                 >
-                  <Avatar
-                    src={creator.user?.profileImage || ''}
-                    sx={{
-                      width: 64,
-                      height: 64,
-                      background: (theme) => theme.palette.primary.main,
-                      fontSize: '1.5rem',
-                      fontWeight: 600,
-                      border: '3px solid white',
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                    }}
-                  >
-                    {creator.user?.firstName?.[0]}
-                    {creator.user?.lastName?.[0]}
-                  </Avatar>
+                  <UserAvatar
+                    user={creator.user as User}
+                    size="large"
+                    width={60}
+                    height={60}
+                    sx={{ fontWeight: 600 }}
+                  />
                 </Badge>
               </Box>
 
