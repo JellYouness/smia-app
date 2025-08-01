@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import useItems from '@common/hooks/useItems';
 import AmbassadorsApiRoutes from '@modules/ambassadors/defs/api-routes';
-import AmbassadorMainContent from '@modules/ambassadors/components/AmbassadorMainContent';
 import { useTranslation } from 'react-i18next';
 import { GetServerSideProps } from 'next';
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
@@ -11,14 +10,14 @@ import Namespaces from '@common/defs/namespaces';
 import { CRUD_ACTION } from '@common/defs/types';
 import Routes from '@common/defs/routes';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { Ambassador } from '@modules/ambassadors/defs/types';
 import { User } from '@modules/users/defs/types';
+import CreatorProfile from '@modules/creators/components/creator-profle/CreatorProfile';
 
 const AmbassadorDetailsPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const { readOne } = useItems(AmbassadorsApiRoutes);
-  const [item, setItem] = useState<Ambassador>();
+  const [item, setItem] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation(['user']);
 
@@ -29,37 +28,8 @@ const AmbassadorDetailsPage = () => {
         .then(({ data }) => {
           if (data && data.item) {
             // Structure data to match what AmbassadorMainContent expects
-            const item = data.item as Ambassador;
-            const ambassadorData = {
-              ...item.user,
-              profile: item.user.profile,
-              ambassador: {
-                id: item.id,
-                userId: item.userId,
-                teamMembers: item.teamMembers,
-                teamName: item.teamName,
-                specializations: item.specializations,
-                regionalExpertise: item.regionalExpertise,
-                serviceOfferings: item.serviceOfferings,
-                clientCount: item.clientCount,
-                projectCapacity: item.projectCapacity,
-                applicationStatus: item.applicationStatus,
-                applicationDate: item.applicationDate,
-                verificationDocuments: item.verificationDocuments,
-                commissionRate: item.commissionRate,
-                teamDescription: item.teamDescription,
-                featuredWork: item.featuredWork,
-                yearsInBusiness: item.yearsInBusiness,
-                businessStreet: item.businessStreet,
-                businessCity: item.businessCity,
-                businessState: item.businessState,
-                businessPostalCode: item.businessPostalCode,
-                businessCountry: item.businessCountry,
-                createdAt: item.createdAt,
-                updatedAt: item.updatedAt,
-              },
-            };
-            setItem(ambassadorData);
+            const item = data.item as User;
+            setItem(item);
           }
           setLoading(false);
         })
@@ -76,7 +46,7 @@ const AmbassadorDetailsPage = () => {
     return <div>Ambassador not found</div>;
   }
 
-  return <AmbassadorMainContent user={item.user as User} t={t} readOnly />;
+  return <CreatorProfile user={item.user as User} t={t} readOnly onlyAmbassador />;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

@@ -13,7 +13,7 @@ interface AmbassadorTeamSectionProps {
   onEdit?: () => void;
 }
 const AmbassadorTeamSection = ({ ambassador, t, readOnly, onEdit }: AmbassadorTeamSectionProps) => (
-  <SectionCard title={t('user:team') || 'Team'} readOnly={readOnly} onEdit={onEdit}>
+  <SectionCard title="Team" readOnly={readOnly} onEdit={onEdit}>
     <InfoItem
       label={t('user:team_name') || 'Team Name'}
       value={ambassador.teamName}

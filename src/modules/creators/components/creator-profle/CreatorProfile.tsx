@@ -8,13 +8,16 @@ import { useTheme } from '@mui/material/styles';
 import { User } from '@modules/users/defs/types';
 import ProfileHeader from './partials/ProfileHeader';
 import { Creator } from '@modules/creators/defs/types';
+import { AmbassadorMainContent } from '@modules/users/components';
 
 interface CreatorProfileProps {
   user: User;
   t: TFunction;
+  readOnly?: boolean;
+  onlyAmbassador?: boolean;
 }
 
-const CreatorProfile = ({ user, t }: CreatorProfileProps) => {
+const CreatorProfile = ({ user, t, readOnly, onlyAmbassador }: CreatorProfileProps) => {
   const theme = useTheme();
   const isAmbassador = user?.ambassador;
 
@@ -29,7 +32,12 @@ const CreatorProfile = ({ user, t }: CreatorProfileProps) => {
     >
       <Grid container spacing={4}>
         <Grid item xs={12}>
-          <ProfileHeader user={user} creator={user?.creator as Creator} isUserProfile t={t} />
+          <ProfileHeader
+            user={user}
+            creator={user?.creator as Creator}
+            isUserProfile={!readOnly}
+            t={t}
+          />
         </Grid>
         <Grid
           item
@@ -47,10 +55,13 @@ const CreatorProfile = ({ user, t }: CreatorProfileProps) => {
           md={8}
           sx={{ pl: { xs: 0, md: '0 !important' }, pt: { xs: 0, md: '0 !important' } }}
         >
-          {isAmbassador ? (
-            <CreatorAndAmbassadorMainContent user={user} t={t} />
+          {isAmbassador && !onlyAmbassador && (
+            <CreatorAndAmbassadorMainContent user={user} t={t} readOnly={readOnly} />
+          )}
+          {onlyAmbassador ? (
+            <AmbassadorMainContent user={user} t={t} readOnly={readOnly} />
           ) : (
-            <CreatorMainContent user={user} t={t} />
+            <CreatorMainContent user={user} t={t} readOnly={readOnly} />
           )}
         </Grid>
       </Grid>

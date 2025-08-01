@@ -8,9 +8,14 @@ import { Chip, Tab, Tabs } from '@mui/material';
 interface CreatorAndAmbassadorMainContentProps {
   user: User;
   t: TFunction;
+  readOnly?: boolean;
 }
 
-const CreatorAndAmbassadorMainContent = ({ user, t }: CreatorAndAmbassadorMainContentProps) => {
+const CreatorAndAmbassadorMainContent = ({
+  user,
+  t,
+  readOnly,
+}: CreatorAndAmbassadorMainContentProps) => {
   const [showTab, setShowTab] = useState<'creator' | 'ambassador'>('creator');
   // ambassador status
   const ambassadorStatusChip = () => {
@@ -45,8 +50,8 @@ const CreatorAndAmbassadorMainContent = ({ user, t }: CreatorAndAmbassadorMainCo
           icon={ambassadorStatusChip()}
         />
       </Tabs>
-      {showTab === 'creator' && <CreatorMainContent user={user} t={t} />}
-      {showTab === 'ambassador' && <AmbassadorMainContent user={user} t={t} />}
+      {showTab === 'creator' && <CreatorMainContent user={user} t={t} readOnly={readOnly} />}
+      {showTab === 'ambassador' && <AmbassadorMainContent user={user} t={t} readOnly={readOnly} />}
     </>
   );
 };
