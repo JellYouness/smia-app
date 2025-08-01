@@ -32,6 +32,8 @@ const AdminProfile = ({ user, t }: AdminProfileProps) => {
           md={4}
           sx={{
             borderRight: { xs: 'none', md: `1px solid ${theme.palette.divider}` },
+            borderBottom: `1px solid ${theme.palette.divider}`,
+            pb: 2,
           }}
         >
           <Sidebar user={user} />
