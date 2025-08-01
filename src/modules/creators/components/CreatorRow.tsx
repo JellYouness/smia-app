@@ -21,6 +21,8 @@ import { useTranslation } from 'react-i18next';
 import { TFunction } from 'next-i18next';
 import LanguageChips from '@modules/projects/components/partials/LanguageChips';
 import { LanguageOptions } from '@modules/creators/defs/enums';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 const getAvailabilityChipProps = (status: AvailabilityStatus, t: TFunction) => {
   switch (status) {
@@ -88,9 +90,12 @@ const CreatorRow = ({ creator }: { creator: Creator }) => {
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 100 }}>
-        <Avatar
-          src={creator.user?.profilePicture}
-          sx={{ width: 80, height: 80, mb: 1, boxShadow: 1 }}
+        <UserAvatar
+          user={creator.user as User}
+          size="medium"
+          width={80}
+          height={80}
+          sx={{ mb: 1, boxShadow: 1 }}
         />
       </Box>
       <Box flex={1} minWidth={0}>

@@ -43,6 +43,8 @@ import useProjects from '@modules/projects/hooks/useProjects';
 import ProposalComment from '@modules/creators/components/partials/dashboard/ProposalComment';
 import ConfirmDialog from '@common/components/lib/feedbacks/ConfirmDialog';
 import { countComments } from '@modules/creators/defs/utils';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface Props {
   proposal: ProjectProposal;
@@ -200,10 +202,7 @@ const ProposalReviewCard = ({ proposal, onApprove, onDecline }: Props) => {
           >
             <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
               <Stack direction="row" spacing={2} alignItems="center">
-                <Avatar
-                  src={proposal.creator?.user?.profile?.profilePicture ?? undefined}
-                  sx={{ width: 56, height: 56 }}
-                />
+                <UserAvatar user={proposal.creator?.user as User} size="medium" />
                 <Box>
                   <Typography variant="h6" fontWeight={700}>
                     {proposal.creator?.user?.firstName} {proposal.creator?.user?.lastName}

@@ -21,6 +21,8 @@ import ConfirmDialog from '@common/components/lib/feedbacks/ConfirmDialog';
 import Routes from '@common/defs/routes';
 import { useRouter } from 'next/router';
 import ProposalWizardDialog from '../../ProposalWizardDialog';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface InviteCardProps {
   invite: ProjectInvite;
@@ -221,15 +223,7 @@ const InviteCard: React.FC<InviteCardProps> = ({ invite, onAccept, onDecline }) 
 
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" spacing={1.5} alignItems="center">
-              <Avatar
-                src={clientUser?.profileImage}
-                sx={{
-                  width: 36,
-                  height: 36,
-                  boxShadow: theme.shadows[1],
-                  border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                }}
-              />
+              <UserAvatar user={clientUser as User} size="medium" />
               <Box>
                 <Typography variant="body2" fontWeight={500}>
                   {clientUser?.firstName} {clientUser?.lastName}

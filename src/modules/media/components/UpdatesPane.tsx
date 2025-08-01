@@ -22,6 +22,8 @@ import useAuth from '@modules/auth/hooks/api/useAuth';
 import useProjectUpdates from '@modules/projects/hooks/useProjectUpdates';
 import { PROJECT_UPDATE_TYPE, ProjectUpdate } from '@modules/projects/defs/types';
 import { Any } from '@common/defs/types';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface UpdatesPaneProps {
   projectId: number;
@@ -89,7 +91,9 @@ export default function UpdatesPane({ projectId }: UpdatesPaneProps) {
           user: {
             firstName: user?.firstName || user?.first_name || '',
             lastName: user?.lastName || user?.last_name || '',
-            profileImage: user?.profileImage || user?.profile_image || null,
+            profile: {
+              profilePicture: user?.profile?.profilePicture || null,
+            },
           },
         },
       },
@@ -221,16 +225,27 @@ export default function UpdatesPane({ projectId }: UpdatesPaneProps) {
         userObj = {
           firstName: user?.firstName || user?.first_name || '',
           lastName: user?.lastName || user?.last_name || '',
-          profileImage: user?.profileImage || user?.profile_image || null,
+          email: user?.email || '',
+          color: user?.color || '#84cc16',
+          profile: {
+            profilePicture: user?.profile?.profilePicture || null,
+          },
         };
       }
 
-      const firstName = userObj.firstName || userObj.first_name || '';
-      const lastName = userObj.lastName || userObj.last_name || '';
-      const initials = (firstName?.[0] || '') + (lastName?.[0] || '');
+      const normalizedUser = {
+        firstName: userObj.firstName || userObj.first_name || '',
+        lastName: userObj.lastName || userObj.last_name || '',
+        email: userObj.email || '',
+        color: userObj.color || '#84cc16',
+        profile: {
+          profilePicture: userObj.profile?.profilePicture || null,
+        },
+      } as unknown as User;
+
+      const firstName = normalizedUser.firstName;
+      const lastName = normalizedUser.lastName;
       const fullName = firstName || lastName ? `${firstName} ${lastName}`.trim() : 'Unknown User';
-      const profileImage =
-        userObj.profileImage || userObj.profile_image || userObj.profile?.profile_picture || null;
 
       return (
         <Grow in timeout={500} style={{ transformOrigin: 'top center' }}>
@@ -256,19 +271,7 @@ export default function UpdatesPane({ projectId }: UpdatesPaneProps) {
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               {/* Header */}
               <Box display="flex" alignItems="flex-start" mb={1.5} gap={1.5}>
-                <Avatar
-                  src={profileImage || undefined}
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    fontSize: '0.75rem',
-                    backgroundColor: 'primary.main',
-                    color: 'white',
-                    flexShrink: 0,
-                  }}
-                >
-                  {profileImage ? null : initials || 'U'}
-                </Avatar>
+                <UserAvatar user={normalizedUser as unknown as User} size="medium" />
                 <Box flex={1} minWidth={0}>
                   <Box display="flex" alignItems="center" mb={0.5}>
                     <Typography

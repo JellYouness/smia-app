@@ -30,6 +30,7 @@ import { AvailabilityStatus, Creator, MediaType } from '@modules/creators/defs/t
 import { User } from '@modules/users/defs/types';
 import { Project, PROJECT_STATUS } from '@modules/projects/defs/types';
 import { useTranslation } from 'react-i18next';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
 
 interface DetailsPanelProps {
   creator: Creator;
@@ -106,10 +107,10 @@ const DetailsPanel = ({ creator, user, projects }: DetailsPanelProps) => {
                   </Tooltip>
                 }
               >
-                <Avatar src={user?.profilePicture} sx={{ width: 80, height: 80 }} />
+                <UserAvatar user={user as User} size="large" />
               </Badge>
             ) : (
-              <Avatar src={user?.profilePicture} sx={{ width: 80, height: 80 }} />
+              <UserAvatar user={user as User} size="large" />
             )}
 
             <Typography variant="h6" fontWeight={600}>

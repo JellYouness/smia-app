@@ -17,6 +17,8 @@ import { RHFTextField } from '@common/components/lib/react-hook-form';
 import { Creator } from '@modules/creators/defs/types';
 import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
+import { User } from '@modules/users/defs/types';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
 
 interface SendMessageModalProps {
   open: boolean;
@@ -84,12 +86,7 @@ const SendMessageModal = ({ open, creator, onClose, onSubmit, loading }: SendMes
           </Typography>
 
           <Stack direction="row" alignItems="center" spacing={2} mb={3}>
-            <Avatar
-              src={creator.user?.profile?.profilePicture ?? undefined}
-              sx={{ width: 56, height: 56 }}
-            >
-              {creator.user?.firstName?.[0]}
-            </Avatar>
+            <UserAvatar user={creator.user as User} size="medium" />
             <Box>
               <Typography fontWeight={600} color="primary.main">
                 {creator.user?.firstName} {creator.user?.lastName}

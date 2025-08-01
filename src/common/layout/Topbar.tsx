@@ -13,7 +13,6 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Avatar,
   Badge,
   Tooltip,
   Menu,
@@ -37,6 +36,7 @@ import { useNotificationContext } from '@modules/notifications/contexts/Notifica
 import { useUnreadConversations } from '@modules/chat/hooks/useUnreadConversations';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ChatIcon from '@mui/icons-material/Chat';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
 
 interface TopbarItem {
   label: string;
@@ -402,11 +402,7 @@ const Topbar = ({ openLeftbar }: { openLeftbar: boolean }) => {
               <>
                 <Tooltip title={user.firstName + ' ' + user.lastName}>
                   <IconButton onClick={handleUserClick} sx={{ p: 0 }}>
-                    <Avatar
-                      src={user.profile?.profile_picture || undefined}
-                      alt={user.firstName || user.email}
-                      sx={{ width: 40, height: 40 }}
-                    />
+                    <UserAvatar user={user} size="large" />
                   </IconButton>
                 </Tooltip>
                 <Menu
@@ -417,11 +413,7 @@ const Topbar = ({ openLeftbar }: { openLeftbar: boolean }) => {
                 >
                   <Box sx={{ px: 2, py: 1.5 }}>
                     <Stack direction="row" alignItems="center" spacing={1}>
-                      <Avatar
-                        src={user.profile?.profile_picture || undefined}
-                        alt={user.firstName || user.email}
-                        sx={{ width: 32, height: 32 }}
-                      />
+                      <UserAvatar user={user} size="medium" />
                       <Box>
                         <Box sx={{ fontWeight: 600 }}>
                           {user.firstName} {user.lastName}

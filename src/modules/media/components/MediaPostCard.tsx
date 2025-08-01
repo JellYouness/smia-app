@@ -11,6 +11,8 @@ import {
 } from '@mui/material';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { MediaPost } from '../defs/types';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface MediaPostCardProps {
   task: MediaPost;
@@ -254,27 +256,12 @@ const MediaPostCard = ({
             <AvatarGroup max={3} spacing="small">
               {task.assignments.map((assignment, idx) => {
                 const user = assignment.creator?.user;
+
+                console.log(user);
                 if (!user) {
                   return null;
                 }
-                const initials = (
-                  (user.firstName?.charAt(0) || '') + (user.lastName?.charAt(0) || '')
-                ).toUpperCase();
-                return (
-                  <Avatar
-                    key={assignment.creatorId || idx}
-                    src={user.profilePicture || undefined}
-                    sx={{
-                      width: 24,
-                      height: 24,
-                      fontSize: '0.7rem',
-                      backgroundColor: 'primary.main',
-                      color: 'white',
-                    }}
-                  >
-                    {!user.profilePicture && initials}
-                  </Avatar>
-                );
+                return <UserAvatar user={user as User} size="small" />;
               })}
             </AvatarGroup>
           ) : (

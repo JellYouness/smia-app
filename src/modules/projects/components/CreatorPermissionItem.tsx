@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Avatar,
   Typography,
   IconButton,
   Tooltip,
@@ -14,6 +13,8 @@ import { Visibility, Edit, SwapHoriz, Add, Block, PersonOffOutlined } from '@mui
 import { PROJECT_CREATOR_PERMISSION, ProjectCreator } from '../defs/types';
 import useProjects, { projectCacheKey } from '../hooks/useProjects';
 import { mutate } from 'swr';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface Props {
   projectId: number;
@@ -109,19 +110,7 @@ const CreatorPermissionItem = ({ projectId, projectCreator }: Props) => {
         boxShadow: '0 2px 8px rgba(80,120,200,0.06)',
       }}
     >
-      <Avatar
-        src={creator.user?.profileImage}
-        sx={{
-          width: 44,
-          height: 44,
-          mr: 1,
-          bgcolor: '#e0e7ef',
-          fontWeight: 700,
-        }}
-      >
-        {!creator.user?.profileImage && creator.user?.firstName ? creator.user.firstName[0] : ''}
-      </Avatar>
-
+      <UserAvatar user={creator.user as User} size="medium" />
       <Box flex={1} minWidth={0}>
         <Typography variant="subtitle1" fontWeight={600} noWrap>
           {creator.user?.firstName} {creator.user?.lastName}

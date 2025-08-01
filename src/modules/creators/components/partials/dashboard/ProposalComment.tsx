@@ -16,6 +16,8 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 
 import { ReplyOutlined, ExpandMore, ExpandLess } from '@mui/icons-material';
+import { User } from '@modules/users/defs/types';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
 
 interface CommentContainerProps {
   depth?: number;
@@ -59,14 +61,7 @@ const ProposalComment = ({ comment, depth = 0, onReply, replyingTo }: ProposalCo
           },
         }}
       >
-        <Avatar
-          src={comment.user?.profileImage ?? undefined}
-          sx={{
-            width: 32,
-            height: 32,
-            mt: 0.5,
-          }}
-        />
+        <UserAvatar user={comment.user as User} size="medium" sx={{ mt: 0.5 }} />
         <Box sx={{ flex: 1 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
             <Box>

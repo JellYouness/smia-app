@@ -49,6 +49,8 @@ import AmbassadorApplicationReviewDialog from '@modules/ambassadors/components/A
 import dayjs from 'dayjs';
 import { Creator } from '@modules/creators/defs/types';
 import { Ambassador } from '@modules/ambassadors/defs/types';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -302,10 +304,7 @@ const AdminApplicationsPage: NextPage = () => {
                     >
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Avatar src={application.user?.profilePicture}>
-                            {application.user?.firstName?.[0]}
-                            {application.user?.lastName?.[0]}
-                          </Avatar>
+                          <UserAvatar user={application.user as User} size="medium" />
                           <Box>
                             <Typography variant="subtitle2">
                               {application.user?.firstName} {application.user?.lastName}
@@ -458,10 +457,7 @@ const AdminApplicationsPage: NextPage = () => {
                     >
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Avatar src={application.user?.profilePicture}>
-                            {application.user?.firstName?.[0]}
-                            {application.user?.lastName?.[0]}
-                          </Avatar>
+                          <UserAvatar user={application.user as User} size="medium" />
                           <Box>
                             <Typography variant="subtitle2">
                               {application.user?.firstName} {application.user?.lastName}

@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   Chip,
   IconButton,
@@ -25,15 +24,11 @@ import useMedia from '@modules/media/hooks/useMedia';
 import { Creator } from '@modules/creators/defs/types';
 import { Id } from '@common/defs/types';
 import { MEDIA_POST_ASSIGNMENT_ROLE } from '@modules/media/defs/types';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface MediaAssigneesProps {
-  assignees: {
-    id: number;
-    name: string;
-    avatar: string;
-    initials: string;
-    role: string;
-  }[];
+  assignees: Creator[];
   projectCreators: Creator[];
   postId: Id;
   disableAssign?: boolean;
@@ -57,7 +52,7 @@ const MediaAssignees = ({
   const [selectedRole, setSelectedRole] = useState<MEDIA_POST_ASSIGNMENT_ROLE>(
     MEDIA_POST_ASSIGNMENT_ROLE.EDITOR
   );
-  const [selectedAssignee, setSelectedAssignee] = useState<any>(null);
+  const [selectedAssignee, setSelectedAssignee] = useState<Creator | null>(null);
   const [editingRole, setEditingRole] = useState<string>('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -90,7 +85,7 @@ const MediaAssignees = ({
     setSelectedRole(MEDIA_POST_ASSIGNMENT_ROLE.EDITOR);
   };
 
-  const handleAssigneeClick = (event: React.MouseEvent<HTMLElement>, assignee: any) => {
+  const handleAssigneeClick = (event: React.MouseEvent<HTMLElement>, assignee: Creator) => {
     if (disableAssign) {
       return;
     }
@@ -158,12 +153,6 @@ const MediaAssignees = ({
 
   const handleDeleteCancel = () => {
     setDeleteDialogOpen(false);
-  };
-
-  const getCreatorInitials = (creator: Creator) => {
-    const firstName = creator.user?.firstName || '';
-    const lastName = creator.user?.lastName || '';
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
   const getCreatorName = (creator: Creator) => {
@@ -240,7 +229,11 @@ const MediaAssignees = ({
         {assignees.map((assignee, index) => (
           <Box
             key={assignee.id}
-            onClick={disableAssign ? undefined : (e) => handleAssigneeClick(e, assignee)}
+            onClick={
+              disableAssign
+                ? undefined
+                : (e) => handleAssigneeClick(e, assignee as unknown as Creator)
+            }
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -258,23 +251,8 @@ const MediaAssignees = ({
               },
             }}
           >
-            <Avatar
-              key={assignee.id}
-              src={assignee.avatar || undefined}
-              sx={{
-                width: 36,
-                height: 36,
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                background: `linear-gradient(135deg, ${
-                  ['#3b82f6', '#ef4444', '#10b981', '#f59e0b'][index % 4]
-                } 0%, ${['#1d4ed8', '#dc2626', '#059669', '#d97706'][index % 4]} 100%)`,
-                color: 'white',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-              }}
-            >
-              {!assignee.avatar && assignee.initials}
-            </Avatar>
+            <UserAvatar user={assignee.user as User} size="medium" />
+
             <Box>
               <Typography
                 variant="body2"
@@ -285,7 +263,7 @@ const MediaAssignees = ({
                   lineHeight: 1.2,
                 }}
               >
-                {assignee.name}
+                {assignee.user?.firstName} {assignee.user?.lastName}
               </Typography>
               {assignee.role && (
                 <Chip
@@ -406,18 +384,7 @@ const MediaAssignees = ({
                   }}
                 >
                   <ListItemAvatar sx={{ minWidth: 45 }}>
-                    <Avatar
-                      sx={{
-                        width: 36,
-                        height: 36,
-                        fontSize: '0.8rem',
-                        fontWeight: 700,
-                        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                        color: 'white',
-                      }}
-                    >
-                      {getCreatorInitials(creator)}
-                    </Avatar>
+                    <UserAvatar user={creator.user as User} size="medium" />
                   </ListItemAvatar>
                   <ListItemText
                     primary={getCreatorName(creator)}
@@ -586,7 +553,7 @@ const MediaAssignees = ({
                 }}
               >
                 <Edit fontSize="small" />
-                Manage {selectedAssignee.name}
+                Manage {selectedAssignee.user?.firstName} {selectedAssignee.user?.lastName}
               </Typography>
               <Typography
                 variant="body2"
@@ -613,19 +580,7 @@ const MediaAssignees = ({
                 border: '1px solid rgba(59, 130, 246, 0.1)',
               }}
             >
-              <Avatar
-                src={selectedAssignee.avatar || undefined}
-                sx={{
-                  width: 36,
-                  height: 36,
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                  color: 'white',
-                }}
-              >
-                {!selectedAssignee.avatar && selectedAssignee.initials}
-              </Avatar>
+              <UserAvatar user={selectedAssignee.user as User} size="medium" />
               <Box>
                 <Typography
                   variant="body2"
@@ -636,7 +591,7 @@ const MediaAssignees = ({
                     lineHeight: 1.2,
                   }}
                 >
-                  {selectedAssignee.name}
+                  {selectedAssignee.user?.firstName} {selectedAssignee.user?.lastName}
                 </Typography>
                 <Chip
                   label={selectedAssignee.role}
@@ -790,8 +745,11 @@ const MediaAssignees = ({
         </DialogTitle>
         <DialogContent>
           <Typography sx={{ color: '#64748b', mb: 2 }}>
-            Are you sure you want to remove <strong>{selectedAssignee?.name}</strong> from this
-            assignment?
+            Are you sure you want to remove{' '}
+            <strong>
+              {selectedAssignee?.user?.firstName} {selectedAssignee?.user?.lastName}
+            </strong>{' '}
+            from this assignment?
           </Typography>
           <Typography sx={{ color: '#64748b', fontSize: '0.9rem' }}>
             This action cannot be undone. They will lose access to this post and any associated

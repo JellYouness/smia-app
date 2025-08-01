@@ -33,6 +33,7 @@ import { Ambassador } from '@modules/ambassadors/defs/types';
 import NoAmbassadorsFound from '@modules/ambassadors/components/NoAmbassadorsFound';
 import { TFunction } from 'next-i18next';
 import { User } from '@modules/users/defs/types';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
 
 interface AmbassadorCardProps {
   ambassador: Ambassador & {
@@ -59,9 +60,7 @@ const AmbassadorCard = ({ ambassador, onViewDetails, t }: AmbassadorCardProps) =
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-          <Avatar src={(user as User).profile?.avatar} sx={{ width: 40, height: 40, mr: 1 }}>
-            {user.name?.charAt(0) || 'A'}
-          </Avatar>
+          <UserAvatar user={user} size="large" sx={{ mr: 1 }} />
           <Box>
             <Typography variant="h6" component="h3" noWrap>
               {user.name || 'Ambassador'}
