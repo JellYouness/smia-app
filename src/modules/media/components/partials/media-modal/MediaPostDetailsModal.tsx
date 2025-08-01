@@ -125,18 +125,10 @@ const MediaPostDetailsModal = ({
   }
 
   const assignees =
-    currentMediaPost.assignments?.map((a: any, idx: number) => {
-      const firstName = a.creator?.user?.firstName ?? '';
-      const lastName = a.creator?.user?.lastName ?? '';
-      const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
-      return {
-        id: a.creatorId ?? idx,
-        name: `${firstName} ${lastName}`.trim() || 'Unknown',
-        avatar: a.creator?.user?.profile?.profileImage ?? '',
-        initials,
-        role: a.role,
-      };
-    }) ?? [];
+    currentMediaPost.assignments?.map((a: any) => ({
+      ...a.creator,
+      role: a.role,
+    })) ?? [];
 
   const assets: MediaPostAsset[] = currentMediaPost.assets || [];
   const reviews: MediaPostReview[] = currentMediaPost.reviews || [];

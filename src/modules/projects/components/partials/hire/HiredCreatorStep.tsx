@@ -44,6 +44,8 @@ import useProjects, { projectCacheKey } from '@modules/projects/hooks/useProject
 import { Id } from '@common/defs/types';
 import useSWR, { mutate } from 'swr';
 import StepperEmptyState from '../StepperEmptyState';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface HiredCreatorStepProps {
   projectId: Id;
@@ -166,22 +168,18 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
               {/* Left Section - Avatar & Basic Info */}
               <Box display="flex" alignItems="center" flex={1}>
                 <Box position="relative">
-                  <Avatar
-                    src={creator.user?.profileImage || ''}
+                  <UserAvatar
+                    user={creator.user as User}
+                    size="large"
+                    width={60}
+                    height={60}
                     sx={{
-                      bgcolor: primaryColor.main,
-                      width: 60,
-                      height: 60,
+                      fontWeight: 600,
                       mr: 3,
                       border: `3px solid ${theme.palette.background.paper}`,
                       boxShadow: `0 4px 12px ${alpha(primaryColor.main, 0.2)}`,
-                      fontSize: '1.2rem',
-                      fontWeight: 600,
                     }}
-                  >
-                    {creator.user?.firstName?.[0]}
-                    {creator.user?.lastName?.[0]}
-                  </Avatar>
+                  />
                   {isAssigned && (
                     <Box
                       position="absolute"

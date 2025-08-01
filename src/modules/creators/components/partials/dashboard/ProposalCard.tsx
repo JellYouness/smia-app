@@ -27,6 +27,8 @@ import { ProjectProposal, ProjectProposalComment } from '@modules/projects/defs/
 import useProjects from '@modules/projects/hooks/useProjects';
 import ProposalComment from './ProposalComment';
 import { countComments } from '@modules/creators/defs/utils';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface ProposalCardProps {
   proposal: ProjectProposal;
@@ -380,13 +382,7 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal }) => {
 
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Stack direction="row" spacing={1.5} alignItems="center">
-            <Avatar
-              src={proposal.project?.client?.user.profileImage ?? undefined}
-              sx={{
-                width: 36,
-                height: 36,
-              }}
-            />
+            <UserAvatar user={proposal.project?.client?.user as User} size="medium" />
             <Box>
               <Typography variant="body2" fontWeight={600} fontSize="0.875rem">
                 {proposal.project?.client?.user?.firstName}{' '}

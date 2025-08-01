@@ -39,6 +39,7 @@ import { Creator } from '@modules/creators/defs/types';
 import { User } from '@modules/users/defs/types';
 import { useRouter } from 'next/router';
 import SectionCard from '@modules/users/components/SectionCard';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
 
 interface TeamMembersSectionProps {
   ambassadorId: number;
@@ -152,13 +153,7 @@ const AddTeamMemberDialog: React.FC<AddTeamMemberDialogProps> = ({
               return (
                 <Box component="li" {...props}>
                   <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <Avatar sx={{ width: 32, height: 32, mr: 2 }}>
-                      {user?.profile?.avatar ? (
-                        <Avatar src={user.profile.avatar} />
-                      ) : (
-                        <PersonIcon />
-                      )}
-                    </Avatar>
+                    <UserAvatar user={user as User} size="medium" width={32} height={32} />
                     <Box sx={{ flexGrow: 1 }}>
                       <Typography variant="body2" noWrap>
                         {user?.name || 'Unknown Creator'}
@@ -310,13 +305,12 @@ export const TeamMembersSection: React.FC<TeamMembersSectionProps> = ({
               <React.Fragment key={member.id}>
                 <ListItem sx={{ px: 1, py: 0 }}>
                   <ListItemAvatar>
-                    <Avatar>
-                      {member.user?.profile?.avatar ? (
-                        <Avatar src={member.user.profile.avatar} />
-                      ) : (
-                        <PersonIcon />
-                      )}
-                    </Avatar>
+                    <UserAvatar
+                      user={member.user as unknown as User}
+                      size="medium"
+                      width={32}
+                      height={32}
+                    />
                   </ListItemAvatar>
                   <ListItemText
                     primary={

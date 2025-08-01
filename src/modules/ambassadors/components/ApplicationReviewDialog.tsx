@@ -14,12 +14,13 @@ import {
   Typography,
   Chip,
   Grid,
-  Avatar,
 } from '@mui/material';
 import { CheckCircle, Cancel, VerifiedUser, Visibility } from '@mui/icons-material';
 import { Ambassador } from '@modules/ambassadors/defs/types';
 import { useTranslation } from 'react-i18next';
 import useAmbassadorApplications from '@modules/ambassadors/hooks/useAmbassadorApplications';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface ApplicationReviewDialogProps {
   open: boolean;
@@ -99,10 +100,7 @@ const ApplicationReviewDialog: React.FC<ApplicationReviewDialogProps> = ({
         <Box sx={{ mb: 3 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <Avatar src={application.user?.profilePicture} sx={{ width: 60, height: 60 }}>
-                {application.user?.firstName?.[0]}
-                {application.user?.lastName?.[0]}
-              </Avatar>
+              <UserAvatar user={application.user as User} size="medium" width={60} height={60} />
             </Grid>
             <Grid item xs>
               <Typography variant="h6">

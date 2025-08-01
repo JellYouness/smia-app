@@ -47,7 +47,7 @@ export interface TeamMember extends CrudObject {
     name: string;
     email: string;
     profile?: {
-      avatar?: string;
+      profilePicture?: string;
     };
   };
 }
