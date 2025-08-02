@@ -26,6 +26,8 @@ const PRIMARY = {
   dark: '#103996',
   darker: '#061B64',
   contrastText: '#fff',
+  gradient: 'linear-gradient(to right, #D1E9FC, #76B0F1)',
+  background: '#f1f7fb',
 };
 
 const SECONDARY = {
@@ -90,7 +92,8 @@ const palette: CustomPalette = {
   },
   background: {
     paper: '#fff',
-    default: '#ffffff',
+    // default: 'f5f5f5',
+    default: PRIMARY.background,
     neutral: GREY[200],
   },
   action: {

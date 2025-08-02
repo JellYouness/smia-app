@@ -3,7 +3,6 @@ import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import Routes from '@common/defs/routes';
 import { Box, Grid, Stack, Container, CircularProgress } from '@mui/material';
 import useAuth from '@modules/auth/hooks/api/useAuth';
-import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Skeleton from '@mui/material/Skeleton';
@@ -14,27 +13,6 @@ import AdminProfile from '@modules/admins/components/admin-profile/AdminProfile'
 const MyProfile: NextPage = () => {
   const { user, initialized } = useAuth();
   const { t } = useTranslation(['common', 'user']);
-  const [profilePicture, setProfilePicture] = useState<string | null>(
-    user?.profile?.profile_picture || null
-  );
-
-  // Update profile picture when user data changes
-  useEffect(() => {
-    if (user?.profile?.profile_picture) {
-      setProfilePicture(user.profile.profile_picture);
-    }
-  }, [user?.profile?.profile_picture]);
-
-  const handleUploadPicture = async (file: File) => {
-    // Implementation for uploading profile picture
-    console.log('Uploading file:', file);
-  };
-
-  const handleDeletePicture = async () => {
-    // Implementation for deleting profile picture
-    console.log('Deleting profile picture');
-  };
-
   // Determine user type based on userType field (more reliable than roles)
   const isClient = user?.userType === 'CLIENT' || user?.client;
   const isCreator = user?.userType === 'CREATOR' || user?.creator;

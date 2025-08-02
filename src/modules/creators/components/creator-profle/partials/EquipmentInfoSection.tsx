@@ -28,7 +28,7 @@ const EquipmentInfoSection = ({ creator, t, readOnly, onEdit }: EquipmentInfoSec
                 sx={{
                   p: 3,
                   border: '1px solid',
-                  borderColor: 'divider',
+                  borderColor: 'primary.main',
                   borderRadius: 2,
                   bgcolor: 'background.paper',
                   transition: 'all 0.2s ease',

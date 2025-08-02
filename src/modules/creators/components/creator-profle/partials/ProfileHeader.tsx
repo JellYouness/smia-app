@@ -10,7 +10,7 @@ import {
   WorkspacePremium,
   Language,
 } from '@mui/icons-material';
-import { Box, Avatar, Stack, Typography, Tooltip, Button, Rating, Chip } from '@mui/material';
+import { Box, Stack, Typography, Tooltip, Button, Rating, Chip } from '@mui/material';
 import { TFunction } from 'i18next';
 import { User } from '@modules/users/defs/types';
 import { Creator } from '@modules/creators/defs/types';
@@ -104,7 +104,7 @@ const ProfileHeader = ({
         flexDirection: { xs: 'column', md: 'row' },
         alignItems: 'center',
         gap: 4,
-        mb: 4,
+        // mb: 4,
         p: { xs: 2, md: 4 },
         borderRadius: 4,
         boxShadow: 4,

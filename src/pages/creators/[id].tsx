@@ -10,26 +10,17 @@ import Namespaces from '@common/defs/namespaces';
 import { CRUD_ACTION } from '@common/defs/types';
 import Routes from '@common/defs/routes';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { Box, Typography, Grid, Divider, Skeleton } from '@mui/material';
+import { Box, Typography, Grid, Skeleton } from '@mui/material';
 import { TFunction } from 'next-i18next';
 import { User } from '@modules/users/defs/types';
 import { Creator } from '@modules/creators/defs/types';
-import SkillsSection from '@modules/creators/components/creator-profle/partials/SkillsSection';
-import RegionalExpertiseSection from '@modules/creators/components/creator-profle/partials/RegionalExpertiseSection';
-import MediaTypesSection from '@modules/creators/components/creator-profle/partials/MediaTypesSection';
-import AboutSection from '@common/components/AboutSection';
-import PortfolioSection from '@modules/creators/components/creator-profle/partials/PortfolioSection';
-import CertificationsSection from '@modules/creators/components/creator-profle/partials/CertificationsSection';
-import AchievementsSection from '@modules/creators/components/creator-profle/partials/AchievementsSection';
-import ProfessionalBackgroundSection from '@modules/creators/components/creator-profle/partials/ProfessionalBackgroundSection';
-import EquipmentInfoSection from '@modules/creators/components/creator-profle/partials/EquipmentInfoSection';
-import UserLanguages from '@common/components/UserLanguages';
 import SendMessageModal from '@modules/creators/components/SendMessageModal';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import { useCreateDirectConversation, useSendMessage } from '@modules/chat/hooks/useChat';
 import { useSnackbar } from 'notistack';
 import ProfileHeader from '@modules/creators/components/creator-profle/partials/ProfileHeader';
-import UserSocialMedia from '@common/components/UserSocialMedia';
+import CreatorSidebar from '@modules/creators/components/creator-profle/CreatorSidebar';
+import CreatorMainContent from '@modules/creators/components/creator-profle/CreatorMainContent';
 
 const CreatorProfilePage = ({ item, t }: { item: User; t: TFunction }) => {
   const creator = item.creator as Creator;
@@ -70,54 +61,28 @@ const CreatorProfilePage = ({ item, t }: { item: User; t: TFunction }) => {
   };
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', p: { xs: 2, md: 4 } }}>
-      {/* Profile Header */}
-      <ProfileHeader user={user} creator={creator} setSendMessageOpen={setSendMessageOpen} t={t} />
+    <Box
+      sx={{
+        minHeight: '100vh',
+        maxWidth: { xs: '100%', sm: '90%', lg: '80%' },
+        mx: 'auto',
+        p: { xs: 2, md: 4 },
+      }}
+    >
       <Grid container spacing={4}>
-        {/* Left column: Main info */}
-        <Grid item xs={12} md={4}>
-          <Box sx={{ mb: 3 }}>
-            <UserLanguages languages={creator.languages} t={t} readOnly titleSize="h5" />
-          </Box>
-          <Box sx={{ mb: 3 }}>
-            <MediaTypesSection creator={creator} t={t} readOnly titleSize="h5" />
-          </Box>
-          <Box sx={{ mb: 3 }}>
-            <RegionalExpertiseSection creator={creator} t={t} readOnly titleSize="h5" />
-          </Box>
-          <Box sx={{ mb: 3 }}>
-            <UserSocialMedia socialMediaLinks={user.profile?.socialMediaLinks || {}} />
-          </Box>
+        <Grid item xs={12}>
+          <ProfileHeader
+            user={user}
+            creator={creator}
+            setSendMessageOpen={setSendMessageOpen}
+            t={t}
+          />
         </Grid>
-        {/* Right column: Detailed sections */}
+        <Grid item xs={12} md={4}>
+          <CreatorSidebar user={user} readOnly />
+        </Grid>
         <Grid item xs={12} md={8}>
-          <Box sx={{ mb: 1, p: 3 }}>
-            <AboutSection
-              bio={user.profile?.bio}
-              shortBio={user.profile?.shortBio}
-              hourlyRate={creator.hourlyRate}
-              title={user.profile?.title}
-            />
-          </Box>
-          <Divider sx={{ mb: 1 }} />
-          <Box sx={{ mb: 1 }}>
-            <SkillsSection creator={creator} t={t} readOnly />
-          </Box>
-          <Box sx={{ mb: 1 }}>
-            <PortfolioSection creator={creator} t={t} readOnly />
-          </Box>
-          <Box sx={{ mb: 1 }}>
-            <CertificationsSection creator={creator} t={t} readOnly />
-          </Box>
-          <Box sx={{ mb: 1 }}>
-            <AchievementsSection creator={creator} t={t} readOnly />
-          </Box>
-          <Box sx={{ mb: 1 }}>
-            <ProfessionalBackgroundSection creator={creator} t={t} readOnly />
-          </Box>
-          <Box sx={{ mb: 1 }}>
-            <EquipmentInfoSection creator={creator} t={t} readOnly />
-          </Box>
+          <CreatorMainContent user={user} t={t} readOnly />
         </Grid>
       </Grid>
       {/* Send Message Modal */}
@@ -160,7 +125,17 @@ const CreatorDetailsPage = () => {
   if (loading) {
     return (
       <Box sx={{ p: 6, textAlign: 'center' }}>
-        <Skeleton variant="rectangular" height={200} />
+        <Grid container spacing={4}>
+          <Grid item xs={12}>
+            <Skeleton variant="rounded" height={200} />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Skeleton variant="rounded" height={200} />
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Skeleton variant="rounded" height={200} />
+          </Grid>
+        </Grid>
       </Box>
     );
   }

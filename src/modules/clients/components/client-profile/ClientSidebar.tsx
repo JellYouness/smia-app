@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stack } from '@mui/material';
+import { Paper, Stack } from '@mui/material';
 import { Any } from '@common/defs/types';
 import EditLanguagesDialog from '@modules/creators/components/creator-profle/dialogs/EditLanguagesDialog';
 import useProfileUpdates from '@modules/users/hooks/api/useProfileUpdates';
@@ -60,7 +60,7 @@ const ClientSidebar = ({ user, readOnly }: ClientSidebarProps) => {
   };
 
   return (
-    <>
+    <Paper sx={{ p: 2, borderRadius: 2 }} elevation={6}>
       <Stack spacing={1}>
         <UserLanguages
           languages={languagesData}
@@ -88,7 +88,7 @@ const ClientSidebar = ({ user, readOnly }: ClientSidebarProps) => {
         loading={loading}
         user={user}
       />
-    </>
+    </Paper>
   );
 };
 

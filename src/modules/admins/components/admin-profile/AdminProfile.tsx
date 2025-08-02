@@ -18,7 +18,6 @@ const AdminProfile = ({ user, t }: AdminProfileProps) => {
         minHeight: '100vh',
         maxWidth: { xs: '100%', md: '90%', lg: '80%' },
         margin: '0 auto',
-        bgcolor: 'white',
         pt: 4,
       }}
     >

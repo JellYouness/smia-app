@@ -38,7 +38,7 @@ const SkillsSection = ({ creator, t, readOnly, onEdit }: SkillsSectionProps) => 
               fontWeight: 500,
               fontSize: '0.875rem',
               height: 32,
-              backgroundColor: 'rgba(25, 118, 210, 0.04)',
+              backgroundColor: 'white',
               borderColor: 'primary.main',
               transition: 'all 0.2s ease-in-out',
               '&:hover': {

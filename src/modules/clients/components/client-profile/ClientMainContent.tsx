@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stack } from '@mui/material';
+import { Paper, Stack } from '@mui/material';
 import { Any } from '@common/defs/types';
 import SectionCard from '@modules/users/components/SectionCard';
 import EditAboutDialog from '@modules/creators/components/creator-profle/dialogs/EditAboutDialog';
@@ -154,73 +154,79 @@ const ClientMainContent = ({ user, t, readOnly }: ClientMainContentProps) => {
   };
 
   return (
-    <Stack spacing={0}>
-      {/* Title/About Section */}
-      <SectionCard title={t('user:about')} readOnly={readOnly} onEdit={() => setOpenAbout(true)}>
-        <AboutSection
-          title={user?.profile?.title}
-          bio={user?.profile?.bio}
-          shortBio={user?.profile?.shortBio}
-          hourlyRate={user?.client?.hourlyRate}
+    <Paper sx={{ p: 2, borderRadius: 2 }} elevation={6}>
+      <Stack spacing={0}>
+        {/* Title/About Section */}
+        <SectionCard title={t('user:about')} readOnly={readOnly} onEdit={() => setOpenAbout(true)}>
+          <AboutSection
+            title={user?.profile?.title}
+            bio={user?.profile?.bio}
+            shortBio={user?.profile?.shortBio}
+            hourlyRate={user?.client?.hourlyRate}
+          />
+        </SectionCard>
+        <EditAboutDialog
+          user={user}
+          open={openAbout}
+          onClose={() => setOpenAbout(false)}
+          onSave={handleSaveAbout}
+          loading={loading}
         />
-      </SectionCard>
-      <EditAboutDialog
-        user={user}
-        open={openAbout}
-        onClose={() => setOpenAbout(false)}
-        onSave={handleSaveAbout}
-        loading={loading}
-      />
-      <CompanyInfoSection user={user} readOnly={readOnly} onEdit={() => setOpenCompany(true)} />
-      <EditCompanyDialog
-        user={user}
-        open={openCompany}
-        onClose={() => setOpenCompany(false)}
-        onSave={handleSaveCompany}
-        loading={loading}
-      />
-      <BillingInfoSection user={user} readOnly={readOnly} onEdit={() => setOpenBilling(true)} />
-      <EditBillingDialog
-        user={user}
-        open={openBilling}
-        onClose={() => setOpenBilling(false)}
-        onSave={handleSaveBilling}
-        loading={loading}
-      />
-      <BudgetProjectsSection
-        user={user}
-        readOnly={readOnly}
-        onEdit={() => setOpenBudgetProjects(true)}
-      />
-      <EditBudgetProjectsDialog
-        user={user}
-        open={openBudgetProjects}
-        onClose={() => setOpenBudgetProjects(false)}
-        onSave={handleSaveBudgetProjects}
-        loading={loading}
-      />
-      <DefaultProjectSettingsSection
-        user={user}
-        readOnly={readOnly}
-        onEdit={() => setOpenDefaultProjectSettings(true)}
-      />
-      <EditDefaultProjectSettingsDialog
-        user={user}
-        open={openDefaultProjectSettings}
-        onClose={() => setOpenDefaultProjectSettings(false)}
-        onSave={handleSaveDefaultProjectSettings}
-        loading={loading}
-      />
-      <ContactInfoSection user={user} readOnly={readOnly} onEdit={() => setOpenContactInfo(true)} />
-      <EditContactInfoDialog
-        user={user}
-        open={openContactInfo}
-        onClose={() => setOpenContactInfo(false)}
-        onSave={handleSaveContactInfo}
-        loading={loading}
-      />
-      <AdditionalInfoSection user={user} readOnly={readOnly} />
-    </Stack>
+        <CompanyInfoSection user={user} readOnly={readOnly} onEdit={() => setOpenCompany(true)} />
+        <EditCompanyDialog
+          user={user}
+          open={openCompany}
+          onClose={() => setOpenCompany(false)}
+          onSave={handleSaveCompany}
+          loading={loading}
+        />
+        <BillingInfoSection user={user} readOnly={readOnly} onEdit={() => setOpenBilling(true)} />
+        <EditBillingDialog
+          user={user}
+          open={openBilling}
+          onClose={() => setOpenBilling(false)}
+          onSave={handleSaveBilling}
+          loading={loading}
+        />
+        <BudgetProjectsSection
+          user={user}
+          readOnly={readOnly}
+          onEdit={() => setOpenBudgetProjects(true)}
+        />
+        <EditBudgetProjectsDialog
+          user={user}
+          open={openBudgetProjects}
+          onClose={() => setOpenBudgetProjects(false)}
+          onSave={handleSaveBudgetProjects}
+          loading={loading}
+        />
+        <DefaultProjectSettingsSection
+          user={user}
+          readOnly={readOnly}
+          onEdit={() => setOpenDefaultProjectSettings(true)}
+        />
+        <EditDefaultProjectSettingsDialog
+          user={user}
+          open={openDefaultProjectSettings}
+          onClose={() => setOpenDefaultProjectSettings(false)}
+          onSave={handleSaveDefaultProjectSettings}
+          loading={loading}
+        />
+        <ContactInfoSection
+          user={user}
+          readOnly={readOnly}
+          onEdit={() => setOpenContactInfo(true)}
+        />
+        <EditContactInfoDialog
+          user={user}
+          open={openContactInfo}
+          onClose={() => setOpenContactInfo(false)}
+          onSave={handleSaveContactInfo}
+          loading={loading}
+        />
+        <AdditionalInfoSection user={user} readOnly={readOnly} />
+      </Stack>
+    </Paper>
   );
 };
 

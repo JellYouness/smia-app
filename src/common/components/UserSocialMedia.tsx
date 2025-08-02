@@ -23,6 +23,9 @@ const UserSocialMedia: React.FC<UserSocialMediaProps> = ({
   onEdit,
   readOnly = false,
 }) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  socialMediaLinks = socialMediaLinks[0];
   return (
     <SectionCard title="Social Media" readOnly={readOnly} onEdit={onEdit} titleSize="h5">
       <Stack spacing={1}>

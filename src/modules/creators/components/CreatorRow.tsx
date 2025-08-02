@@ -1,15 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Typography,
-  Chip,
-  Avatar,
-  Rating,
-  Button,
-  Stack,
-  Divider,
-  Tooltip,
-} from '@mui/material';
+import { Box, Typography, Chip, Rating, Button, Stack, Divider, Tooltip } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Stack, Typography, Divider, Button, LinearProgress } from '@mui/material';
+import { Box, Stack, Typography, Divider, Button, LinearProgress, Paper } from '@mui/material';
 import { Business } from '@mui/icons-material';
 import { Any } from '@common/defs/types';
 import EditLanguagesDialog from '@modules/creators/components/creator-profle/dialogs/EditLanguagesDialog';
@@ -113,12 +113,12 @@ const CreatorSidebar = ({ user, readOnly }: CreatorSidebarProps) => {
   };
 
   return (
-    <>
+    <Paper sx={{ p: 2, borderRadius: 2 }} elevation={6}>
       <Stack
         spacing={1}
         //  sx={{ borderLeft: `2px solid`, borderColor: 'divider' }}
       >
-        {user?.profile?.profileCompleteness !== undefined && (
+        {user?.profile?.profileCompleteness !== undefined && !readOnly && (
           <Box sx={{ mb: 2, px: 3 }}>
             <Typography
               variant="caption"
@@ -148,7 +148,7 @@ const CreatorSidebar = ({ user, readOnly }: CreatorSidebarProps) => {
             </Box>
           </Box>
         )}
-        <Divider />
+        {!readOnly && <Divider />}
         <UserLanguages
           languages={languagesData}
           onEdit={() => setOpenLanguages(true)}
@@ -187,7 +187,7 @@ const CreatorSidebar = ({ user, readOnly }: CreatorSidebarProps) => {
         />
 
         {/* Ambassador Application Section */}
-        {!user?.ambassador && (
+        {!user?.ambassador && !readOnly && (
           <>
             <Divider />
             <Box sx={{ p: 2 }}>
@@ -249,7 +249,7 @@ const CreatorSidebar = ({ user, readOnly }: CreatorSidebarProps) => {
         onClose={() => setOpenAmbassadorApplication(false)}
         t={t}
       />
-    </>
+    </Paper>
   );
 };
 

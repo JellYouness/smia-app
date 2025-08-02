@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, IconButton, useTheme } from '@mui/material';
+import { Box, Typography, IconButton } from '@mui/material';
 import { Edit } from '@mui/icons-material';
 import Link from 'next/link';
 
@@ -20,14 +20,14 @@ const SectionCard: React.FC<SectionCardProps> = ({
   readOnly,
   titleSize = 'h4',
 }) => {
-  const theme = useTheme();
+  // const theme = useTheme();
   return (
     <Box
       sx={{
         p: 3,
         // mb: 3,
         position: 'relative',
-        borderBottom: `2px solid ${theme.palette.divider}`,
+        // borderBottom: `2px solid ${theme.palette.divider}`,
         //  borderRadius: 2, border: '1px solid #e0e0e0'
       }}
     >

@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import CreatorRow from '@modules/creators/components/CreatorRow';
 import Link from 'next/link';
+import { Bookmark } from '@mui/icons-material';
 
 const AVAILABILITY_OPTIONS: AvailabilityStatus[] = ['AVAILABLE', 'LIMITED', 'UNAVAILABLE', 'BUSY'];
 
@@ -94,7 +95,7 @@ const CreatorsBrowsePage = () => {
         </Typography>
         <Box mb={2}>
           <Link href="/creators/saved" passHref legacyBehavior>
-            <Button variant="contained" color="secondary">
+            <Button variant="contained" color="secondary" startIcon={<Bookmark />}>
               {t('user:saved_creators', 'View Saved Creators')}
             </Button>
           </Link>

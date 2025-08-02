@@ -24,6 +24,7 @@ const PortfolioSection = ({ creator, t, readOnly, onEdit }: PortfolioSectionProp
             p: 3,
             border: '1px solid',
             borderColor: 'primary.main',
+            bgcolor: 'background.paper',
             borderRadius: 2,
             mb: 2,
             '&:hover': {

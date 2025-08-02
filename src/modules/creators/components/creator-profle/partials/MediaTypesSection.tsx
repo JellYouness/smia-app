@@ -44,6 +44,7 @@ const MediaTypesSection = ({ creator, t, readOnly, onEdit, titleSize }: MediaTyp
                 borderRadius: 4, // Pill shape
                 borderWidth: 1,
                 fontWeight: 500,
+                backgroundColor: 'white',
                 '& .MuiChip-label': {
                   px: 1.5,
                   fontSize: '0.75rem',

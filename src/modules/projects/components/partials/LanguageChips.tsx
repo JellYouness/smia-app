@@ -16,7 +16,7 @@ interface LanguageChipsProps {
 
 const LanguageChips: React.FC<LanguageChipsProps> = ({
   languages,
-  bgColor,
+  bgColor = 'white',
   size = 'sm',
   direction = 'column',
 }) => {
@@ -103,7 +103,7 @@ const LanguageChips: React.FC<LanguageChipsProps> = ({
             variant="outlined"
             sx={{
               p: size === 'xs' ? 1 : 1.5,
-              borderColor: theme.palette.divider,
+              borderColor: theme.palette.primary.dark,
               backgroundColor: bgColor || 'transparent',
               '&:hover': {
                 backgroundColor: theme.palette.action.hover,

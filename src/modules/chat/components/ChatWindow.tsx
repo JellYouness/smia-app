@@ -27,6 +27,8 @@ import {
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
+import UserAvatar from '@common/components/lib/partials/UserAvatar';
+import { User } from '@modules/users/defs/types';
 
 interface ChatWindowProps {
   selectedConversationId?: string;
@@ -333,7 +335,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 color="primary"
                 invisible={!conversation.unreadCount}
               >
-                <Avatar>{getConversationAvatar(conversation)}</Avatar>
+                {/* <Avatar>{getConversationAvatar(conversation)}</Avatar> */}
+                <UserAvatar
+                  user={conversation.participants.find((p) => p.id !== user?.id) as unknown as User}
+                  size="large"
+                />
               </Badge>
             </ListItemAvatar>
             <ListItemText
@@ -376,7 +382,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   ]);
 
   return (
-    <Grid container sx={{ height: '80vh', overflow: 'hidden' }}>
+    <Grid container sx={{ height: '80vh', overflow: 'hidden', bgcolor: 'white' }}>
       {/* Conversations List */}
       {!onProjectPage && (
         <Grid
@@ -442,7 +448,15 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             >
               {selectedConversation ? (
                 <>
-                  <Avatar>{getConversationAvatar(selectedConversation)}</Avatar>
+                  {/* <Avatar>{getConversationAvatar(selectedConversation)}</Avatar> */}
+                  <UserAvatar
+                    user={
+                      selectedConversation.participants.find(
+                        (p) => p.id !== user?.id
+                      ) as unknown as User
+                    }
+                    size="medium"
+                  />
                   <Typography variant="h6">
                     {getConversationDisplayName(selectedConversation)}
                   </Typography>
