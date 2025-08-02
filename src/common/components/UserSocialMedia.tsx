@@ -13,7 +13,7 @@ interface SocialMediaLinks {
 }
 
 interface UserSocialMediaProps {
-  socialMediaLinks: SocialMediaLinks;
+  socialMediaLinks: SocialMediaLinks[];
   onEdit?: () => void;
   readOnly?: boolean;
 }
@@ -23,19 +23,16 @@ const UserSocialMedia: React.FC<UserSocialMediaProps> = ({
   onEdit,
   readOnly = false,
 }) => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  socialMediaLinks = socialMediaLinks[0];
   return (
     <SectionCard title="Social Media" readOnly={readOnly} onEdit={onEdit} titleSize="h5">
       <Stack spacing={1}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <LinkedIn sx={{ fontSize: 20, color: '#0077b5' }} />
-          {socialMediaLinks.linkedin ? (
-            <Link href={socialMediaLinks.linkedin} target="_blank" rel="noopener noreferrer">
+          {socialMediaLinks[0]?.linkedin ? (
+            <Link href={socialMediaLinks[0]?.linkedin} target="_blank" rel="noopener noreferrer">
               <Typography
                 variant="body2"
-                color={socialMediaLinks.linkedin ? 'primary' : 'text.secondary'}
+                color={socialMediaLinks[0]?.linkedin ? 'primary' : 'text.secondary'}
                 sx={{ textDecoration: 'none' }}
               >
                 LinkedIn
@@ -49,11 +46,11 @@ const UserSocialMedia: React.FC<UserSocialMediaProps> = ({
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Twitter sx={{ fontSize: 20, color: '#1DA1F2' }} />
-          {socialMediaLinks.twitter ? (
-            <Link href={socialMediaLinks.twitter} target="_blank" rel="noopener noreferrer">
+          {socialMediaLinks[0]?.twitter ? (
+            <Link href={socialMediaLinks[0]?.twitter} target="_blank" rel="noopener noreferrer">
               <Typography
                 variant="body2"
-                color={socialMediaLinks.twitter ? 'primary' : 'text.secondary'}
+                color={socialMediaLinks[0]?.twitter ? 'primary' : 'text.secondary'}
                 sx={{ textDecoration: 'none' }}
               >
                 Twitter
@@ -67,11 +64,11 @@ const UserSocialMedia: React.FC<UserSocialMediaProps> = ({
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Facebook sx={{ fontSize: 20, color: '#1877F2' }} />
-          {socialMediaLinks.facebook ? (
-            <Link href={socialMediaLinks.facebook} target="_blank" rel="noopener noreferrer">
+          {socialMediaLinks[0]?.facebook ? (
+            <Link href={socialMediaLinks[0]?.facebook} target="_blank" rel="noopener noreferrer">
               <Typography
                 variant="body2"
-                color={socialMediaLinks.facebook ? 'primary' : 'text.secondary'}
+                color={socialMediaLinks[0]?.facebook ? 'primary' : 'text.secondary'}
                 sx={{ textDecoration: 'none' }}
               >
                 Facebook
@@ -83,13 +80,13 @@ const UserSocialMedia: React.FC<UserSocialMediaProps> = ({
             </Typography>
           )}
         </Box>
-        {socialMediaLinks.instagram && (
+        {socialMediaLinks[0]?.instagram && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Instagram sx={{ fontSize: 20, color: '#E4405F' }} />
-            <Link href={socialMediaLinks.instagram} target="_blank" rel="noopener noreferrer">
+            <Link href={socialMediaLinks[0]?.instagram} target="_blank" rel="noopener noreferrer">
               <Typography
                 variant="body2"
-                color={socialMediaLinks.instagram ? 'primary' : 'text.secondary'}
+                color={socialMediaLinks[0]?.instagram ? 'primary' : 'text.secondary'}
                 sx={{ textDecoration: 'none' }}
               >
                 Instagram
@@ -98,13 +95,13 @@ const UserSocialMedia: React.FC<UserSocialMediaProps> = ({
           </Box>
         )}
 
-        {socialMediaLinks.github && (
+        {socialMediaLinks[0]?.github && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <GitHub sx={{ fontSize: 20, color: '#333' }} />
-            <Link href={socialMediaLinks.github} target="_blank" rel="noopener noreferrer">
+            <Link href={socialMediaLinks[0]?.github} target="_blank" rel="noopener noreferrer">
               <Typography
                 variant="body2"
-                color={socialMediaLinks.github ? 'primary' : 'text.secondary'}
+                color={socialMediaLinks[0]?.github ? 'primary' : 'text.secondary'}
                 sx={{ textDecoration: 'none' }}
               >
                 GitHub

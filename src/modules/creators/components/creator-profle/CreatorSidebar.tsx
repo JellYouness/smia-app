@@ -181,7 +181,7 @@ const CreatorSidebar = ({ user, readOnly }: CreatorSidebarProps) => {
           </Stack>
         </SectionCard>
         <UserSocialMedia
-          socialMediaLinks={user?.profile?.socialMediaLinks || {}}
+          socialMediaLinks={user?.profile?.socialMediaLinks || []}
           onEdit={() => setOpenSocialMedia(true)}
           readOnly={readOnly}
         />

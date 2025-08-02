@@ -65,7 +65,7 @@ export interface UserProfile extends CrudObject {
     twitter?: string;
     facebook?: string;
     instagram?: string;
-  };
+  }[];
   emergencyContact: {
     name: string;
     relationship: string;
