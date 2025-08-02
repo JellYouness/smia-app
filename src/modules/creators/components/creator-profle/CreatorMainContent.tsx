@@ -202,6 +202,7 @@ const CreatorMainContent = ({ user, t, readOnly }: CreatorMainContentProps) => {
           title={user?.profile?.title}
           bio={user?.profile?.bio}
           hourlyRate={user?.creator?.hourlyRate}
+          isCreator
         />
       </SectionCard>
 

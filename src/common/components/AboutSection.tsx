@@ -7,31 +7,37 @@ interface AboutSectionProps {
   bio?: string;
   shortBio?: string;
   hourlyRate?: number | string;
+  isCreator?: boolean;
   //   t?: Any;
 }
 
-const AboutSection: React.FC<AboutSectionProps> = ({ title, bio, shortBio, hourlyRate }) => (
+const AboutSection: React.FC<AboutSectionProps> = ({
+  title,
+  bio,
+  shortBio,
+  hourlyRate,
+  isCreator,
+}) => (
   <Box>
-    {(title || hourlyRate) && (
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 2,
-          mb: 1,
-        }}
-      >
-        <Typography variant="h4" sx={{ fontWeight: 600, color: 'primary.main' }}>
-          {title || <Skeleton width="80%" />}
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 2,
+        mb: 1,
+      }}
+    >
+      <Typography variant="h4" sx={{ fontWeight: 600, color: 'primary.main' }}>
+        {title !== null ? title : <Skeleton width="300px" />}
+      </Typography>
+      {isCreator && (
+        <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 600 }}>
+          {hourlyRate !== null ? `$${hourlyRate}/hr` : <Skeleton width="50px" />}
         </Typography>
-        {hourlyRate !== undefined && hourlyRate !== null && (
-          <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 600 }}>
-            {typeof hourlyRate === 'number' ? `$${hourlyRate}/hr` : hourlyRate}
-          </Typography>
-        )}
-      </Box>
-    )}
+      )}
+    </Box>
+
     {/* <Typography variant="body1" sx={{ mt: 1, fontWeight: 600 }}>
       {t ? t('user:bio') : 'Bio'}:
     </Typography> */}
