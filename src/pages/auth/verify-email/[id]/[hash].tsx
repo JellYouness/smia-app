@@ -14,11 +14,15 @@ const EmailVerificationPage: NextPage = () => {
   const { t } = useTranslation(['auth', 'common']);
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
+  const [runned, setRunned] = useState(false);
 
   useEffect(() => {
     const verifyEmailToken = async () => {
       const { id, hash } = router.query;
-      console.log(id, hash);
+
+      if (runned) {
+        return;
+      }
 
       if (!id || !hash) {
         setStatus('error');
@@ -33,17 +37,20 @@ const EmailVerificationPage: NextPage = () => {
         );
 
         if (response.success) {
+          setRunned(true);
           setStatus('success');
           setMessage(t('auth:email_verified_success'));
           // Redirect to profile completion page after 3 seconds
           setTimeout(() => {
             router.push(Routes.Auth.CompleteProfile);
-          }, 3000);
+          }, 1000);
         } else {
+          setRunned(true);
           setStatus('error');
           setMessage(response.errors?.[0] || t('common:unexpected_error'));
         }
       } catch (error) {
+        setRunned(true);
         setStatus('error');
         setMessage(t('common:unexpected_error'));
       }

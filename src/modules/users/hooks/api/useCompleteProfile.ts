@@ -484,7 +484,7 @@ export const useCompleteProfile = () => {
 
       if (result.success) {
         enqueueSnackbar(t('user:profile_completed_successfully'), { variant: 'success' });
-        router.push(Routes.Users.Me);
+        router.push(Routes.Auth.CompleteRoleProfile);
       } else {
         enqueueSnackbar(result.errors?.[0] || t('common:update_failed'), { variant: 'error' });
       }
@@ -495,7 +495,7 @@ export const useCompleteProfile = () => {
   };
 
   const handleSkip = () => {
-    router.push(Routes.Users.Me);
+    router.push(Routes.Auth.CompleteRoleProfile);
   };
 
   return {
