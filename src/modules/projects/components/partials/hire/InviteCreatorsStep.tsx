@@ -551,7 +551,7 @@ const InviteCreatorsStep = ({ projectId, project }: InviteCreatorsStepProps) => 
                   variant="h6"
                   sx={{ fontWeight: 700, color: theme.palette.text.primary }}
                 >
-                  ${creator.hourlyRate.toFixed(2)}/hr
+                  ${creator.hourlyRate}/hr
                 </Typography>
               </Box>
 
