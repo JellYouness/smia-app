@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Box, Grid, styled, Typography, useTheme } from '@mui/material';
+import { Box, Grid, styled, Typography, useTheme, Card, CardContent } from '@mui/material';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -28,10 +28,11 @@ const TipContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'flex-start',
   padding: theme.spacing(2),
-  backgroundColor:
-    theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[100],
   borderRadius: theme.shape.borderRadius,
   marginBottom: theme.spacing(3),
+  background: `linear-gradient(135deg, ${theme.palette.info.light}15 0%, ${theme.palette.info.light}25 100%)`,
+  border: `1px solid ${theme.palette.info.light}40`,
+  boxShadow: `0 4px 10px ${theme.palette.info.light}20`,
 }));
 
 const schema = (t: TFunction) =>
@@ -99,86 +100,97 @@ const StepProjectResources = forwardRef<FormStepRef, FormStepProps>(({ next, dat
         <TipContainer>
           <LightbulbOutlined
             sx={{
-              color: theme.palette.warning.main,
+              color: theme.palette.info.main,
               mr: 2,
               mt: 0.5,
               fontSize: 20,
             }}
           />
           <Box>
-            <Typography variant="subtitle2" gutterBottom fontWeight={500}>
+            <Typography
+              variant="subtitle2"
+              gutterBottom
+              fontWeight={500}
+              sx={{ color: theme.palette.info.dark, fontWeight: 600 }}
+            >
               {t('project:steps.step2.pro_tip')}
             </Typography>
-            <Typography variant="body2">{t('project:steps.step2.tip')}</Typography>
+            <Typography variant="body2" sx={{ color: theme.palette.info.dark, opacity: 0.9 }}>
+              {t('project:steps.step2.tip')}
+            </Typography>
           </Box>
         </TipContainer>
 
-        <Box mb={5}>
-          <SectionHeader>
-            <CalendarToday
-              sx={{
-                color: theme.palette.primary.main,
-                mr: 1.5,
-                fontSize: 18,
-              }}
-            />
-            <Typography fontWeight={500}>{t('project:steps.step2.timeline_title')}</Typography>
-          </SectionHeader>
+        <Card elevation={2}>
+          <CardContent sx={{ p: 4 }}>
+            <Box mb={5}>
+              <SectionHeader>
+                <CalendarToday
+                  sx={{
+                    color: theme.palette.primary.main,
+                    mr: 1.5,
+                    fontSize: 18,
+                  }}
+                />
+                <Typography fontWeight={500}>{t('project:steps.step2.timeline_title')}</Typography>
+              </SectionHeader>
 
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <RHFDatePicker name="startDate" label={t('project:steps.step2.start_date')} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <RHFDatePicker name="endDate" label={t('project:steps.step2.end_date')} />
-            </Grid>
-          </Grid>
-        </Box>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <RHFDatePicker name="startDate" label={t('project:steps.step2.start_date')} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <RHFDatePicker name="endDate" label={t('project:steps.step2.end_date')} />
+                </Grid>
+              </Grid>
+            </Box>
 
-        <Box mb={5}>
-          <SectionHeader>
-            <AttachMoney
-              sx={{
-                color: theme.palette.primary.main,
-                mr: 1.5,
-                fontSize: 18,
-              }}
-            />
-            <Typography fontWeight={500}>{t('project:steps.step2.budget_title')}</Typography>
-          </SectionHeader>
+            <Box>
+              <SectionHeader>
+                <AttachMoney
+                  sx={{
+                    color: theme.palette.primary.main,
+                    mr: 1.5,
+                    fontSize: 18,
+                  }}
+                />
+                <Typography fontWeight={500}>{t('project:steps.step2.budget_title')}</Typography>
+              </SectionHeader>
 
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <RHFTextField
-                name="budget"
-                type="number"
-                label={t('project:steps.step2.budget')}
-                InputProps={{
-                  inputProps: {
-                    min: 0,
-                    step: 50,
-                  },
-                  startAdornment: (
-                    <Box
-                      sx={{
-                        mr: 1,
-                        color: 'text.secondary',
-                        fontWeight: 500,
-                      }}
-                    >
-                      $
-                    </Box>
-                  ),
-                }}
-                sx={{
-                  '& .MuiInputBase-root': {
-                    paddingLeft: 2,
-                  },
-                }}
-              />
-            </Grid>
-          </Grid>
-        </Box>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <RHFTextField
+                    name="budget"
+                    type="number"
+                    label={t('project:steps.step2.budget')}
+                    InputProps={{
+                      inputProps: {
+                        min: 0,
+                        step: 50,
+                      },
+                      startAdornment: (
+                        <Box
+                          sx={{
+                            mr: 1,
+                            color: 'text.secondary',
+                            fontWeight: 500,
+                          }}
+                        >
+                          $
+                        </Box>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiInputBase-root': {
+                        paddingLeft: 2,
+                      },
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+          </CardContent>
+        </Card>
       </Box>
     </FormProvider>
   );

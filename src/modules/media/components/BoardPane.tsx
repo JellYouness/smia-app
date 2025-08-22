@@ -1,4 +1,4 @@
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Skeleton, Fade } from '@mui/material';
 import { useState, useEffect, useMemo } from 'react';
 import CreateMediaPostModal from './CreateMediaPostModal';
 import useMedia from '../hooks/useMedia';
@@ -171,6 +171,63 @@ const BoardPane = ({ projectId, onFilesClick }: BoardPaneProps) => {
   // Add a flag to disable drag for creators
   const disableDrag = user?.userType === 'CREATOR';
 
+  // Loading skeleton component
+  const LoadingSkeleton = () => (
+    <Fade in timeout={300}>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          overflowX: 'auto',
+          overflowY: 'auto',
+          display: 'flex',
+          gap: 3,
+          pb: 2,
+          width: '100%',
+        }}
+      >
+        {COLUMNS.map((column) => (
+          <Box
+            key={String(column.id)}
+            sx={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column' }}
+          >
+            {/* Column header skeleton */}
+            <Box sx={{ mb: 2 }}>
+              <Skeleton variant="text" width="60%" height={24} sx={{ mb: 1, borderRadius: 1 }} />
+              <Skeleton variant="text" width="40%" height={16} sx={{ borderRadius: 1 }} />
+            </Box>
+
+            {/* Column content skeleton */}
+            <Box
+              sx={{
+                flex: 1,
+                minHeight: 400,
+                background: 'rgba(255, 255, 255, 0.6)',
+                borderRadius: 2,
+                border: '1px dashed rgba(32, 101, 209, 0.2)',
+                p: 2,
+              }}
+            >
+              {/* Task card skeletons */}
+              {[1, 2, 3].map((index) => (
+                <Box key={index} sx={{ mb: 2 }}>
+                  <Skeleton
+                    variant="rectangular"
+                    height={80}
+                    sx={{
+                      borderRadius: 2,
+                      background: 'rgba(32, 101, 209, 0.08)',
+                    }}
+                  />
+                </Box>
+              ))}
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    </Fade>
+  );
+
   return (
     <Box
       sx={{
@@ -224,59 +281,63 @@ const BoardPane = ({ projectId, onFilesClick }: BoardPaneProps) => {
           overflow: 'auto',
         }}
       >
-        <Box
-          sx={{
-            flex: 1,
-            minHeight: 0,
-            overflowX: 'auto',
-            overflowY: 'auto',
-            display: 'flex',
-            gap: 3,
-            pb: 2,
-            width: '100%',
-            '&::-webkit-scrollbar': {
-              width: 8,
-              height: 8,
-            },
-            '&::-webkit-scrollbar-track': {
-              backgroundColor: 'rgba(32, 101, 209, 0.1)',
-              borderRadius: 4,
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: 'rgba(32, 101, 209, 0.3)',
-              borderRadius: 4,
-              '&:hover': {
-                backgroundColor: 'rgba(32, 101, 209, 0.5)',
+        {loading ? (
+          <LoadingSkeleton />
+        ) : (
+          <Box
+            sx={{
+              flex: 1,
+              minHeight: 0,
+              overflowX: 'auto',
+              overflowY: 'auto',
+              display: 'flex',
+              gap: 3,
+              pb: 2,
+              width: '100%',
+              '&::-webkit-scrollbar': {
+                width: 8,
+                height: 8,
               },
-            },
-          }}
-        >
-          {COLUMNS.map((column) => (
-            <Box
-              key={String(column.id)}
-              sx={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column' }}
-            >
-              <BoardColumn
-                column={column}
-                tasks={
-                  Array.isArray(postsToRender)
-                    ? postsToRender.filter((task: MediaPost) => task.status === column.status)
-                    : []
-                }
-                draggedTaskId={draggedTaskId}
-                isDragOver={dragOverColumn === String(column.id)}
-                onDragOver={disableDrag ? undefined : (e) => handleDragOver(e, String(column.id))}
-                onDragLeave={disableDrag ? undefined : (e) => handleDragLeave(e)}
-                onDrop={disableDrag ? undefined : handleDrop}
-                onDragStart={disableDrag ? undefined : handleDragStart}
-                onDragEnd={disableDrag ? undefined : handleDragEnd}
-                onCardClick={handleCardClick}
-                onFilesClick={onFilesClick}
-                disableDrag={disableDrag}
-              />
-            </Box>
-          ))}
-        </Box>
+              '&::-webkit-scrollbar-track': {
+                backgroundColor: 'rgba(32, 101, 209, 0.1)',
+                borderRadius: 4,
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: 'rgba(32, 101, 209, 0.3)',
+                borderRadius: 4,
+                '&:hover': {
+                  backgroundColor: 'rgba(32, 101, 209, 0.5)',
+                },
+              },
+            }}
+          >
+            {COLUMNS.map((column) => (
+              <Box
+                key={String(column.id)}
+                sx={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column' }}
+              >
+                <BoardColumn
+                  column={column}
+                  tasks={
+                    Array.isArray(postsToRender)
+                      ? postsToRender.filter((task: MediaPost) => task.status === column.status)
+                      : []
+                  }
+                  draggedTaskId={draggedTaskId}
+                  isDragOver={dragOverColumn === String(column.id)}
+                  onDragOver={disableDrag ? undefined : (e) => handleDragOver(e, String(column.id))}
+                  onDragLeave={disableDrag ? undefined : (e) => handleDragLeave(e)}
+                  onDrop={disableDrag ? undefined : handleDrop}
+                  onDragStart={disableDrag ? undefined : handleDragStart}
+                  onDragEnd={disableDrag ? undefined : handleDragEnd}
+                  onCardClick={handleCardClick}
+                  onFilesClick={onFilesClick}
+                  disableDrag={disableDrag}
+                />
+              </Box>
+            ))}
+          </Box>
+        )}
       </Box>
       <CreateMediaPostModal
         open={createModalOpen}

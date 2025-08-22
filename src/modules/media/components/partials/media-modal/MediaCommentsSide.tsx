@@ -20,6 +20,7 @@ export type MediaPostCommentUI = MediaPostComment & {
   text: string;
   date: string;
   time: string;
+  authorColor: string;
 };
 
 interface MediaCommentSideProps {
@@ -94,7 +95,7 @@ const MediaCommentsSide = ({ comments, onAddComment }: MediaCommentSideProps) =>
                 width: 32,
                 height: 32,
                 fontSize: '0.75rem',
-                backgroundColor: 'primary.main',
+                backgroundColor: comment.authorColor,
                 color: 'white',
                 mr: 1.5,
                 fontWeight: 600,

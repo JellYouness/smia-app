@@ -215,12 +215,15 @@ export default function UpdatesPane({ projectId }: UpdatesPaneProps) {
       let userObj: Any = {};
 
       if (isOptimistic) {
-        userObj =
-          update.project?.client?.user ||
-          update.project?.ambassador?.user ||
-          update.project?.client ||
-          update.project?.ambassador ||
-          {};
+        userObj = {
+          firstName: user?.firstName || user?.first_name || '',
+          lastName: user?.lastName || user?.last_name || '',
+          email: user?.email || '',
+          color: user?.color || '#84cc16',
+          profile: {
+            profilePicture: user?.profile?.profilePicture || null,
+          },
+        };
       } else {
         userObj = {
           firstName: user?.firstName || user?.first_name || '',
@@ -321,7 +324,17 @@ export default function UpdatesPane({ projectId }: UpdatesPaneProps) {
               </Box>
 
               {/* Content */}
-              <Typography variant="body2" color="text.primary" fontSize="0.8rem" lineHeight={1.5}>
+              <Typography
+                variant="body2"
+                color="text.primary"
+                fontSize="0.8rem"
+                lineHeight={1.5}
+                sx={{
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                  overflowWrap: 'break-word',
+                }}
+              >
                 {update.body}
               </Typography>
             </CardContent>

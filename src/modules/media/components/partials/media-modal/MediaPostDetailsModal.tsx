@@ -139,6 +139,7 @@ const MediaPostDetailsModal = ({
     text: string;
     date: string;
     time: string;
+    authorColor: string;
   })[] = (currentMediaPost.comments || []).map((c: any) => {
     const firstName = c.author?.firstName ?? '';
     const lastName = c.author?.lastName ?? '';
@@ -153,6 +154,7 @@ const MediaPostDetailsModal = ({
       time: c.createdAt
         ? new Date(c.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         : '',
+      authorColor: c.author?.color || '#84cc16',
     };
   });
 

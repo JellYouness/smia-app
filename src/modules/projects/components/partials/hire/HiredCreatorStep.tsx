@@ -65,7 +65,6 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
   console.log(projectData);
 
   const project = projectData?.data?.item || propProject;
-  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedCreator, setSelectedCreator] = useState<ProjectCreator | null>(null);
   const [updatingCreatorId, setUpdatingCreatorId] = useState<Id | null>(null);
   const [softHireExpanded, setSoftHireExpanded] = useState(true);
@@ -83,9 +82,11 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
   const handleMenuOpen = (e: React.MouseEvent<HTMLElement>, creator: ProjectCreator) => {
     setSelectedCreator(creator);
     const rect = e.currentTarget.getBoundingClientRect();
+
+    // Position menu right next to the button
     setMenuPosition({
-      top: rect.bottom + window.scrollY + 10,
-      left: rect.right + window.scrollX + 10,
+      top: rect.bottom + 8,
+      left: rect.left,
     });
   };
 
@@ -600,7 +601,6 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
         onClose={handleMenuClose}
         anchorReference="anchorPosition"
         anchorPosition={menuPosition || undefined}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         sx={{ py: '30px !important' }}
         MenuListProps={{ disablePadding: true }}
         PaperProps={{
