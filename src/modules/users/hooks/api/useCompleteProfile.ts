@@ -151,10 +151,10 @@ export const useCompleteProfile = () => {
       case 4: // Social Media
         return Yup.object().shape({
           socialMediaLinks: Yup.object().shape({
-            facebook: Yup.string().nullable().url(t('user:invalid_facebook_url')),
-            twitter: Yup.string().nullable().url(t('user:invalid_twitter_url')),
-            linkedin: Yup.string().nullable().url(t('user:invalid_linkedin_url')),
-            instagram: Yup.string().nullable().url(t('user:invalid_instagram_url')),
+            facebook: Yup.string().nullable(),
+            twitter: Yup.string().nullable(),
+            linkedin: Yup.string().nullable(),
+            instagram: Yup.string().nullable(),
           }),
         });
 
