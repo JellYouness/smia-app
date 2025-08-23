@@ -47,8 +47,6 @@ const ProjectDetailsPage: NextPage = () => {
   const isCreator = user?.userType === ROLE.CREATOR;
   const isProjectOwner = user?.client?.id === project?.clientId;
 
-  console.log('isProjectOwner', isProjectOwner);
-
   const isAssignedCreator = useMemo(() => {
     if (!isCreator || !user?.creator?.id || !project?.projectCreators) {
       return false;

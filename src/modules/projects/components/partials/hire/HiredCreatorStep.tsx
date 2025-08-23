@@ -62,8 +62,6 @@ const HiredCreatorStep = ({ projectId, project: propProject }: HiredCreatorStepP
     readOne(projectId)
   );
 
-  console.log(projectData);
-
   const project = projectData?.data?.item || propProject;
   const [selectedCreator, setSelectedCreator] = useState<ProjectCreator | null>(null);
   const [updatingCreatorId, setUpdatingCreatorId] = useState<Id | null>(null);

@@ -185,7 +185,6 @@ const useProfileUpdates = () => {
   ): Promise<ApiResponse<ProfileUpdateResponse>> => {
     setLoading(true);
     try {
-      console.log('updateRegionalExpertise called with:', { userId, regionalExpertise });
       const response = await fetchApi<ProfileUpdateResponse>(
         ApiRoutes.Users.UpdateRegionalExpertise.replace('{id}', userId.toString()),
         {

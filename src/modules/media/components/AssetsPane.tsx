@@ -1,14 +1,15 @@
 import React, { useState, useCallback } from 'react';
-import { Box, CircularProgress, Paper, Typography } from '@mui/material';
+import { Box, CircularProgress, Paper, Typography, Button } from '@mui/material';
 import MediaFileSection from './MediaFileSection';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import { ROLE } from '@modules/permissions/defs/types';
 import VersionsSection from './VersionsSection';
 import useSWR, { mutate } from 'swr';
 import useMedia from '../hooks/useMedia';
-import { MediaPostAsset, MediaPost, FileItem } from '../defs/types';
+import { MediaPostAsset, MediaPost, FileItem, MEDIA_POST_STATUS } from '../defs/types';
 import useUploads from '@modules/uploads/hooks/api/useUploads';
 import { Description, Error, Image } from '@mui/icons-material';
+import { ApprovedAsset, DistributeResult, DistributeModal } from './distribute';
 
 interface AssetsPaneProps {
   selectedPostId: number | null;
@@ -35,6 +36,9 @@ const AssetsPane = ({ selectedPostId }: AssetsPaneProps) => {
   // Loading states
   const [uploadingFiles, setUploadingFiles] = useState<Map<string, FileItem>>(new Map());
   const [deletingFiles, setDeletingFiles] = useState<Set<string>>(new Set());
+
+  // Modal states
+  const [distributeModalOpen, setDistributeModalOpen] = useState(false);
 
   // Toggle state for sections
   const [expandedSections, setExpandedSections] = useState({
@@ -104,7 +108,35 @@ const AssetsPane = ({ selectedPostId }: AssetsPaneProps) => {
   // Find the last version (with files)
   const lastVersionWithAssets = versions.length > 0 ? versions[versions.length - 1] : undefined;
 
-  console.log('versions', versions);
+  // Convert assets to ApprovedAsset format for distribute modal
+  const approvedAssets: ApprovedAsset[] = assets
+    .filter(
+      (asset) => asset.isReference || (asset.versionId && asset.version?.status === 'APPROVED')
+    )
+    .map((asset) => ({
+      id: String(asset.id),
+      kind: (() => {
+        if (asset.mimeType?.startsWith('image/')) {
+          return 'image' as const;
+        }
+        if (asset.mimeType?.startsWith('video/')) {
+          return 'video' as const;
+        }
+        if (asset.mimeType?.startsWith('audio/')) {
+          return 'audio' as const;
+        }
+        if (asset.mimeType === 'application/pdf') {
+          return 'pdf' as const;
+        }
+        return 'image' as const;
+      })(),
+      width: asset.upload?.width,
+      height: asset.upload?.height,
+      durationSec: asset.upload?.duration,
+      name: asset.upload?.name || String(asset.id),
+      url: asset.upload?.url || '',
+      tags: asset.tags || [],
+    }));
 
   if (!user) {
     return null;
@@ -247,6 +279,11 @@ const AssetsPane = ({ selectedPostId }: AssetsPaneProps) => {
     return [...uploadingForSection, ...sortedRealFiles];
   };
 
+  const handleDistributeSubmit = (payload: DistributeResult) => {
+    console.log('Distribution payload received:', payload);
+    setDistributeModalOpen(false);
+  };
+
   if (!selectedPostId) {
     return <EmptyState />;
   }
@@ -261,67 +298,120 @@ const AssetsPane = ({ selectedPostId }: AssetsPaneProps) => {
     <Box
       sx={{
         height: '100%',
-        overflowY: 'auto',
-        p: 2,
-        '&::-webkit-scrollbar': {
-          width: '8px',
-        },
-        '&::-webkit-scrollbar-track': {
-          background: 'rgba(0, 0, 0, 0.05)',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          background: 'rgba(32, 101, 209, 0.3)',
-          borderRadius: '4px',
-        },
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <MediaFileSection
-        title="Reference Assets"
-        files={mergeAssetsWithUploading(referenceAssets, true).map((file) => ({
-          ...file,
-          canDelete: user?.userType !== ROLE.CREATOR,
-        }))}
-        onFilesAdd={(files) => handleAddAsset(files, { isReference: true })}
-        isExpanded={expandedSections.reference}
-        onToggle={() => toggleSection('reference')}
-        onFileDelete={handleDeleteAsset}
-        getFileUrl={getFileUrl}
-        user={user}
-        showUploadInput={user?.userType !== ROLE.CREATOR}
-      />
-
-      <VersionsSection
-        versions={versions}
-        isExpanded={expandedSections.versions}
-        onToggle={() => toggleSection('versions')}
-        isProjectOwner={isProjectOwner}
-        lastVersionWithAssets={lastVersionWithAssets}
-        postId={selectedPostId}
-        reviews={mediaPost?.reviews || []}
-      />
-
-      {user?.userType === ROLE.CREATOR && (
+      {/* Scrollable content area */}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: 'auto',
+          p: 2,
+          pb: 0, // Remove bottom padding since we have the button below
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'rgba(0, 0, 0, 0.05)',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: 'rgba(32, 101, 209, 0.3)',
+            borderRadius: '4px',
+          },
+        }}
+      >
         <MediaFileSection
-          title="Draft Files"
-          files={mergeAssetsWithUploading(draftAssets, false).map((file) => ({
+          title="Reference Assets"
+          files={mergeAssetsWithUploading(referenceAssets, true).map((file) => ({
             ...file,
-            canDelete:
-              user?.userType === ROLE.CREATOR
-                ? file.uploadedBy === user.id // Only allow delete if uploaded by this user
-                : true,
+            canDelete: user?.userType !== ROLE.CREATOR,
           }))}
-          onFilesAdd={(files) => handleAddAsset(files, { isReference: false })}
-          isExpanded={expandedSections.drafts}
-          onToggle={() => toggleSection('drafts')}
+          onFilesAdd={(files) => handleAddAsset(files, { isReference: true })}
+          isExpanded={expandedSections.reference}
+          onToggle={() => toggleSection('reference')}
           onFileDelete={handleDeleteAsset}
           getFileUrl={getFileUrl}
-          showUploadInput={user?.userType === ROLE.CREATOR && !isDraftSuspended}
-          suspendedMessage={draftSuspendedMessage}
-          postId={selectedPostId}
-          assignments={assignments}
           user={user}
+          showUploadInput={user?.userType !== ROLE.CREATOR}
         />
-      )}
+
+        <VersionsSection
+          versions={versions}
+          isExpanded={expandedSections.versions}
+          onToggle={() => toggleSection('versions')}
+          isProjectOwner={isProjectOwner}
+          lastVersionWithAssets={lastVersionWithAssets}
+          postId={selectedPostId}
+          reviews={mediaPost?.reviews || []}
+        />
+
+        {user?.userType === ROLE.CREATOR && (
+          <MediaFileSection
+            title="Draft Files"
+            files={mergeAssetsWithUploading(draftAssets, false).map((file) => ({
+              ...file,
+              canDelete:
+                user?.userType === ROLE.CREATOR
+                  ? file.uploadedBy === user.id // Only allow delete if uploaded by this user
+                  : true,
+            }))}
+            onFilesAdd={(files) => handleAddAsset(files, { isReference: false })}
+            isExpanded={expandedSections.drafts}
+            onToggle={() => toggleSection('drafts')}
+            onFileDelete={handleDeleteAsset}
+            getFileUrl={getFileUrl}
+            showUploadInput={user?.userType === ROLE.CREATOR && !isDraftSuspended}
+            suspendedMessage={draftSuspendedMessage}
+            postId={selectedPostId}
+            assignments={assignments}
+            user={user}
+          />
+        )}
+      </Box>
+
+      {/* Distribute Button - Fixed at the bottom */}
+      <Box
+        sx={{
+          p: 2,
+          pt: 1,
+          borderTop: '1px solid rgba(0, 0, 0, 0.1)',
+          background: 'rgba(255, 255, 255, 0.9)',
+        }}
+      >
+        <Button
+          variant="contained"
+          fullWidth
+          disabled={
+            !mediaPost ||
+            mediaPost.status !== MEDIA_POST_STATUS.APPROVED ||
+            approvedAssets.length === 0
+          }
+          onClick={() => setDistributeModalOpen(true)}
+          sx={{
+            backgroundColor: 'primary.main',
+            color: 'white',
+            fontWeight: 600,
+            textTransform: 'none',
+            boxShadow: 2,
+            '&:hover': { backgroundColor: 'primary.dark' },
+            height: 40,
+            '&:disabled': {
+              backgroundColor: 'action.disabled',
+              color: 'action.disabled',
+            },
+          }}
+        >
+          Distribute
+        </Button>
+      </Box>
+
+      <DistributeModal
+        open={distributeModalOpen}
+        onClose={() => setDistributeModalOpen(false)}
+        approvedAssets={approvedAssets}
+        onSubmit={handleDistributeSubmit}
+      />
     </Box>
   );
 };
