@@ -257,7 +257,6 @@ const MediaPostCard = ({
               {task.assignments.map((assignment, idx) => {
                 const user = assignment.creator?.user;
 
-                console.log(user);
                 if (!user) {
                   return null;
                 }

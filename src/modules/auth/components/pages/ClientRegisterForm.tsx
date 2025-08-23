@@ -59,13 +59,9 @@ const ClientRegisterForm = () => {
   } = methods;
 
   const onSubmit = async (data: RegisterInput) => {
-    console.log('Form submitted with data:', data);
     try {
       const response = await register(data);
-      console.log('Registration response in form:', response);
       if (response.success) {
-        // Store email for verification page
-        localStorage.setItem('pendingVerificationEmail', data.email);
         router.push('/auth/verify-email');
       }
     } catch (error) {

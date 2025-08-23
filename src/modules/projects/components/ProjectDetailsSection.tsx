@@ -12,7 +12,6 @@ interface Props {
 const ProjectDetailsSection = ({ project, isProjectOwner }: Props) => {
   const owner = project.client?.user;
 
-  console.log(isProjectOwner);
   return (
     <Box>
       <ProjectCard project={project} hideAction={!isProjectOwner} />

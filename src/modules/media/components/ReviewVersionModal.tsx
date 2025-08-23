@@ -177,6 +177,14 @@ const ReviewVersionModal = ({ open, onClose, version, files, postId }: ReviewVer
   const [submitting, setSubmitting] = useState(false);
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
 
+  // Reset comment and selected file when modal opens or version changes
+  React.useEffect(() => {
+    if (open) {
+      setComment('');
+      setSelectedFileIndex(0);
+    }
+  }, [open, version.id]);
+
   const handleApprove = async () => {
     if (!postId) {
       return;
@@ -201,7 +209,6 @@ const ReviewVersionModal = ({ open, onClose, version, files, postId }: ReviewVer
   };
 
   const handleRequestRevisions = async () => {
-    console.log(postId, comment, version.id);
     if (!postId || !comment) {
       return;
     }
