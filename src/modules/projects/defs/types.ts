@@ -50,6 +50,7 @@ export interface ProjectInvite {
   expiresAt: string | null;
   acceptedAt: string | null;
   declinedAt: string | null;
+  createdAt: string;
 
   project?: Project;
   creator?: Creator;

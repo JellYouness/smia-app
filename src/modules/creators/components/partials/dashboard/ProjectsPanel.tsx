@@ -14,18 +14,15 @@ import {
 } from '@mui/icons-material';
 import {
   alpha,
-  Avatar,
   Box,
   Button,
   Card,
   CardContent,
   Chip,
-  CircularProgress,
   Divider,
   Grid,
   IconButton,
   InputAdornment,
-  Stack,
   Tab,
   Tabs,
   TextField,
@@ -37,27 +34,115 @@ import {
   Menu,
   MenuItem,
   LinearProgress,
+  Pagination,
+  Stack,
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import UserAvatar from '@common/components/lib/partials/UserAvatar';
 import { User } from '@modules/users/defs/types';
+import { PaginationMeta } from '@common/hooks/useItems';
+import { Theme } from '@mui/material/styles';
+
+// Modern loading skeleton component
+const LoadingSkeleton = ({ theme }: { theme: Theme }) => (
+  <Fade in timeout={300}>
+    <Box>
+      {[1].map((index) => (
+        <Card
+          key={index}
+          sx={{
+            mb: 3,
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: alpha(theme.palette.divider, 0.08),
+            background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(
+              theme.palette.primary.main,
+              0.02
+            )} 100%)`,
+            overflow: 'hidden',
+          }}
+        >
+          <CardContent sx={{ p: 4 }}>
+            {/* Header skeleton */}
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
+              <Box sx={{ flex: 1 }}>
+                <Skeleton variant="text" width="70%" height={40} sx={{ borderRadius: 1, mb: 1 }} />
+                <Skeleton variant="text" width="90%" height={20} sx={{ borderRadius: 1 }} />
+              </Box>
+              <Skeleton variant="circular" width={32} height={32} sx={{ ml: 2 }} />
+            </Box>
+
+            {/* Progress bar skeleton */}
+            <Skeleton variant="rectangular" height={8} sx={{ borderRadius: 1, mb: 3 }} />
+
+            {/* Info cards skeleton */}
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              {[1, 2, 3].map((cardIndex) => (
+                <Grid item xs={12} sm={4} key={cardIndex}>
+                  <Skeleton
+                    variant="rectangular"
+                    height={80}
+                    sx={{
+                      borderRadius: 1,
+                      background: alpha(theme.palette.primary.main, 0.04),
+                    }}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* Footer skeleton */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Skeleton variant="circular" width={40} height={40} />
+                <Box>
+                  <Skeleton
+                    variant="text"
+                    width={120}
+                    height={20}
+                    sx={{ borderRadius: 1, mb: 0.5 }}
+                  />
+                  <Skeleton variant="text" width={80} height={16} sx={{ borderRadius: 1 }} />
+                </Box>
+              </Box>
+              <Skeleton variant="rectangular" width={120} height={36} sx={{ borderRadius: 1 }} />
+            </Box>
+          </CardContent>
+        </Card>
+      ))}
+    </Box>
+  </Fade>
+);
 
 interface ProjectsPanelProps {
   projects: Project[];
   loadingProjects: boolean;
+  paginationMeta: PaginationMeta | null;
+  onPageChange: (page: number) => void;
 }
 
-const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
+const ProjectsPanel = ({
+  projects,
+  loadingProjects,
+  paginationMeta,
+  onPageChange,
+}: ProjectsPanelProps) => {
   const theme = useTheme();
   const { t } = useTranslation(['common', 'user', 'project']);
   const [searchTerm, setSearchTerm] = useState('');
   const [tab, setTab] = useState<'ongoing' | 'completed' | 'other'>('ongoing');
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [_selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const clearSearch = () => setSearchTerm('');
+  const clearSearch = () => {
+    setSearchTerm('');
+    // Reset to first page when clearing search
+    if (paginationMeta && paginationMeta.currentPage !== 1) {
+      onPageChange(1);
+    }
+  };
 
   let filtered: Project[] = [];
 
@@ -121,9 +206,7 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
     }
   };
 
-  const formatDate = (dateString: string | null) => {
-    return dateString ? dayjs(dateString).format('MMM DD, YYYY') : 'N/A';
-  };
+  // Removed unused formatDate function
 
   const getProjectProgress = (project: Project) => {
     // Calculate progress based on project status and other factors
@@ -151,91 +234,15 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
     setSelectedProject(null);
   };
 
-  // Modern loading skeleton
-  const LoadingSkeleton = () => (
-    <Fade in timeout={300}>
-      <Box>
-        {[1, 2, 3].map((index) => (
-          <Card
-            key={index}
-            sx={{
-              mb: 3,
-              borderRadius: 1,
-              border: '1px solid',
-              borderColor: alpha(theme.palette.divider, 0.08),
-              background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(
-                theme.palette.primary.main,
-                0.02
-              )} 100%)`,
-              overflow: 'hidden',
-            }}
-          >
-            <CardContent sx={{ p: 4 }}>
-              {/* Header skeleton */}
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Skeleton
-                    variant="text"
-                    width="70%"
-                    height={32}
-                    sx={{ borderRadius: 1, mb: 1 }}
-                  />
-                  <Skeleton variant="text" width="90%" height={20} sx={{ borderRadius: 1 }} />
-                </Box>
-                <Skeleton variant="circular" width={32} height={32} sx={{ ml: 2 }} />
-              </Box>
-
-              {/* Progress bar skeleton */}
-              <Skeleton variant="rectangular" height={8} sx={{ borderRadius: 1, mb: 3 }} />
-
-              {/* Info cards skeleton */}
-              <Grid container spacing={2} sx={{ mb: 3 }}>
-                {[1, 2, 3].map((cardIndex) => (
-                  <Grid item xs={12} sm={4} key={cardIndex}>
-                    <Skeleton
-                      variant="rectangular"
-                      height={80}
-                      sx={{
-                        borderRadius: 1,
-                        background: alpha(theme.palette.primary.main, 0.04),
-                      }}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-
-              {/* Footer skeleton */}
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Skeleton variant="circular" width={40} height={40} />
-                  <Box>
-                    <Skeleton
-                      variant="text"
-                      width={120}
-                      height={20}
-                      sx={{ borderRadius: 1, mb: 0.5 }}
-                    />
-                    <Skeleton variant="text" width={80} height={16} sx={{ borderRadius: 1 }} />
-                  </Box>
-                </Box>
-                <Skeleton variant="rectangular" width={120} height={36} sx={{ borderRadius: 1 }} />
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
-    </Fade>
-  );
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Card
         sx={{
-          mb: 3,
+          mb: 2,
           borderRadius: 1,
           background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(
             theme.palette.primary.main,
-            0.02
+            0.05
           )} 100%)`,
           border: `1px solid ${alpha(theme.palette.divider, 0.08)}`,
           boxShadow: `0 2px 12px ${alpha(theme.palette.common.black, 0.06)}`,
@@ -249,11 +256,11 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
               flexDirection: { xs: 'column', sm: 'row' },
               justifyContent: 'space-between',
               alignItems: { xs: 'stretch', sm: 'center' },
-              gap: 3,
+              gap: 1,
             }}
           >
             {/* Search Section */}
-            <Box sx={{ flex: 1, maxWidth: { xs: '100%', sm: 400 } }}>
+            <Box sx={{ flex: 1, maxWidth: { xs: '100%', sm: 'auto' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -273,7 +280,13 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
                 size="small"
                 placeholder={t('project:search_projects')}
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  // Reset to first page when searching
+                  if (paginationMeta && paginationMeta.currentPage !== 1) {
+                    onPageChange(1);
+                  }
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -290,7 +303,8 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
                 }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    backgroundColor: alpha(theme.palette.background.default, 0.4),
+                    // backgroundColor: alpha(theme.palette.background.default, 0.4),
+                    bgcolor: 'white',
                     borderRadius: 1,
                     '& fieldset': {
                       borderColor: alpha(theme.palette.divider, 0.2),
@@ -307,7 +321,7 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
             </Box>
 
             {/* Tabs Section */}
-            <Box sx={{ flex: 1, maxWidth: { xs: '100%', sm: 500 } }}>
+            <Box sx={{ maxWidth: { xs: '100%', sm: 500 } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -323,7 +337,8 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
               </Typography>
               <Box
                 sx={{
-                  backgroundColor: alpha(theme.palette.background.default, 0.4),
+                  // backgroundColor: alpha(theme.palette.background.default, 0.4),
+                  bgcolor: 'white',
                   borderRadius: 1,
                   border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                   overflow: 'hidden',
@@ -331,7 +346,13 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
               >
                 <Tabs
                   value={tab}
-                  onChange={(_, newValue) => setTab(newValue)}
+                  onChange={(_, newValue) => {
+                    setTab(newValue);
+                    // Reset to first page when changing tabs
+                    if (paginationMeta && paginationMeta.currentPage !== 1) {
+                      onPageChange(1);
+                    }
+                  }}
                   variant="scrollable"
                   scrollButtons="auto"
                   sx={{
@@ -439,7 +460,7 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
       </Card>
 
       {/* Main Content */}
-      {loadingProjects && <LoadingSkeleton />}
+      {loadingProjects && <LoadingSkeleton theme={theme} />}
 
       {!loadingProjects && filteredProjects.length > 0 && (
         <Fade in timeout={500}>
@@ -476,7 +497,7 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
                 >
                   <CardContent sx={{ p: 4 }}>
                     {/* Header */}
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
                       <Box sx={{ flex: 1 }}>
                         <Typography
                           variant="h5"
@@ -499,7 +520,9 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
                         >
                           {project.description}
                         </Typography>
+                      </Box>
 
+                      <Stack direction="row" alignItems="center" gap={2}>
                         {/* Status chip with icon */}
                         <Chip
                           icon={getStatusIcon(project.status)}
@@ -514,21 +537,20 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
                             },
                           }}
                         />
-                      </Box>
-
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleMenuClick(e, project)}
-                        sx={{
-                          ml: 2,
-                          backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                          '&:hover': {
-                            backgroundColor: alpha(theme.palette.primary.main, 0.15),
-                          },
-                        }}
-                      >
-                        <MoreVert fontSize="small" />
-                      </IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleMenuClick(e, project)}
+                          sx={{
+                            ml: 2,
+                            backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                            '&:hover': {
+                              backgroundColor: alpha(theme.palette.primary.main, 0.15),
+                            },
+                          }}
+                        >
+                          <MoreVert fontSize="small" />
+                        </IconButton>
+                      </Stack>
                     </Box>
 
                     {/* Progress Bar */}
@@ -564,7 +586,7 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
                     </Box>
 
                     {/* Info Cards */}
-                    <Grid container spacing={2} sx={{ mb: 3 }}>
+                    <Grid container spacing={2} sx={{ mb: 1 }}>
                       {/* Budget Card */}
                       {project.budget && (
                         <Grid item xs={12} sm={4}>
@@ -658,7 +680,7 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
                       </Grid>
                     </Grid>
 
-                    <Divider sx={{ my: 3, borderColor: alpha(theme.palette.divider, 0.1) }} />
+                    <Divider sx={{ my: 1, borderColor: alpha(theme.palette.divider, 0.1) }} />
 
                     {/* Footer */}
                     <Box
@@ -769,6 +791,46 @@ const ProjectsPanel = ({ projects, loadingProjects }: ProjectsPanelProps) => {
           </Typography>
         </MenuItem>
       </Menu>
+
+      {/* Pagination */}
+      {paginationMeta && (
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Pagination
+            count={paginationMeta.lastPage}
+            page={paginationMeta.currentPage}
+            onChange={(_, value) => onPageChange(value)}
+            color="primary"
+            shape="rounded"
+            size="large"
+            sx={{
+              '& .MuiPagination-ul': {
+                justifyContent: 'center',
+              },
+              '& .MuiPaginationItem-root': {
+                fontWeight: 600,
+                minWidth: 40,
+                height: 40,
+                margin: '0 4px',
+                borderRadius: 1,
+                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                  transform: 'translateY(-1px)',
+                },
+                '&.Mui-selected': {
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                  color: 'white',
+                  boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
+                  '&:hover': {
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                    transform: 'translateY(-1px)',
+                  },
+                },
+              },
+            }}
+          />
+        </Box>
+      )}
     </Box>
   );
 };

@@ -6,6 +6,7 @@ import useAuth from '@modules/auth/hooks/api/useAuth';
 import useProjects from '@modules/projects/hooks/useProjects';
 import { useTranslation } from 'react-i18next';
 import { Creator } from '@modules/creators/defs/types';
+import { PaginationMeta } from '@common/hooks/useItems';
 import ProjectsPanel from './ProjectsPanel';
 import DetailsPanel from './DetailsPanel';
 import OffersPanel from './OffersPanel';
@@ -17,16 +18,24 @@ const CreatorDashboard = () => {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(1); // Fixed page size for projects - show only one project per page
+  const [paginationMeta, setPaginationMeta] = useState<PaginationMeta | null>(null);
 
   const creator = user?.creator as Creator | undefined;
 
-  const getProjects = async () => {
+  const getProjects = async (currentPage = page) => {
     if (user && creator) {
       setLoadingProjects(true);
       try {
-        const response = await readAllByCreator(creator.id);
-        if (response.data) {
+        const response = await readAllByCreator(creator.id, currentPage, pageSize);
+        if (response.success && response.data) {
           setProjects(response.data.items);
+          setPaginationMeta({
+            currentPage: response.data.meta.currentPage,
+            lastPage: response.data.meta.lastPage,
+            totalItems: response.data.meta.totalItems,
+          });
         }
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -39,6 +48,16 @@ const CreatorDashboard = () => {
   useEffect(() => {
     getProjects();
   }, [user]);
+
+  useEffect(() => {
+    if (user && creator) {
+      getProjects(page);
+    }
+  }, [page]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   const getVerificationStatus = () => {
     if (!creator) {
@@ -114,7 +133,12 @@ const CreatorDashboard = () => {
       <Grid container spacing={4}>
         {/* Left: Projects */}
         <Grid item xs={12} md={9} sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <ProjectsPanel projects={projects} loadingProjects={loadingProjects} />
+          <ProjectsPanel
+            projects={projects}
+            loadingProjects={loadingProjects}
+            paginationMeta={paginationMeta}
+            onPageChange={handlePageChange}
+          />
           <OffersPanel creator={creator} />
         </Grid>
 
