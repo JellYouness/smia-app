@@ -53,8 +53,8 @@ const LoadingSkeleton = ({ theme }: { theme: Theme }) => (
         <Card
           key={index}
           sx={{
-            mb: 3,
-            borderRadius: 1,
+            mb: { xs: 2, sm: 3 },
+            borderRadius: { xs: 2, sm: 3 },
             border: '1px solid',
             borderColor: alpha(theme.palette.divider, 0.08),
             background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(
@@ -64,29 +64,59 @@ const LoadingSkeleton = ({ theme }: { theme: Theme }) => (
             overflow: 'hidden',
           }}
         >
-          <CardContent sx={{ p: 4 }}>
+          <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
             {/* Header skeleton */}
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: 'flex-start',
+                mb: { xs: 2, sm: 3 },
+                gap: { xs: 2, sm: 0 },
+              }}
+            >
               <Box sx={{ flex: 1 }}>
-                <Skeleton variant="text" width="70%" height={40} sx={{ borderRadius: 1, mb: 1 }} />
-                <Skeleton variant="text" width="90%" height={20} sx={{ borderRadius: 1 }} />
+                <Skeleton
+                  variant="text"
+                  width="70%"
+                  sx={{ borderRadius: 1, mb: 1, height: { xs: 28, sm: 40 } }}
+                />
+                <Skeleton
+                  variant="text"
+                  width="90%"
+                  sx={{ borderRadius: 1, height: { xs: 18, sm: 20 } }}
+                />
               </Box>
-              <Skeleton variant="circular" width={32} height={32} sx={{ ml: 2 }} />
+              <Skeleton
+                variant="circular"
+                sx={{
+                  ml: { xs: 0, sm: 2 },
+                  width: { xs: 28, sm: 32 },
+                  height: { xs: 28, sm: 32 },
+                }}
+              />
             </Box>
 
             {/* Progress bar skeleton */}
-            <Skeleton variant="rectangular" height={8} sx={{ borderRadius: 1, mb: 3 }} />
+            <Skeleton
+              variant="rectangular"
+              sx={{
+                borderRadius: 1,
+                mb: { xs: 2, sm: 3 },
+                height: { xs: 6, sm: 8 },
+              }}
+            />
 
             {/* Info cards skeleton */}
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: { xs: 2, sm: 3 } }}>
               {[1, 2, 3].map((cardIndex) => (
                 <Grid item xs={12} sm={4} key={cardIndex}>
                   <Skeleton
                     variant="rectangular"
-                    height={80}
                     sx={{
-                      borderRadius: 1,
+                      borderRadius: { xs: 1.5, sm: 2 },
                       background: alpha(theme.palette.primary.main, 0.04),
+                      height: { xs: 60, sm: 80 },
                     }}
                   />
                 </Grid>
@@ -94,20 +124,41 @@ const LoadingSkeleton = ({ theme }: { theme: Theme }) => (
             </Grid>
 
             {/* Footer skeleton */}
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Skeleton variant="circular" width={40} height={40} />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'stretch', sm: 'center' },
+                justifyContent: 'space-between',
+                gap: { xs: 2, sm: 0 },
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 } }}>
+                <Skeleton
+                  variant="circular"
+                  sx={{ width: { xs: 32, sm: 40 }, height: { xs: 32, sm: 40 } }}
+                />
                 <Box>
                   <Skeleton
                     variant="text"
                     width={120}
-                    height={20}
-                    sx={{ borderRadius: 1, mb: 0.5 }}
+                    sx={{ borderRadius: 1, mb: 0.5, height: { xs: 18, sm: 20 } }}
                   />
-                  <Skeleton variant="text" width={80} height={16} sx={{ borderRadius: 1 }} />
+                  <Skeleton
+                    variant="text"
+                    width={80}
+                    sx={{ borderRadius: 1, height: { xs: 14, sm: 16 } }}
+                  />
                 </Box>
               </Box>
-              <Skeleton variant="rectangular" width={120} height={36} sx={{ borderRadius: 1 }} />
+              <Skeleton
+                variant="rectangular"
+                sx={{
+                  borderRadius: { xs: 1.5, sm: 1 },
+                  width: { xs: '100%', sm: 120 },
+                  height: { xs: 40, sm: 36 },
+                }}
+              />
             </Box>
           </CardContent>
         </Card>
@@ -238,8 +289,8 @@ const ProjectsPanel = ({
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Card
         sx={{
-          mb: 2,
-          borderRadius: 1,
+          mb: { xs: 2, sm: 3 },
+          borderRadius: { xs: 1, sm: 2 },
           background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(
             theme.palette.primary.main,
             0.05
@@ -249,25 +300,25 @@ const ProjectsPanel = ({
           overflow: 'hidden',
         }}
       >
-        <CardContent sx={{ p: 3 }}>
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
           <Box
             sx={{
               display: 'flex',
-              flexDirection: { xs: 'column', sm: 'row' },
+              flexDirection: { xs: 'column', lg: 'row' },
               justifyContent: 'space-between',
-              alignItems: { xs: 'stretch', sm: 'center' },
-              gap: 1,
+              alignItems: { xs: 'stretch', lg: 'center' },
+              gap: { xs: 2, sm: 3 },
             }}
           >
             {/* Search Section */}
-            <Box sx={{ flex: 1, maxWidth: { xs: '100%', sm: 'auto' } }}>
+            <Box sx={{ flex: 1, maxWidth: { xs: '100%', lg: '400px' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
                 sx={{
                   mb: 1,
                   fontWeight: 600,
-                  fontSize: '0.75rem',
+                  fontSize: { xs: '0.7rem', sm: '0.75rem' },
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
                 }}
@@ -321,14 +372,14 @@ const ProjectsPanel = ({
             </Box>
 
             {/* Tabs Section */}
-            <Box sx={{ maxWidth: { xs: '100%', sm: 500 } }}>
+            <Box sx={{ maxWidth: { xs: '100%', lg: 'auto' }, minWidth: { lg: '400px' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
                 sx={{
                   mb: 1,
                   fontWeight: 600,
-                  fontSize: '0.75rem',
+                  fontSize: { xs: '0.7rem', sm: '0.75rem' },
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
                 }}
@@ -356,19 +407,20 @@ const ProjectsPanel = ({
                   variant="scrollable"
                   scrollButtons="auto"
                   sx={{
-                    minHeight: 44,
+                    minHeight: { xs: 40, sm: 44 },
                     '& .MuiTabs-indicator': {
                       height: 3,
                       borderRadius: '1px 1px 0 0',
                       background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                     },
                     '& .MuiTab-root': {
-                      minHeight: 44,
+                      minHeight: { xs: 40, sm: 44 },
                       textTransform: 'none',
                       fontWeight: 600,
-                      fontSize: '0.875rem',
-                      px: 2.5,
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                      px: { xs: 1.5, sm: 2.5 },
                       py: 1,
+                      minWidth: { xs: 120, sm: 'auto' },
                       '&.Mui-selected': {
                         color: theme.palette.primary.main,
                         backgroundColor: alpha(theme.palette.primary.main, 0.08),
@@ -381,9 +433,20 @@ const ProjectsPanel = ({
                 >
                   <Tab
                     label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" fontWeight="inherit">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
+                        <Typography
+                          variant="body2"
+                          fontWeight="inherit"
+                          sx={{ display: { xs: 'none', sm: 'block' } }}
+                        >
                           {t('project:ongoing')}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          fontWeight="inherit"
+                          sx={{ display: { xs: 'block', sm: 'none' } }}
+                        >
+                          Ongoing
                         </Typography>
                         <Chip
                           label={
@@ -392,10 +455,10 @@ const ProjectsPanel = ({
                           size="small"
                           color="primary"
                           sx={{
-                            height: 20,
-                            fontSize: '0.75rem',
+                            height: { xs: 18, sm: 20 },
+                            fontSize: { xs: '0.7rem', sm: '0.75rem' },
                             fontWeight: 700,
-                            minWidth: 24,
+                            minWidth: { xs: 20, sm: 24 },
                           }}
                         />
                       </Box>
@@ -404,9 +467,20 @@ const ProjectsPanel = ({
                   />
                   <Tab
                     label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" fontWeight="inherit">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
+                        <Typography
+                          variant="body2"
+                          fontWeight="inherit"
+                          sx={{ display: { xs: 'none', sm: 'block' } }}
+                        >
                           {t('project:completed')}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          fontWeight="inherit"
+                          sx={{ display: { xs: 'block', sm: 'none' } }}
+                        >
+                          Done
                         </Typography>
                         <Chip
                           label={
@@ -415,10 +489,10 @@ const ProjectsPanel = ({
                           size="small"
                           color="success"
                           sx={{
-                            height: 20,
-                            fontSize: '0.75rem',
+                            height: { xs: 18, sm: 20 },
+                            fontSize: { xs: '0.7rem', sm: '0.75rem' },
                             fontWeight: 700,
-                            minWidth: 24,
+                            minWidth: { xs: 20, sm: 24 },
                           }}
                         />
                       </Box>
@@ -427,9 +501,20 @@ const ProjectsPanel = ({
                   />
                   <Tab
                     label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" fontWeight="inherit">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
+                        <Typography
+                          variant="body2"
+                          fontWeight="inherit"
+                          sx={{ display: { xs: 'none', sm: 'block' } }}
+                        >
                           {t('project:other')}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          fontWeight="inherit"
+                          sx={{ display: { xs: 'block', sm: 'none' } }}
+                        >
+                          Other
                         </Typography>
                         <Chip
                           label={
@@ -442,10 +527,10 @@ const ProjectsPanel = ({
                           size="small"
                           color="info"
                           sx={{
-                            height: 20,
-                            fontSize: '0.75rem',
+                            height: { xs: 18, sm: 20 },
+                            fontSize: { xs: '0.7rem', sm: '0.75rem' },
                             fontWeight: 700,
-                            minWidth: 24,
+                            minWidth: { xs: 20, sm: 24 },
                           }}
                         />
                       </Box>
@@ -469,8 +554,8 @@ const ProjectsPanel = ({
               <Slide in direction="up" timeout={300 + index * 100} key={project.id}>
                 <Card
                   sx={{
-                    mb: 3,
-                    borderRadius: 1,
+                    mb: { xs: 2, sm: 3 },
+                    borderRadius: { xs: 2, sm: 3 },
                     border: '1px solid',
                     borderColor: alpha(theme.palette.divider, 0.08),
                     background: `linear-gradient(135deg, ${
@@ -480,7 +565,7 @@ const ProjectsPanel = ({
                     position: 'relative',
                     overflow: 'hidden',
                     '&:hover': {
-                      transform: 'translateY(-4px)',
+                      transform: { xs: 'none', sm: 'translateY(-4px)' },
                       boxShadow: `0 20px 40px ${alpha(theme.palette.primary.main, 0.15)}`,
                       borderColor: alpha(theme.palette.primary.main, 0.2),
                     },
@@ -495,9 +580,17 @@ const ProjectsPanel = ({
                     },
                   }}
                 >
-                  <CardContent sx={{ p: 4 }}>
+                  <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
                     {/* Header */}
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        alignItems: 'flex-start',
+                        mb: { xs: 2, sm: 1 },
+                        gap: { xs: 2, sm: 0 },
+                      }}
+                    >
                       <Box sx={{ flex: 1 }}>
                         <Typography
                           variant="h5"
@@ -506,6 +599,7 @@ const ProjectsPanel = ({
                             color: theme.palette.text.primary,
                             mb: 1,
                             lineHeight: 1.3,
+                            fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' },
                           }}
                         >
                           {project.title}
@@ -515,25 +609,33 @@ const ProjectsPanel = ({
                           sx={{
                             color: theme.palette.text.secondary,
                             lineHeight: 1.6,
-                            mb: 2,
+                            mb: { xs: 1, sm: 2 },
+                            fontSize: { xs: '0.9rem', sm: '1rem' },
                           }}
                         >
                           {project.description}
                         </Typography>
                       </Box>
 
-                      <Stack direction="row" alignItems="center" gap={2}>
+                      <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        alignItems={{ xs: 'stretch', sm: 'center' }}
+                        gap={{ xs: 1, sm: 2 }}
+                        sx={{ width: { xs: '100%', sm: 'auto' } }}
+                      >
                         {/* Status chip with icon */}
                         <Chip
                           icon={getStatusIcon(project.status)}
                           label={getStatusLabel(project.status)}
                           color={getStatusColor(project.status)}
                           variant="filled"
-                          size="medium"
+                          size="small"
                           sx={{
                             fontWeight: 600,
+                            fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                            height: { xs: 28, sm: 32 },
                             '& .MuiChip-icon': {
-                              fontSize: '1rem',
+                              fontSize: { xs: '0.875rem', sm: '1rem' },
                             },
                           }}
                         />
@@ -541,7 +643,8 @@ const ProjectsPanel = ({
                           size="small"
                           onClick={(e) => handleMenuClick(e, project)}
                           sx={{
-                            ml: 2,
+                            ml: { xs: 0, sm: 2 },
+                            alignSelf: { xs: 'flex-end', sm: 'center' },
                             backgroundColor: alpha(theme.palette.primary.main, 0.08),
                             '&:hover': {
                               backgroundColor: alpha(theme.palette.primary.main, 0.15),
@@ -554,7 +657,7 @@ const ProjectsPanel = ({
                     </Box>
 
                     {/* Progress Bar */}
-                    <Box sx={{ mb: 3 }}>
+                    <Box sx={{ mb: { xs: 2, sm: 3 } }}>
                       <Box
                         sx={{
                           display: 'flex',
@@ -563,10 +666,20 @@ const ProjectsPanel = ({
                           mb: 1,
                         }}
                       >
-                        <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          fontWeight={600}
+                          sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                        >
                           Project Progress
                         </Typography>
-                        <Typography variant="caption" color="primary.main" fontWeight={700}>
+                        <Typography
+                          variant="caption"
+                          color="primary.main"
+                          fontWeight={700}
+                          sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                        >
                           {getProjectProgress(project)}%
                         </Typography>
                       </Box>
@@ -574,7 +687,7 @@ const ProjectsPanel = ({
                         variant="determinate"
                         value={getProjectProgress(project)}
                         sx={{
-                          height: 8,
+                          height: { xs: 6, sm: 8 },
                           borderRadius: 1,
                           backgroundColor: alpha(theme.palette.primary.main, 0.1),
                           '& .MuiLinearProgress-bar': {
@@ -586,14 +699,14 @@ const ProjectsPanel = ({
                     </Box>
 
                     {/* Info Cards */}
-                    <Grid container spacing={2} sx={{ mb: 1 }}>
+                    <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: 1 }}>
                       {/* Budget Card */}
                       {project.budget && (
                         <Grid item xs={12} sm={4}>
                           <Box
                             sx={{
-                              p: 2,
-                              borderRadius: 1,
+                              p: { xs: 1.5, sm: 2 },
+                              borderRadius: { xs: 1.5, sm: 2 },
                               background: `linear-gradient(135deg, ${alpha(
                                 theme.palette.success.main,
                                 0.1
@@ -601,15 +714,30 @@ const ProjectsPanel = ({
                               border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`,
                               display: 'flex',
                               alignItems: 'center',
-                              gap: 2,
+                              gap: { xs: 1.5, sm: 2 },
                             }}
                           >
-                            <AttachMoney sx={{ color: theme.palette.success.main, fontSize: 24 }} />
+                            <AttachMoney
+                              sx={{
+                                color: theme.palette.success.main,
+                                fontSize: { xs: 20, sm: 24 },
+                              }}
+                            />
                             <Box>
-                              <Typography variant="caption" color="text.secondary" display="block">
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                display="block"
+                                sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                              >
                                 Budget
                               </Typography>
-                              <Typography variant="h6" fontWeight={700} color="success.main">
+                              <Typography
+                                variant="h6"
+                                fontWeight={700}
+                                color="success.main"
+                                sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                              >
                                 ${project.budget}
                               </Typography>
                             </Box>
@@ -621,8 +749,8 @@ const ProjectsPanel = ({
                       <Grid item xs={12} sm={4}>
                         <Box
                           sx={{
-                            p: 2,
-                            borderRadius: 1,
+                            p: { xs: 1.5, sm: 2 },
+                            borderRadius: { xs: 1.5, sm: 2 },
                             background: `linear-gradient(135deg, ${alpha(
                               theme.palette.info.main,
                               0.1
@@ -630,15 +758,30 @@ const ProjectsPanel = ({
                             border: `1px solid ${alpha(theme.palette.info.main, 0.2)}`,
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 2,
+                            gap: { xs: 1.5, sm: 2 },
                           }}
                         >
-                          <CalendarToday sx={{ color: theme.palette.info.main, fontSize: 24 }} />
+                          <CalendarToday
+                            sx={{
+                              color: theme.palette.info.main,
+                              fontSize: { xs: 20, sm: 24 },
+                            }}
+                          />
                           <Box>
-                            <Typography variant="caption" color="text.secondary" display="block">
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              display="block"
+                              sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                            >
                               Timeline
                             </Typography>
-                            <Typography variant="body2" fontWeight={600} color="info.main">
+                            <Typography
+                              variant="body2"
+                              fontWeight={600}
+                              color="info.main"
+                              sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                            >
                               {project.startDate && project.endDate
                                 ? `${dayjs(project.startDate).format('MMM DD')} - ${dayjs(
                                     project.endDate
@@ -653,8 +796,8 @@ const ProjectsPanel = ({
                       <Grid item xs={12} sm={4}>
                         <Box
                           sx={{
-                            p: 2,
-                            borderRadius: 1,
+                            p: { xs: 1.5, sm: 2 },
+                            borderRadius: { xs: 1.5, sm: 2 },
                             background: `linear-gradient(135deg, ${alpha(
                               theme.palette.secondary.main,
                               0.1
@@ -662,15 +805,30 @@ const ProjectsPanel = ({
                             border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`,
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 2,
+                            gap: { xs: 1.5, sm: 2 },
                           }}
                         >
-                          <Group sx={{ color: theme.palette.secondary.main, fontSize: 24 }} />
+                          <Group
+                            sx={{
+                              color: theme.palette.secondary.main,
+                              fontSize: { xs: 20, sm: 24 },
+                            }}
+                          />
                           <Box>
-                            <Typography variant="caption" color="text.secondary" display="block">
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              display="block"
+                              sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                            >
                               Team
                             </Typography>
-                            <Typography variant="body2" fontWeight={600} color="secondary.main">
+                            <Typography
+                              variant="body2"
+                              fontWeight={600}
+                              color="secondary.main"
+                              sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                            >
                               {project.ambassador
                                 ? `${project.ambassador.firstName} (Ambassador)`
                                 : 'No ambassador assigned'}
@@ -686,17 +844,28 @@ const ProjectsPanel = ({
                     <Box
                       sx={{
                         display: 'flex',
-                        alignItems: 'center',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        alignItems: { xs: 'stretch', sm: 'center' },
                         justifyContent: 'space-between',
+                        gap: { xs: 2, sm: 0 },
                       }}
                     >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 } }}>
                         <UserAvatar user={project.client?.user as User} size="large" />
                         <Box>
-                          <Typography variant="body1" fontWeight={600} color="text.primary">
+                          <Typography
+                            variant="body1"
+                            fontWeight={600}
+                            color="text.primary"
+                            sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                          >
                             {project.client?.firstName} {project.client?.lastName}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                          >
                             Client • Last updated {dayjs(project.updatedAt).fromNow()}
                           </Typography>
                         </Box>
@@ -706,14 +875,18 @@ const ProjectsPanel = ({
                         variant="contained"
                         size="medium"
                         sx={{
-                          borderRadius: 1,
+                          borderRadius: { xs: 1.5, sm: 2 },
                           textTransform: 'none',
                           fontWeight: 600,
-                          px: 3,
+                          px: { xs: 2, sm: 3 },
+                          py: { xs: 1, sm: 1.5 },
+                          fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                          alignSelf: { xs: 'center', sm: 'auto' },
+                          minWidth: { xs: '120px', sm: 'auto' },
                           background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                           boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
                           '&:hover': {
-                            transform: 'translateY(-1px)',
+                            transform: { xs: 'none', sm: 'translateY(-1px)' },
                             boxShadow: `0 6px 16px ${alpha(theme.palette.primary.main, 0.4)}`,
                           },
                         }}
@@ -794,28 +967,30 @@ const ProjectsPanel = ({
 
       {/* Pagination */}
       {paginationMeta && (
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: { xs: 2, sm: 3 } }}>
           <Pagination
             count={paginationMeta.lastPage}
             page={paginationMeta.currentPage}
             onChange={(_, value) => onPageChange(value)}
             color="primary"
             shape="rounded"
-            size="large"
+            size="medium"
             sx={{
               '& .MuiPagination-ul': {
                 justifyContent: 'center',
+                flexWrap: 'wrap',
               },
               '& .MuiPaginationItem-root': {
                 fontWeight: 600,
-                minWidth: 40,
-                height: 40,
-                margin: '0 4px',
+                minWidth: { xs: 32, sm: 40 },
+                height: { xs: 32, sm: 40 },
+                margin: { xs: '0 2px', sm: '0 4px' },
                 borderRadius: 1,
+                fontSize: { xs: '0.8rem', sm: '0.9rem' },
                 transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                 '&:hover': {
                   backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                  transform: 'translateY(-1px)',
+                  transform: { xs: 'none', sm: 'translateY(-1px)' },
                 },
                 '&.Mui-selected': {
                   background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
@@ -823,7 +998,7 @@ const ProjectsPanel = ({
                   boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
                   '&:hover': {
                     background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                    transform: 'translateY(-1px)',
+                    transform: { xs: 'none', sm: 'translateY(-1px)' },
                   },
                 },
               },

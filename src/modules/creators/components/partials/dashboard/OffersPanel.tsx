@@ -43,7 +43,6 @@ import { TFunction } from 'i18next';
 import ProposalWizardDialog from '../../ProposalWizardDialog';
 import ConfirmDialog from '@common/components/lib/feedbacks/ConfirmDialog';
 // import InviteCard from './InviteCard';
-import ProposalCard from './ProposalCard';
 // import ProposalCard from './ProposalCard';
 
 // Modern loading skeleton
@@ -54,8 +53,8 @@ const LoadingSkeleton = ({ theme }: { theme: Theme }) => (
         <Card
           key={index}
           sx={{
-            mb: 3,
-            borderRadius: 3,
+            mb: { xs: 2, sm: 3 },
+            borderRadius: { xs: 2, sm: 3 },
             border: '1px solid',
             borderColor: alpha(theme.palette.divider, 0.08),
             background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(
@@ -65,30 +64,55 @@ const LoadingSkeleton = ({ theme }: { theme: Theme }) => (
             overflow: 'hidden',
           }}
         >
-          <CardContent sx={{ p: 4 }}>
+          <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
             {/* Header skeleton */}
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
-              <Box sx={{ flex: 1 }}>
-                <Skeleton variant="text" width="60%" height={28} sx={{ borderRadius: 1, mb: 1 }} />
-                <Skeleton variant="text" width="40%" height={20} sx={{ borderRadius: 1, mb: 2 }} />
-                <Skeleton variant="rectangular" width={100} height={24} sx={{ borderRadius: 1 }} />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: 'flex-start',
+                mb: { xs: 2, sm: 3 },
+                gap: { xs: 1, sm: 2 },
+              }}
+            >
+              <Box sx={{ flex: 1, width: '100%' }}>
+                <Skeleton
+                  variant="text"
+                  width="60%"
+                  sx={{ borderRadius: 1, mb: 1, height: { xs: 24, sm: 28 } }}
+                />
+                <Skeleton
+                  variant="text"
+                  width="40%"
+                  sx={{ borderRadius: 1, mb: 2, height: { xs: 18, sm: 20 } }}
+                />
+                <Skeleton
+                  variant="rectangular"
+                  width={100}
+                  sx={{ borderRadius: 1, height: { xs: 20, sm: 24 } }}
+                />
               </Box>
-              <Skeleton variant="circular" width={40} height={40} sx={{ ml: 2 }} />
+              <Skeleton
+                variant="circular"
+                sx={{
+                  ml: { xs: 0, sm: 2 },
+                  mt: { xs: 1, sm: 0 },
+                  width: { xs: 32, sm: 40 },
+                  height: { xs: 32, sm: 40 },
+                }}
+              />
             </Box>
 
-            {/* Content skeleton */}
-            {/* <Skeleton variant="rectangular" height={80} sx={{ borderRadius: 2, mb: 3 }} /> */}
-
             {/* Info cards skeleton */}
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: { xs: 2, sm: 3 } }}>
               {[1, 2].map((cardIndex) => (
                 <Grid item xs={12} sm={6} key={cardIndex}>
                   <Skeleton
                     variant="rectangular"
-                    height={60}
                     sx={{
-                      borderRadius: 2,
+                      borderRadius: { xs: 1.5, sm: 2 },
                       background: alpha(theme.palette.primary.main, 0.04),
+                      height: { xs: 50, sm: 60 },
                     }}
                   />
                 </Grid>
@@ -96,20 +120,41 @@ const LoadingSkeleton = ({ theme }: { theme: Theme }) => (
             </Grid>
 
             {/* Footer skeleton */}
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Skeleton variant="circular" width={32} height={32} />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'stretch', sm: 'center' },
+                justifyContent: 'space-between',
+                gap: { xs: 2, sm: 0 },
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 } }}>
+                <Skeleton
+                  variant="circular"
+                  sx={{ width: { xs: 28, sm: 32 }, height: { xs: 28, sm: 32 } }}
+                />
                 <Box>
                   <Skeleton
                     variant="text"
                     width={100}
-                    height={16}
-                    sx={{ borderRadius: 1, mb: 0.5 }}
+                    sx={{ borderRadius: 1, mb: 0.5, height: { xs: 14, sm: 16 } }}
                   />
-                  <Skeleton variant="text" width={60} height={14} sx={{ borderRadius: 1 }} />
+                  <Skeleton
+                    variant="text"
+                    width={60}
+                    sx={{ borderRadius: 1, height: { xs: 12, sm: 14 } }}
+                  />
                 </Box>
               </Box>
-              <Skeleton variant="rectangular" width={100} height={32} sx={{ borderRadius: 1 }} />
+              <Skeleton
+                variant="rectangular"
+                sx={{
+                  borderRadius: { xs: 1.5, sm: 1 },
+                  width: { xs: '100%', sm: 100 },
+                  height: { xs: 36, sm: 32 },
+                }}
+              />
             </Box>
           </CardContent>
         </Card>
@@ -295,7 +340,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
       <Card
         sx={{
           mb: 3,
-          borderRadius: 1,
+          borderRadius: { xs: 1, sm: 2 },
           background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(
             theme.palette.secondary.main,
             0.02
@@ -305,25 +350,25 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
           overflow: 'hidden',
         }}
       >
-        <CardContent sx={{ p: 3 }}>
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
           <Box
             sx={{
               display: 'flex',
-              flexDirection: { xs: 'column', sm: 'row' },
+              flexDirection: { xs: 'column', lg: 'row' },
               justifyContent: 'space-between',
-              alignItems: { xs: 'stretch', sm: 'center' },
-              gap: 3,
+              alignItems: { xs: 'stretch', lg: 'center' },
+              gap: { xs: 2, sm: 3 },
             }}
           >
             {/* Search Section */}
-            <Box sx={{ flex: 1, maxWidth: { xs: '100%', sm: 'auto' } }}>
+            <Box sx={{ flex: 1, maxWidth: { xs: '100%', lg: '400px' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
                 sx={{
                   mb: 1,
                   fontWeight: 600,
-                  fontSize: '0.75rem',
+                  fontSize: { xs: '0.7rem', sm: '0.75rem' },
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
                 }}
@@ -380,14 +425,14 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
             </Box>
 
             {/* Tabs Section */}
-            <Box sx={{ maxWidth: { xs: '100%', sm: 'auto' } }}>
+            <Box sx={{ maxWidth: { xs: '100%', lg: 'auto' }, minWidth: { lg: '300px' } }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
                 sx={{
                   mb: 1,
                   fontWeight: 600,
-                  fontSize: '0.75rem',
+                  fontSize: { xs: '0.7rem', sm: '0.75rem' },
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
                 }}
@@ -418,19 +463,20 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                   variant="scrollable"
                   scrollButtons="auto"
                   sx={{
-                    minHeight: 44,
+                    minHeight: { xs: 40, sm: 44 },
                     '& .MuiTabs-indicator': {
                       height: 3,
                       borderRadius: '1px 1px 0 0',
                       background: `linear-gradient(90deg, ${theme.palette.secondary.main}, ${theme.palette.primary.main})`,
                     },
                     '& .MuiTab-root': {
-                      minHeight: 44,
+                      minHeight: { xs: 40, sm: 44 },
                       textTransform: 'none',
                       fontWeight: 600,
-                      fontSize: '0.875rem',
-                      px: 2.5,
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                      px: { xs: 1.5, sm: 2.5 },
                       py: 1,
+                      minWidth: { xs: 120, sm: 'auto' },
                       '&.Mui-selected': {
                         color: theme.palette.secondary.main,
                         backgroundColor: alpha(theme.palette.secondary.main, 0.08),
@@ -444,19 +490,30 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                   <Tab
                     value="invites"
                     label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" fontWeight="inherit">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
+                        <Typography
+                          variant="body2"
+                          fontWeight="inherit"
+                          sx={{ display: { xs: 'none', sm: 'block' } }}
+                        >
                           {t('invite:invitations')}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          fontWeight="inherit"
+                          sx={{ display: { xs: 'block', sm: 'none' } }}
+                        >
+                          Invites
                         </Typography>
                         <Chip
                           label={countInvites}
                           size="small"
                           color="info"
                           sx={{
-                            height: 20,
-                            fontSize: '0.75rem',
+                            height: { xs: 18, sm: 20 },
+                            fontSize: { xs: '0.7rem', sm: '0.75rem' },
                             fontWeight: 700,
-                            minWidth: 24,
+                            minWidth: { xs: 20, sm: 24 },
                           }}
                         />
                       </Box>
@@ -465,19 +522,30 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                   <Tab
                     value="proposals"
                     label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" fontWeight="inherit">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
+                        <Typography
+                          variant="body2"
+                          fontWeight="inherit"
+                          sx={{ display: { xs: 'none', sm: 'block' } }}
+                        >
                           {t('proposal:proposals')}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          fontWeight="inherit"
+                          sx={{ display: { xs: 'block', sm: 'none' } }}
+                        >
+                          Proposals
                         </Typography>
                         <Chip
                           label={countProposals}
                           size="small"
                           color="secondary"
                           sx={{
-                            height: 20,
-                            fontSize: '0.75rem',
+                            height: { xs: 18, sm: 20 },
+                            fontSize: { xs: '0.7rem', sm: '0.75rem' },
                             fontWeight: 700,
-                            minWidth: 24,
+                            minWidth: { xs: 20, sm: 24 },
                           }}
                         />
                       </Box>
@@ -514,8 +582,8 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                       <Slide in direction="up" timeout={300 + index * 100}>
                         <Card
                           sx={{
-                            mb: 3,
-                            borderRadius: 3,
+                            mb: { xs: 2, sm: 3 },
+                            borderRadius: { xs: 2, sm: 3 },
                             border: '1px solid',
                             borderColor: alpha(theme.palette.divider, 0.08),
                             background: `linear-gradient(135deg, ${
@@ -525,7 +593,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                             position: 'relative',
                             overflow: 'hidden',
                             '&:hover': {
-                              transform: 'translateY(-4px)',
+                              transform: { xs: 'none', sm: 'translateY(-4px)' },
                               boxShadow: `0 20px 40px ${alpha(theme.palette.info.main, 0.15)}`,
                               borderColor: alpha(theme.palette.info.main, 0.2),
                             },
@@ -540,29 +608,54 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                             },
                           }}
                         >
-                          <CardContent sx={{ p: 4 }}>
+                          <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
                             {/* Enhanced Invite Card Content */}
                             <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
                               <Box sx={{ flex: 1 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                  <MailOutline
-                                    sx={{ color: theme.palette.info.main, fontSize: 24 }}
-                                  />
-                                  <Typography
-                                    variant="h6"
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: { xs: 'flex-start', sm: 'center' },
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    gap: { xs: 1, sm: 2 },
+                                    mb: 2,
+                                  }}
+                                >
+                                  <Box
                                     sx={{
-                                      fontWeight: 700,
-                                      color: theme.palette.text.primary,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: { xs: 1, sm: 2 },
                                     }}
                                   >
-                                    Project Invitation
-                                  </Typography>
+                                    <MailOutline
+                                      sx={{
+                                        color: theme.palette.info.main,
+                                        fontSize: { xs: 20, sm: 24 },
+                                      }}
+                                    />
+                                    <Typography
+                                      variant="h6"
+                                      sx={{
+                                        fontWeight: 700,
+                                        color: theme.palette.text.primary,
+                                        fontSize: { xs: '1rem', sm: '1.25rem' },
+                                      }}
+                                    >
+                                      Project Invitation
+                                    </Typography>
+                                  </Box>
                                   <Chip
                                     label="New"
                                     size="small"
                                     color="info"
                                     variant="filled"
-                                    sx={{ fontWeight: 600 }}
+                                    sx={{
+                                      fontWeight: 600,
+                                      fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                      height: { xs: 22, sm: 24 },
+                                      mt: { xs: 0.5, sm: 0 },
+                                    }}
                                   />
                                 </Box>
 
@@ -573,6 +666,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                     color: theme.palette.text.primary,
                                     mb: 1,
                                     lineHeight: 1.3,
+                                    fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' },
                                   }}
                                 >
                                   {invite.project?.title}
@@ -584,20 +678,21 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                     color: theme.palette.text.secondary,
                                     lineHeight: 1.6,
                                     mb: 2,
+                                    fontSize: { xs: '0.9rem', sm: '1rem' },
                                   }}
                                 >
                                   {invite.message}
                                 </Typography>
 
                                 {/* Project Info Cards */}
-                                <Grid container spacing={2} sx={{ mb: 1 }}>
+                                <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: 1 }}>
                                   {/* Budget Card */}
                                   {invite.project?.budget && (
                                     <Grid item xs={12} sm={6}>
                                       <Box
                                         sx={{
-                                          p: 2,
-                                          borderRadius: 2,
+                                          p: { xs: 1.5, sm: 2 },
+                                          borderRadius: { xs: 1.5, sm: 2 },
                                           background: `linear-gradient(135deg, ${alpha(
                                             theme.palette.success.main,
                                             0.1
@@ -608,17 +703,21 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                           )}`,
                                           display: 'flex',
                                           alignItems: 'center',
-                                          gap: 2,
+                                          gap: { xs: 1, sm: 2 },
                                         }}
                                       >
                                         <AttachMoney
-                                          sx={{ color: theme.palette.success.main, fontSize: 20 }}
+                                          sx={{
+                                            color: theme.palette.success.main,
+                                            fontSize: { xs: 18, sm: 20 },
+                                          }}
                                         />
                                         <Box>
                                           <Typography
                                             variant="caption"
                                             color="text.secondary"
                                             display="block"
+                                            sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                                           >
                                             Budget
                                           </Typography>
@@ -626,6 +725,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                             variant="body2"
                                             fontWeight={700}
                                             color="success.main"
+                                            sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
                                           >
                                             ${invite.project.budget}
                                           </Typography>
@@ -638,8 +738,8 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                   <Grid item xs={12} sm={6}>
                                     <Box
                                       sx={{
-                                        p: 2,
-                                        borderRadius: 2,
+                                        p: { xs: 1.5, sm: 2 },
+                                        borderRadius: { xs: 1.5, sm: 2 },
                                         background: `linear-gradient(135deg, ${alpha(
                                           theme.palette.warning.main,
                                           0.1
@@ -650,17 +750,21 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                         )}`,
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: 2,
+                                        gap: { xs: 1, sm: 2 },
                                       }}
                                     >
                                       <CalendarToday
-                                        sx={{ color: theme.palette.warning.main, fontSize: 20 }}
+                                        sx={{
+                                          color: theme.palette.warning.main,
+                                          fontSize: { xs: 18, sm: 20 },
+                                        }}
                                       />
                                       <Box>
                                         <Typography
                                           variant="caption"
                                           color="text.secondary"
                                           display="block"
+                                          sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                                         >
                                           Timeline
                                         </Typography>
@@ -668,6 +772,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                           variant="body2"
                                           fontWeight={600}
                                           color="warning.main"
+                                          sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
                                         >
                                           {invite.project?.startDate && invite.project?.endDate
                                             ? `${dayjs(invite.project.startDate).format(
@@ -690,39 +795,60 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                 <Box
                                   sx={{
                                     display: 'flex',
-                                    alignItems: 'center',
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    alignItems: { xs: 'stretch', sm: 'center' },
                                     justifyContent: 'space-between',
+                                    gap: { xs: 2, sm: 0 },
                                   }}
                                 >
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                  <Box
+                                    sx={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: { xs: 1.5, sm: 2 },
+                                    }}
+                                  >
                                     <Person
-                                      sx={{ color: theme.palette.text.secondary, fontSize: 20 }}
+                                      sx={{
+                                        color: theme.palette.text.secondary,
+                                        fontSize: { xs: 18, sm: 20 },
+                                      }}
                                     />
                                     <Box>
                                       <Typography
                                         variant="body2"
                                         fontWeight={600}
                                         color="text.primary"
+                                        sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
                                       >
                                         {invite.project?.client?.firstName}{' '}
                                         {invite.project?.client?.lastName}
                                       </Typography>
-                                      <Typography variant="caption" color="text.secondary">
+                                      <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                                      >
                                         Client • Sent {dayjs(invite.createdAt).fromNow()}
                                       </Typography>
                                     </Box>
                                   </Box>
 
-                                  <Stack direction="row" spacing={2}>
+                                  <Stack
+                                    direction={{ xs: 'column', sm: 'row' }}
+                                    spacing={{ xs: 1, sm: 2 }}
+                                  >
                                     <Button
                                       variant="outlined"
                                       size="medium"
                                       onClick={handleDeclineClick}
                                       sx={{
-                                        borderRadius: 2,
+                                        borderRadius: { xs: 1.5, sm: 2 },
                                         textTransform: 'none',
                                         fontWeight: 600,
-                                        px: 3,
+                                        px: { xs: 2, sm: 3 },
+                                        py: { xs: 1, sm: 1.5 },
+                                        fontSize: { xs: '0.8rem', sm: '0.875rem' },
                                         borderColor: alpha(theme.palette.error.main, 0.5),
                                         color: theme.palette.error.main,
                                         '&:hover': {
@@ -738,17 +864,19 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                       size="medium"
                                       onClick={handleAcceptClick}
                                       sx={{
-                                        borderRadius: 2,
+                                        borderRadius: { xs: 1.5, sm: 2 },
                                         textTransform: 'none',
                                         fontWeight: 600,
-                                        px: 3,
+                                        px: { xs: 2, sm: 3 },
+                                        py: { xs: 1, sm: 1.5 },
+                                        fontSize: { xs: '0.8rem', sm: '0.875rem' },
                                         background: `linear-gradient(135deg, ${theme.palette.info.main} 0%, ${theme.palette.primary.main} 100%)`,
                                         boxShadow: `0 4px 12px ${alpha(
                                           theme.palette.info.main,
                                           0.3
                                         )}`,
                                         '&:hover': {
-                                          transform: 'translateY(-1px)',
+                                          transform: { xs: 'none', sm: 'translateY(-1px)' },
                                           boxShadow: `0 6px 16px ${alpha(
                                             theme.palette.info.main,
                                             0.4
@@ -806,28 +934,30 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
 
           {/* Invites Pagination */}
           {invitePaginationMeta && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 0 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: { xs: 2, sm: 3 } }}>
               <Pagination
                 count={invitePaginationMeta.lastPage}
                 page={invitePaginationMeta.currentPage}
                 onChange={(_, value) => handleInvitePageChange(value)}
                 color="primary"
                 shape="rounded"
-                size="large"
+                size="medium"
                 sx={{
                   '& .MuiPagination-ul': {
                     justifyContent: 'center',
+                    flexWrap: 'wrap',
                   },
                   '& .MuiPaginationItem-root': {
                     fontWeight: 600,
-                    minWidth: 40,
-                    height: 40,
-                    margin: '0 4px',
+                    minWidth: { xs: 32, sm: 40 },
+                    height: { xs: 32, sm: 40 },
+                    margin: { xs: '0 2px', sm: '0 4px' },
                     borderRadius: 1,
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
                       backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                      transform: 'translateY(-1px)',
+                      transform: { xs: 'none', sm: 'translateY(-1px)' },
                     },
                     '&.Mui-selected': {
                       background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
@@ -835,7 +965,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                       boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
                       '&:hover': {
                         background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                        transform: 'translateY(-1px)',
+                        transform: { xs: 'none', sm: 'translateY(-1px)' },
                       },
                     },
                   },
@@ -869,8 +999,8 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                       <Slide in direction="up" timeout={300 + index * 100}>
                         <Card
                           sx={{
-                            mb: 3,
-                            borderRadius: 3,
+                            mb: { xs: 2, sm: 3 },
+                            borderRadius: { xs: 2, sm: 3 },
                             border: '1px solid',
                             borderColor: alpha(theme.palette.divider, 0.08),
                             background: `linear-gradient(135deg, ${
@@ -880,7 +1010,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                             position: 'relative',
                             overflow: 'hidden',
                             '&:hover': {
-                              transform: 'translateY(-4px)',
+                              transform: { xs: 'none', sm: 'translateY(-4px)' },
                               boxShadow: `0 20px 40px ${alpha(theme.palette.secondary.main, 0.15)}`,
                               borderColor: alpha(theme.palette.secondary.main, 0.2),
                             },
@@ -895,64 +1025,99 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                             },
                           }}
                         >
-                          <CardContent sx={{ p: 4 }}>
+                          <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
                             {/* Enhanced Proposal Card Content */}
                             <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
                               <Box sx={{ flex: 1 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                  <AssignmentTurnedIn
-                                    sx={{ color: theme.palette.secondary.main, fontSize: 24 }}
-                                  />
-                                  <Typography
-                                    variant="h6"
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: { xs: 'flex-start', sm: 'center' },
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    gap: { xs: 1, sm: 2 },
+                                    mb: 2,
+                                    flexWrap: 'wrap',
+                                  }}
+                                >
+                                  <Box
                                     sx={{
-                                      fontWeight: 700,
-                                      color: theme.palette.text.primary,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: { xs: 1, sm: 2 },
                                     }}
                                   >
-                                    Your Proposal
-                                  </Typography>
-                                  <Chip
-                                    label={proposal.status}
-                                    size="small"
-                                    color="secondary"
-                                    variant="filled"
-                                    sx={{ fontWeight: 600, textTransform: 'capitalize' }}
-                                  />
-                                  <Chip
-                                    label={
-                                      proposal.amount
-                                        ? `$${parseFloat(
-                                            proposal.amount.toString()
-                                          ).toLocaleString()} ${proposal.currency ?? ''}`
-                                        : t('proposal:amount_unspecified')
-                                    }
-                                    size="small"
-                                    variant="outlined"
-                                    color="info"
-                                    sx={{
-                                      fontWeight: 500,
-                                      fontSize: '0.75rem',
-                                      height: 24,
-                                      borderColor: alpha(theme.palette.info.main, 0.3),
-                                      color: theme.palette.info.dark,
-                                    }}
-                                  />
-                                  {!!proposal.durationDays && (
-                                    <Chip
-                                      label={`${proposal.durationDays} ${t('common:days')}`}
-                                      size="small"
-                                      variant="outlined"
-                                      color="secondary"
+                                    <AssignmentTurnedIn
                                       sx={{
-                                        fontWeight: 500,
-                                        fontSize: '0.75rem',
-                                        height: 24,
-                                        borderColor: alpha(theme.palette.secondary.main, 0.3),
-                                        color: theme.palette.secondary.dark,
+                                        color: theme.palette.secondary.main,
+                                        fontSize: { xs: 20, sm: 24 },
                                       }}
                                     />
-                                  )}
+                                    <Typography
+                                      variant="h6"
+                                      sx={{
+                                        fontWeight: 700,
+                                        color: theme.palette.text.primary,
+                                        fontSize: { xs: '1rem', sm: '1.25rem' },
+                                      }}
+                                    >
+                                      Your Proposal
+                                    </Typography>
+                                  </Box>
+                                  <Box
+                                    sx={{
+                                      display: 'flex',
+                                      flexWrap: 'wrap',
+                                      gap: { xs: 0.5, sm: 1 },
+                                      mt: { xs: 0.5, sm: 0 },
+                                    }}
+                                  >
+                                    <Chip
+                                      label={proposal.status}
+                                      size="small"
+                                      color="secondary"
+                                      variant="filled"
+                                      sx={{
+                                        fontWeight: 600,
+                                        textTransform: 'capitalize',
+                                        fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                        height: { xs: 22, sm: 24 },
+                                      }}
+                                    />
+                                    <Chip
+                                      label={
+                                        proposal.amount
+                                          ? `$${parseFloat(
+                                              proposal.amount.toString()
+                                            ).toLocaleString()} ${proposal.currency ?? ''}`
+                                          : t('proposal:amount_unspecified')
+                                      }
+                                      size="small"
+                                      variant="outlined"
+                                      color="info"
+                                      sx={{
+                                        fontWeight: 500,
+                                        fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                        height: { xs: 22, sm: 24 },
+                                        borderColor: alpha(theme.palette.info.main, 0.3),
+                                        color: theme.palette.info.dark,
+                                      }}
+                                    />
+                                    {!!proposal.durationDays && (
+                                      <Chip
+                                        label={`${proposal.durationDays} ${t('common:days')}`}
+                                        size="small"
+                                        variant="outlined"
+                                        color="secondary"
+                                        sx={{
+                                          fontWeight: 500,
+                                          fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                          height: { xs: 22, sm: 24 },
+                                          borderColor: alpha(theme.palette.secondary.main, 0.3),
+                                          color: theme.palette.secondary.dark,
+                                        }}
+                                      />
+                                    )}
+                                  </Box>
                                 </Box>
 
                                 <Typography
@@ -962,6 +1127,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                     color: theme.palette.text.primary,
                                     mb: 1,
                                     lineHeight: 1.3,
+                                    fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' },
                                   }}
                                 >
                                   {proposal.project?.title}
@@ -973,20 +1139,21 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                     color: theme.palette.text.secondary,
                                     lineHeight: 1.6,
                                     mb: 2,
+                                    fontSize: { xs: '0.9rem', sm: '1rem' },
                                   }}
                                 >
                                   {proposal.coverLetter}
                                 </Typography>
 
                                 {/* Proposal Info Cards */}
-                                <Grid container spacing={2} sx={{ mb: 1 }}>
+                                <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: 1 }}>
                                   {/* Proposed Rate Card */}
                                   {proposal.proposedRate && (
                                     <Grid item xs={12} sm={6}>
                                       <Box
                                         sx={{
-                                          p: 2,
-                                          borderRadius: 2,
+                                          p: { xs: 1.5, sm: 2 },
+                                          borderRadius: { xs: 1.5, sm: 2 },
                                           background: `linear-gradient(135deg, ${alpha(
                                             theme.palette.success.main,
                                             0.1
@@ -997,17 +1164,21 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                           )}`,
                                           display: 'flex',
                                           alignItems: 'center',
-                                          gap: 2,
+                                          gap: { xs: 1, sm: 2 },
                                         }}
                                       >
                                         <AttachMoney
-                                          sx={{ color: theme.palette.success.main, fontSize: 20 }}
+                                          sx={{
+                                            color: theme.palette.success.main,
+                                            fontSize: { xs: 18, sm: 20 },
+                                          }}
                                         />
                                         <Box>
                                           <Typography
                                             variant="caption"
                                             color="text.secondary"
                                             display="block"
+                                            sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                                           >
                                             Proposed Rate
                                           </Typography>
@@ -1015,6 +1186,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                             variant="body2"
                                             fontWeight={700}
                                             color="success.main"
+                                            sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
                                           >
                                             ${proposal.proposedRate}
                                           </Typography>
@@ -1027,8 +1199,8 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                   <Grid item xs={12} sm={6}>
                                     <Box
                                       sx={{
-                                        p: 2,
-                                        borderRadius: 2,
+                                        p: { xs: 1.5, sm: 2 },
+                                        borderRadius: { xs: 1.5, sm: 2 },
                                         background: `linear-gradient(135deg, ${alpha(
                                           theme.palette.info.main,
                                           0.1
@@ -1036,17 +1208,21 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                         border: `1px solid ${alpha(theme.palette.info.main, 0.2)}`,
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: 2,
+                                        gap: { xs: 1, sm: 2 },
                                       }}
                                     >
                                       <Schedule
-                                        sx={{ color: theme.palette.info.main, fontSize: 20 }}
+                                        sx={{
+                                          color: theme.palette.info.main,
+                                          fontSize: { xs: 18, sm: 20 },
+                                        }}
                                       />
                                       <Box>
                                         <Typography
                                           variant="caption"
                                           color="text.secondary"
                                           display="block"
+                                          sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                                         >
                                           Status
                                         </Typography>
@@ -1054,7 +1230,10 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                           variant="body2"
                                           fontWeight={600}
                                           color="info.main"
-                                          sx={{ textTransform: 'capitalize' }}
+                                          sx={{
+                                            textTransform: 'capitalize',
+                                            fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                                          }}
                                         >
                                           {proposal.status}
                                         </Typography>
@@ -1071,24 +1250,40 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                 <Box
                                   sx={{
                                     display: 'flex',
-                                    alignItems: 'center',
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    alignItems: { xs: 'stretch', sm: 'center' },
                                     justifyContent: 'space-between',
+                                    gap: { xs: 2, sm: 0 },
                                   }}
                                 >
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                  <Box
+                                    sx={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: { xs: 1.5, sm: 2 },
+                                    }}
+                                  >
                                     <Person
-                                      sx={{ color: theme.palette.text.secondary, fontSize: 20 }}
+                                      sx={{
+                                        color: theme.palette.text.secondary,
+                                        fontSize: { xs: 18, sm: 20 },
+                                      }}
                                     />
                                     <Box>
                                       <Typography
                                         variant="body2"
                                         fontWeight={600}
                                         color="text.primary"
+                                        sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
                                       >
                                         {proposal.project?.client?.firstName}{' '}
                                         {proposal.project?.client?.lastName}
                                       </Typography>
-                                      <Typography variant="caption" color="text.secondary">
+                                      <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                                      >
                                         Client • Submitted {dayjs(proposal.createdAt).fromNow()}
                                       </Typography>
                                     </Box>
@@ -1098,17 +1293,21 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                                     variant="contained"
                                     size="medium"
                                     sx={{
-                                      borderRadius: 2,
+                                      borderRadius: { xs: 1.5, sm: 2 },
                                       textTransform: 'none',
                                       fontWeight: 600,
-                                      px: 3,
+                                      px: { xs: 2, sm: 3 },
+                                      py: { xs: 1, sm: 1.5 },
+                                      fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                                      alignSelf: { xs: 'center', sm: 'auto' },
+                                      minWidth: { xs: '120px', sm: 'auto' },
                                       background: `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.primary.main} 100%)`,
                                       boxShadow: `0 4px 12px ${alpha(
                                         theme.palette.secondary.main,
                                         0.3
                                       )}`,
                                       '&:hover': {
-                                        transform: 'translateY(-1px)',
+                                        transform: { xs: 'none', sm: 'translateY(-1px)' },
                                         boxShadow: `0 6px 16px ${alpha(
                                           theme.palette.secondary.main,
                                           0.4
@@ -1134,28 +1333,30 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
 
           {/* Proposals Pagination */}
           {proposalPaginationMeta && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: { xs: 2, sm: 3 } }}>
               <Pagination
                 count={proposalPaginationMeta.lastPage}
                 page={proposalPaginationMeta.currentPage}
                 onChange={(_, value) => handleProposalPageChange(value)}
                 color="primary"
                 shape="rounded"
-                size="large"
+                size="medium"
                 sx={{
                   '& .MuiPagination-ul': {
                     justifyContent: 'center',
+                    flexWrap: 'wrap',
                   },
                   '& .MuiPaginationItem-root': {
                     fontWeight: 600,
-                    minWidth: 40,
-                    height: 40,
-                    margin: '0 4px',
+                    minWidth: { xs: 32, sm: 40 },
+                    height: { xs: 32, sm: 40 },
+                    margin: { xs: '0 2px', sm: '0 4px' },
                     borderRadius: 1,
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' },
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
                       backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                      transform: 'translateY(-1px)',
+                      transform: { xs: 'none', sm: 'translateY(-1px)' },
                     },
                     '&.Mui-selected': {
                       background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
@@ -1163,7 +1364,7 @@ const OffersPanel: React.FC<OffersPanelProps> = ({ creator }) => {
                       boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.3)}`,
                       '&:hover': {
                         background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                        transform: 'translateY(-1px)',
+                        transform: { xs: 'none', sm: 'translateY(-1px)' },
                       },
                     },
                   },
