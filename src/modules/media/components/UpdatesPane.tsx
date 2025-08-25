@@ -215,19 +215,43 @@ export default function UpdatesPane({ projectId }: UpdatesPaneProps) {
       let userObj: Any = {};
 
       if (isOptimistic) {
+        // For optimistic updates, use the logged-in user's info
         userObj = {
-          firstName: user?.firstName || user?.first_name || '',
-          lastName: user?.lastName || user?.last_name || '',
+          firstName: user?.firstName || '',
+          lastName: user?.lastName || '',
           email: user?.email || '',
           color: user?.color || '#84cc16',
           profile: {
             profilePicture: user?.profile?.profilePicture || null,
           },
         };
-      } else {
+      }
+
+      if (!isOptimistic && update.client?.user) {
         userObj = {
-          firstName: user?.firstName || user?.first_name || '',
-          lastName: user?.lastName || user?.last_name || '',
+          firstName: update.client.user.firstName || '',
+          lastName: update.client.user.lastName || '',
+          email: update.client.user.email || '',
+          color: update.client.user.color || '#84cc16',
+          profile: {
+            profilePicture: update.client.user.profile?.profilePicture || null,
+          },
+        };
+      } else if (update.ambassador?.user) {
+        userObj = {
+          firstName: update.ambassador.user.firstName || '',
+          lastName: update.ambassador.user.lastName || '',
+          email: update.ambassador.user.email || '',
+          color: update.ambassador.user.color || '#84cc16',
+          profile: {
+            profilePicture: update.ambassador.user.profile?.profilePicture || null,
+          },
+        };
+      } else {
+        // Fallback to logged-in user if no author info is available
+        userObj = {
+          firstName: user?.firstName || '',
+          lastName: user?.lastName || '',
           email: user?.email || '',
           color: user?.color || '#84cc16',
           profile: {
@@ -237,8 +261,8 @@ export default function UpdatesPane({ projectId }: UpdatesPaneProps) {
       }
 
       const normalizedUser = {
-        firstName: userObj.firstName || userObj.first_name || '',
-        lastName: userObj.lastName || userObj.last_name || '',
+        firstName: userObj.firstName || '',
+        lastName: userObj.lastName || '',
         email: userObj.email || '',
         color: userObj.color || '#84cc16',
         profile: {

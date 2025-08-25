@@ -26,7 +26,6 @@ const ProjectsPage: NextPage = () => {
   }, [user]);
 
   let projectOwnerId = null;
-  console.log(user);
   if (user?.client) {
     projectOwnerId = user.client.id;
   } else if (user?.ambassador) {

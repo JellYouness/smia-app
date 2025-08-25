@@ -561,15 +561,20 @@ const MediaFileSection = ({
                 onClick={handleRequestReview}
                 disabled={reviewLoading || files.some((file) => file.isUploading)}
               >
-                {reviewLoading && (
-                  <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
-                    <CircularProgress size={16} sx={{ mr: 1 }} />
-                    Request Review
-                  </Box>
-                )}
-                {!reviewLoading && files.some((file) => file.isUploading)
-                  ? 'Uploading...'
-                  : 'Request Review'}
+                {(() => {
+                  if (reviewLoading) {
+                    return (
+                      <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
+                        <CircularProgress size={16} sx={{ mr: 1 }} />
+                        Requesting...
+                      </Box>
+                    );
+                  }
+                  if (files.some((file) => file.isUploading)) {
+                    return 'Uploading...';
+                  }
+                  return 'Request Review';
+                })()}
               </Button>
             )}
 
