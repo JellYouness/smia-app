@@ -32,7 +32,7 @@ export interface FormStepRef {
 export interface FormStepProps {
   previous: () => void;
   next: (data?: AnyObject) => void;
-  ref: Ref<FormStepRef | undefined>;
+  ref?: Ref<FormStepRef | undefined>;
   data: AnyObject | undefined;
 }
 export interface FormStep<FORM_STEP_ID> {

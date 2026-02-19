@@ -5,7 +5,6 @@ import {
   CardContent,
   Typography,
   Button,
-  Avatar,
   Chip,
   Alert,
   CircularProgress,
@@ -14,7 +13,6 @@ import {
 import {
   CheckCircle as CheckCircleIcon,
   Cancel as CancelIcon,
-  Person as PersonIcon,
   Group as GroupIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';

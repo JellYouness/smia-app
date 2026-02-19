@@ -14,6 +14,7 @@ interface Props<
 > extends AutocompleteProps<T, Multiple, DisableClearable, FreeSolo> {
   name: string;
   label?: string;
+  placeholder?: string;
   helperText?: React.ReactNode;
   onChange?: (
     event: React.SyntheticEvent,
@@ -29,6 +30,7 @@ const RHFAutocomplete = <
 >({
   name,
   label,
+  placeholder,
   helperText,
   ...other
 }: Omit<Props<T, Multiple, DisableClearable, FreeSolo>, 'renderInput'>) => {
@@ -44,6 +46,7 @@ const RHFAutocomplete = <
           renderInput={(params) => (
             <TextField
               label={label}
+              placeholder={placeholder}
               error={!!error}
               helperText={error ? error?.message : helperText}
               {...params}

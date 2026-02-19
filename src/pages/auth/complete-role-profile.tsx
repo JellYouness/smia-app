@@ -271,11 +271,11 @@ const CompleteRoleProfile: NextPage = () => {
                             sx={{
                               width: 32,
                               height: 32,
-                              bgcolor: getStepIconColor(isCompleted, active, isValid),
+                              bgcolor: getStepIconColor(isCompleted, !!active, isValid),
                               color: 'white',
                               cursor: 'pointer',
                               '&:hover': {
-                                bgcolor: getStepIconHoverColor(isCompleted, active, isValid),
+                                bgcolor: getStepIconHoverColor(isCompleted, !!active, isValid),
                               },
                             }}
                           >

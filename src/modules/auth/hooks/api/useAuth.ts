@@ -117,7 +117,7 @@ const useAuth = (): AuthData => {
 
   const fetchApi = useApi();
 
-  const { data: user, mutate } = useSWR<User | null>(ApiRoutes.Auth.Me, async (url) => {
+  const { data: user, mutate } = useSWR<User | null>(ApiRoutes.Auth.Me, async (url: string) => {
     if (!localStorage.getItem('authToken')) {
       setInitialized(true);
       return null;
