@@ -49,6 +49,16 @@ const queryClient = new QueryClient({
 
 const App = ({ Component, pageProps }: AppProps) => {
   const { initialized: authInitialized } = useAuth();
+  const getLayout = (Component as any).getLayout;
+
+  if (getLayout) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        {getLayout(<Component {...pageProps} />)}
+      </QueryClientProvider>
+    );
+  }
+
   if (!authInitialized) {
     return <LoadingScreen />;
   }

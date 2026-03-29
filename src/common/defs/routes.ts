@@ -10,7 +10,7 @@ import Notifications from '@modules/notifications/defs/routes';
 import Chat from '@modules/chat/defs/routes';
 
 const Common = {
-  Home: '/',
+  Home: '/dashboard',
   NotFound: '/404',
 };
 
